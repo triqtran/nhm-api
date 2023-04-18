@@ -1,0 +1,1 @@
+export { default as StudentUsersController } from './StudentUsersController'; 
