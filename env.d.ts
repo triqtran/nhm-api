@@ -35,12 +35,15 @@ declare namespace NodeJS {
     readonly AYOTREE_LIST_LESSONS_BY_CAMPUS_AND_TEACHER: string
 
     // Ayotree - users, students via APIs
-    readonly AYOTREE_GET_USER_PROFILE: string
+    readonly AYOTREE_LIST_USERS_BY_TYPE: string
     readonly AYOTREE_GET_USER_INVOICE: string
     readonly AYOTREE_ADD_NEW_STUDENT: string
     readonly AYOTREE_LIST_STUDENTS_BY_CAMPUS: string
     readonly AYOTREE_GET_STUDENT_ID: string
     readonly AYOTREE_UPDATE_STUDENT_STATUS_BY_ID_AND_CAMPUS: string
+
+    // Ayotree - get teachers
+    readonly AYOTREE_GET_TEACHER_TEACHING_AVAILABILITY_SCHEDULE: string
 
     // Ayotree - get setting timeZones
     readonly AYOTREE_GET_TIMEZONES: string
