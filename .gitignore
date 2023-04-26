@@ -7,3 +7,6 @@ config.env
 
 # keys
 keys/
+
+#build
+build.sh
