@@ -1,4 +1,4 @@
-import StudentUsersDAL from "dals/StudentUsersDAL";
+import StudentsDAL from "dals/StudentsDAL";
 import {
   OwnerProfileRequest,
   OwnerScheduleRequest,

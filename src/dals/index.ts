@@ -1,1 +1,1 @@
-export { default as StudentUsersDAL } from './StudentUsersDAL';
+export { default as StudentsDAL } from './StudentsDAL';

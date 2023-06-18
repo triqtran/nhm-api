@@ -2,7 +2,7 @@ import { Request, RequestHandler, Response, NextFunction } from 'express';
 import config from "@config";
 import JWToken, { JwtPayload } from "jsonwebtoken";
 import { DecodedUserKind, DecodedUserType, ErrorStruct } from "@tsenv";
-import StudentUsersDAL from "dals/StudentUsersDAL";
+import StudentsDAL from "dals/StudentsDAL";
 
 const throwError = (
   errMessage: string = 'Method is not permitted!',
@@ -15,9 +15,9 @@ class JwtResponse {
   exist (id: number, type: DecodedUserKind) {
     switch(type) {
       case 'student': {
-        return StudentUsersDAL.getStudentById(id)
+        return StudentsDAL.getStudentById(id)
           .then(existStudent =>
-            existStudent && existStudent.status !== 'disabled'
+            existStudent && existStudent.status !== 'suspended'
           )
           .catch((e) => {
             console.error('[jwtResponse]', e);

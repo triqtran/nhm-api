@@ -1,21 +1,21 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import dbConnection from './dbConnection';
 
-interface StudentLearnJourneysAttributes {
+interface StudentJourneysAttributes {
   id: number;
-  student_user_id: number;
+  student_id: number;
   learning_level: string;
   course_package: string;
   is_current: boolean;
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<StudentLearnJourneysAttributes, 'id' | 'updated_at'> {}
-export interface IngredientOuput extends Required<StudentLearnJourneysAttributes> {}
+export interface IngredientInput extends Optional<StudentJourneysAttributes, 'id' | 'updated_at'> {}
+export interface IngredientOuput extends Required<StudentJourneysAttributes> {}
 
-class StudentLearnJourneys extends Model<StudentLearnJourneysAttributes, IngredientInput> implements StudentLearnJourneysAttributes {
+class StudentJourneys extends Model<StudentJourneysAttributes, IngredientInput> implements StudentJourneysAttributes {
   public id!: number;
-  public student_user_id!: number;
+  public student_id!: number;
   public learning_level!: string;
   public course_package!: string;
   public is_current!: boolean;
@@ -23,13 +23,13 @@ class StudentLearnJourneys extends Model<StudentLearnJourneysAttributes, Ingredi
   public updated_at?: Date | undefined;
 }
 
-StudentLearnJourneys.init({
+StudentJourneys.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     autoIncrement: true,
     primaryKey: true,
   },
-  student_user_id: { type: DataTypes.INTEGER, allowNull: false },
+  student_id: { type: DataTypes.INTEGER, allowNull: false },
   learning_level: { type: DataTypes.STRING, allowNull: false },
   course_package: { type: DataTypes.STRING, allowNull: false },
   is_current: { type: DataTypes.BOOLEAN, allowNull: false },
@@ -39,7 +39,7 @@ StudentLearnJourneys.init({
   timestamps: true,
   sequelize: dbConnection,
   paranoid: true,
-  tableName: 'student_learn_journeys',
+  tableName: 'student_journeys',
 })
 
-export default StudentLearnJourneys;
+export default StudentJourneys;

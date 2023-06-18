@@ -1,5 +1,5 @@
 import { Request, NextFunction, Response } from "express";
-import { Student_User_Kind, Student_User_Status } from "models/StudentUsers";
+import { StudentStatus } from "models/Students";
 
 export interface StudentUserParamsReq {
   id: number;
@@ -9,8 +9,7 @@ export interface StudentUserBodyReq {
   first_name: string;
   last_name: string;
   registered_user_id: number;
-  kind: Student_User_Kind;
-  status: Student_User_Status;
+  status: StudentStatus;
   user_name: string;
   password: string;
 }

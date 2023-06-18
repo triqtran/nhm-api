@@ -1,17 +1,17 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import dbConnection from './dbConnection';
 
-interface StudentUserTrackingsAttributes {
+interface StudentTrackingsAttributes {
   id: number;
   student_user_id: number;
   action: string;
   platform: string;
   created_at: Date;
 }
-export interface IngredientInput extends Optional<StudentUserTrackingsAttributes, 'id'> {}
-export interface IngredientOuput extends Required<StudentUserTrackingsAttributes> {}
+export interface IngredientInput extends Optional<StudentTrackingsAttributes, 'id'> {}
+export interface IngredientOuput extends Required<StudentTrackingsAttributes> {}
 
-class StudentUserTrackings extends Model<StudentUserTrackingsAttributes, IngredientInput> implements StudentUserTrackingsAttributes {
+class StudentTrackings extends Model<StudentTrackingsAttributes, IngredientInput> implements StudentTrackingsAttributes {
   public id!: number;
   public student_user_id!: number;
   public action!: string
@@ -19,7 +19,7 @@ class StudentUserTrackings extends Model<StudentUserTrackingsAttributes, Ingredi
   public created_at!: Date;
 }
 
-StudentUserTrackings.init({
+StudentTrackings.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     autoIncrement: true,
@@ -33,7 +33,7 @@ StudentUserTrackings.init({
   timestamps: true,
   sequelize: dbConnection,
   paranoid: true,
-  tableName: 'student_user_trackings',
+  tableName: 'student_trackings',
 })
 
-export default StudentUserTrackings;
+export default StudentTrackings;

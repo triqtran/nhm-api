@@ -8,10 +8,7 @@ interface NotificationsAttributes {
   object_id: string;
   short_description: string;
   description?: string;
-  is_read?: boolean;
   is_pushed?: boolean;
-  for_student_user?: boolean;
-  student_user_id?: number;
   created_at: Date;
   updated_at?: Date;
 }
@@ -25,10 +22,7 @@ class Notifications extends Model<NotificationsAttributes, IngredientInput> impl
   public object_id!: string;
   public short_description!: string;
   public description?: string | undefined;
-  public is_read?: boolean | undefined;
   public is_pushed?: boolean | undefined;
-  public for_student_user?: boolean | undefined;
-  public student_user_id?: number | undefined;
   public created_at!: Date;
   public updated_at?: Date | undefined;
 }
@@ -44,10 +38,7 @@ Notifications.init({
   object_id: { type: DataTypes.STRING, allowNull: false },
   short_description: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.STRING },
-  is_read: { type: DataTypes.BOOLEAN },
   is_pushed: { type: DataTypes.BOOLEAN },
-  for_student_user: { type: DataTypes.BOOLEAN },
-  student_user_id: { type: DataTypes.BOOLEAN },
   created_at: { type: DataTypes.TIME, allowNull: false },
   updated_at: { type: DataTypes.TIME }
 }, {

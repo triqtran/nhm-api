@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { StudentUsersDAL } from 'dals';
+import { StudentsDAL } from 'dals';
 import IStudentControllers, {
   StudentUserBodyReq,
   StudentUserParamsReq,
@@ -34,9 +34,9 @@ class StudentUsersController implements IStudentControllers {
     res: Response,
     next: NextFunction,
   ): void {
-    StudentUsersDAL.getStudentById(req.userDecoded.id)
+    StudentsDAL.getStudentById(req.userDecoded.id)
       .then(student => {
-        if (student.status === 'disabled') {
+        if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED)
         }
         res.responseSuccess(student)
@@ -48,7 +48,7 @@ class StudentUsersController implements IStudentControllers {
     res: Response,
     next: NextFunction,
   ): void {
-    StudentUsersDAL.addNewStudent(req)
+    StudentsDAL.addNewStudent(req)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   };
@@ -58,13 +58,13 @@ class StudentUsersController implements IStudentControllers {
     res: Response,
     next: NextFunction
   ): void {
-    StudentUsersDAL.updateStudentById(req?.body, req.params.id)
+    StudentsDAL.updateStudentById(req?.body, req.params.id)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   };
 
   listStudents(req: Request, res: Response, next: NextFunction): void {
-    StudentUsersDAL.listStudentsByCourse(req)
+    StudentsDAL.listStudentsByCourse(req)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   };
@@ -74,7 +74,7 @@ class StudentUsersController implements IStudentControllers {
     res: Response,
     next: NextFunction,
   ): void {
-    StudentUsersDAL.getStudentById(req.params.id)
+    StudentsDAL.getStudentById(req.params.id)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   };
