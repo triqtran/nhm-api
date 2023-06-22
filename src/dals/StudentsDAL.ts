@@ -20,10 +20,13 @@ interface IStudentsDAL {
 
 class StudentsDAL implements IStudentsDAL {
   addNewStudent(data: any): Promise<Students> {
-    return Students.create(data, { returning: true })
-      .then(res => {
-        if (res?.dataValues) return res.dataValues as Students;
-        throw throwError('addNewStudent');
+    return Students.findOne({ where: { email: data.email } })
+      .then(exist => {
+        if (exist) throw throwError('addNewStudent', 'This student has already existed!');
+        return Students.create(data, { returning: true }).then(res => {
+          if (res?.dataValues) return res.dataValues as Students;
+          throw throwError('addNewStudent', 'Can not create student!');
+        });
       })
       .catch(err => {
         throw throwError('addNewStudent', err);

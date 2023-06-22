@@ -20,13 +20,16 @@ interface INHMAccountsDAL {
 
 class NHMAccountsDAL implements INHMAccountsDAL {
   addNewAccount(req: any): Promise<NHMAccounts> {
-    return NHMAccounts.create(req, { returning: true })
-      .then(res => {
-        if (res?.dataValues) return res.dataValues as NHMAccounts;
-        throw throwError('addNewStudent');
+    return NHMAccounts.findOne({ where: { email: req.email } })
+      .then(exist => {
+        if (exist) throw throwError('addNewAccount', 'This account has already existed!');
+        return NHMAccounts.create(req, { returning: true }).then(res => {
+          if (res?.dataValues) return res.dataValues as NHMAccounts;
+          throw throwError('addNewAccount', 'Can not create account!');
+        });
       })
       .catch(err => {
-        throw throwError('addNewStudent', err);
+        throw throwError('addNewAccount', err);
       });
   }
   updateAccountById(req: any, id: number): Promise<NHMAccounts> {
@@ -37,10 +40,10 @@ class NHMAccountsDAL implements INHMAccountsDAL {
     })
       .then(res => {
         if (res?.length > 0 && res[1]) return res[1][0];
-        throw throwError('updateStudentById');
+        throw throwError('updateAccountById');
       })
       .catch(err => {
-        throw throwError('updateStudentById', err);
+        throw throwError('updateAccountById', err);
       });
   }
   listAccounts(req: any): Promise<ListNHMAccountsResponse> {
@@ -50,14 +53,14 @@ class NHMAccountsDAL implements INHMAccountsDAL {
         return { count: res.count, data: resData } as ListNHMAccountsResponse;
       })
       .catch(err => {
-        throw throwError('listStudentsByCourse', err);
+        throw throwError('listAccounts', err);
       });
   }
   getAccountById(id: number): Promise<NHMAccounts> {
     return NHMAccounts.findOne({ where: { id } })
       .then(res => (res?.dataValues || null) as NHMAccounts)
       .catch(err => {
-        throw throwError('getStudentById', err);
+        throw throwError('getAccountById', err);
       });
   }
 
@@ -65,7 +68,7 @@ class NHMAccountsDAL implements INHMAccountsDAL {
     return NHMAccounts.findOne({ where: { email, password } })
       .then(res => (res?.dataValues || null) as NHMAccounts)
       .catch(err => {
-        throw throwError('getStudentById', err);
+        throw throwError('signInAccount', err);
       });
   }
 }
