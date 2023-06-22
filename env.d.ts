@@ -67,7 +67,7 @@ interface DecodedUserType {
   email?: string;
 }
 
-declare module "Express" {
+declare module "express" {
   interface Response {
     responseData: (
       statusCode: number,
@@ -97,6 +97,6 @@ declare module "Express" {
   }
 }
 
-declare module "JsonWebToken" {
+declare module "jsonwebtoken" {
   interface JwtPayload extends DecodedUserType {}
 }

@@ -11,32 +11,26 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
-router.post(
-  '/create',
-  ctrl.addNewStudent as express.RequestHandler,
-);
+router.post('/create', authHandler, ctrl.addNewStudent as express.RequestHandler);
 
 router.put(
   '/update/:id',
-  ctrl.updateStudent as express.RequestHandler<StudentUserParamsReq, StudentUserBodyReq>,
-);
-
-router.get(
-  '/list',
   authHandler,
-  ctrl.listStudents as express.RequestHandler,
+  ctrl.updateStudent as express.RequestHandler<StudentUserParamsReq, StudentUserBodyReq>
 );
 
-router.get(
-  '/hello',
-  (req, res, next) => {
-    res.send('Hello Student Users!');
-  }
-);
+router.get('/list', authHandler, ctrl.listStudents as express.RequestHandler);
 
-router.get(
-  '/:id',
-  ctrl.getStudentById as express.RequestHandler<StudentUserParamsReq>
-);
+router.get('/hello', (req, res, next) => {
+  res.send('Hello Student Users!');
+});
+
+router.get('/me', authHandler, ctrl.getStudentOwnProfile as express.RequestHandler);
+
+router.get('/:id', ctrl.getStudentById as express.RequestHandler<StudentUserParamsReq>);
+
+router.post('/login', ctrl.signInStudent as express.RequestHandler);
+
+router.post('/signup', ctrl.signUpStudent as express.RequestHandler);
 
 export default router;
