@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import dbConnection from './dbConnection';
 
 interface NotificationsAttributes {
@@ -15,7 +15,10 @@ interface NotificationsAttributes {
 export interface IngredientInput extends Optional<NotificationsAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<NotificationsAttributes> {}
 
-class Notifications extends Model<NotificationsAttributes, IngredientInput> implements NotificationsAttributes {
+class Notifications
+  extends Model<NotificationsAttributes, IngredientInput>
+  implements NotificationsAttributes
+{
   public id!: number;
   public title!: string;
   public action!: string;
@@ -27,25 +30,30 @@ class Notifications extends Model<NotificationsAttributes, IngredientInput> impl
   public updated_at?: Date | undefined;
 }
 
-Notifications.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+Notifications.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    title: { type: DataTypes.STRING, allowNull: false },
+    action: { type: DataTypes.STRING, allowNull: false },
+    object_id: { type: DataTypes.STRING, allowNull: false },
+    short_description: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.STRING },
+    is_pushed: { type: DataTypes.BOOLEAN },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
-  title: { type: DataTypes.STRING, allowNull: false },
-  action: { type: DataTypes.STRING, allowNull: false },
-  object_id: { type: DataTypes.STRING, allowNull: false },
-  short_description: { type: DataTypes.STRING, allowNull: false },
-  description: { type: DataTypes.STRING },
-  is_pushed: { type: DataTypes.BOOLEAN },
-  created_at: { type: DataTypes.TIME, allowNull: false },
-  updated_at: { type: DataTypes.TIME }
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'notifications',
-})
+  {
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: false,
+    sequelize: dbConnection,
+    tableName: 'notifications',
+  }
+);
 
 export default Notifications;

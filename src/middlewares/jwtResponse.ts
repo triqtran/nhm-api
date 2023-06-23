@@ -21,7 +21,8 @@ class JwtResponse {
             return false;
           });
       }
-      case 'nhm_account':
+      case 'admin':
+      case 'teacher':
         return NHMAccountDAL.getAccountById(id)
           .then(() => true)
           .catch(e => {
@@ -53,8 +54,22 @@ class JwtResponse {
   generate(payload: DecodedUserType) {
     return JWToken.sign(payload, config.JWT_SECRET, {});
   }
+
+  verifyRole(role: DecodedUserKind[]) {
+    const authRole = (req: Request, res: Response, next: NextFunction) => {
+      if (!req.userDecoded) {
+        return res.responseAppError(throwError('Can not find valid authentication!'));
+      }
+      if (role.includes(req.userDecoded.type)) {
+        return res.responseAppError(throwError('You can not perform this action!'));
+      }
+      next();
+    };
+    return authRole as RequestHandler<any, any>;
+  }
 }
 const jwtResponse = new JwtResponse();
 
 export const authHandler = jwtResponse.verify as RequestHandler<any, any>;
+export const authRoleHanlder = jwtResponse.verifyRole;
 export default jwtResponse;

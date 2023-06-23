@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import dbConnection from './dbConnection';
 
 export type StudentStatus = 'registered' | 'active' | 'suspended';
@@ -45,16 +45,23 @@ Students.init(
     birthday: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false },
     phone: { type: DataTypes.STRING, allowNull: false },
-    status: { type: DataTypes.STRING, allowNull: false, defaultValue: 'registered' },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'registered',
+      values: ['registered', 'active', 'suspended'],
+    },
     password: { type: DataTypes.STRING, allowNull: false },
     ayotree_student_id: { type: DataTypes.INTEGER },
-    created_at: { type: DataTypes.TIME, allowNull: false, defaultValue: new Date() },
-    updated_at: { type: DataTypes.TIME },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
   {
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: false,
     sequelize: dbConnection,
-    paranoid: true,
     tableName: 'students',
   }
 );

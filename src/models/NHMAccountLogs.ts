@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import dbConnection from './dbConnection';
 
 interface NHMAccountLogsAttributes {
@@ -10,27 +10,35 @@ interface NHMAccountLogsAttributes {
 export interface IngredientInput extends Optional<NHMAccountLogsAttributes, 'id'> {}
 export interface IngredientOuput extends Required<NHMAccountLogsAttributes> {}
 
-class NHMAccountLogs extends Model<NHMAccountLogsAttributes, IngredientInput> implements NHMAccountLogsAttributes {
+class NHMAccountLogs
+  extends Model<NHMAccountLogsAttributes, IngredientInput>
+  implements NHMAccountLogsAttributes
+{
   public id!: number;
   public nhm_account_id!: number;
   public action!: string;
   public created_at!: Date;
 }
 
-NHMAccountLogs.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+NHMAccountLogs.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    nhm_account_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    action: { type: DataTypes.STRING, allowNull: false },
+    created_at: { type: DataTypes.DATE },
   },
-  nhm_account_id: { type: DataTypes.NUMBER, allowNull: false },
-  action: { type: DataTypes.STRING, allowNull: false },
-  created_at: { type: DataTypes.TIME, allowNull: false },
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'nhm_account_logs',
-})
+  {
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: false,
+    deletedAt: false,
+    sequelize: dbConnection,
+    tableName: 'nhm_account_logs',
+  }
+);
 
 export default NHMAccountLogs;

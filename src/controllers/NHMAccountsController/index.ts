@@ -44,7 +44,7 @@ class NHMAccountController implements INHMAccountControllers {
         const token = jwtResponse.generate({
           id: account.id,
           name: account.name,
-          type: 'nhm_account',
+          type: account.role || 'teacher',
           email: account.email,
           phone: account.phone,
         });

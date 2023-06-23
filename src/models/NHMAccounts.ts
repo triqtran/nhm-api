@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import dbConnection from './dbConnection';
 
 type NHM_Account_Type = 'admin' | 'teacher';
@@ -27,7 +27,7 @@ class NHMAccounts
   public phone?: string;
   public role?: NHM_Account_Type;
   public created_at!: Date;
-  public updated_at?: Date | undefined;
+  public updated_at?: Date;
 }
 
 NHMAccounts.init(
@@ -42,13 +42,15 @@ NHMAccounts.init(
     password: { type: DataTypes.STRING, allowNull: false },
     phone: { type: DataTypes.STRING },
     role: { type: DataTypes.STRING },
-    created_at: { type: DataTypes.TIME, allowNull: false, defaultValue: new Date() },
-    updated_at: { type: DataTypes.TIME },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
   {
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: false,
     sequelize: dbConnection,
-    paranoid: true,
     tableName: 'nhm_accounts',
   }
 );
