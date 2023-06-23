@@ -11,7 +11,7 @@ const throwError = (errMessage: string = 'Method is not permitted!'): ErrorStruc
 };
 
 class JwtResponse {
-  exist(id: number, type: DecodedUserKind) {
+  static exist(id: number, type: DecodedUserKind) {
     switch (type) {
       case 'student': {
         return StudentsDAL.getStudentById(id)
@@ -42,7 +42,7 @@ class JwtResponse {
     JWToken.verify(jwtToken, config.JWT_SECRET, (jwtErr, decode) => {
       if (jwtErr) return res.responseAppError(throwError());
       req.userDecoded = decode as JwtPayload;
-      return this.exist(req.userDecoded.id, req.userDecoded.type)
+      return JwtResponse.exist(req.userDecoded.id, req.userDecoded.type)
         .then(result => {
           if (!result) res.responseAppError(throwError());
           next();
