@@ -10,6 +10,13 @@ const throwError = (errMessage: string = 'Method is not permitted!'): ErrorStruc
   return { code: 'error', show: errMessage, error: new Error(errMessage) };
 };
 
+const logDecode = (payload: JwtPayload, token: string): void => {
+  console.log('===================== USER REQUEST =====================');
+  console.log(payload);
+  console.log('TOKEN:', token);
+  console.log('========================================================');
+};
+
 class JwtResponse {
   static exist(id: number, type: DecodedUserKind) {
     switch (type) {
@@ -42,6 +49,7 @@ class JwtResponse {
     JWToken.verify(jwtToken, config.JWT_SECRET, (jwtErr, decode) => {
       if (jwtErr) return res.responseAppError(throwError());
       req.userDecoded = decode as JwtPayload;
+      logDecode(req.userDecoded, jwtToken);
       return JwtResponse.exist(req.userDecoded.id, req.userDecoded.type)
         .then(result => {
           if (!result) res.responseAppError(throwError());
