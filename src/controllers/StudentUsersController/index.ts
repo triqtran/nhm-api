@@ -54,7 +54,7 @@ class StudentUsersController implements IStudentControllers {
           phone: student.phone,
         });
 
-        res.responseSuccess({ student, token });
+        res.responseSuccess({ data: student, token });
       })
       .catch(err => res.responseAppError(err));
   }
@@ -73,7 +73,7 @@ class StudentUsersController implements IStudentControllers {
           email: student.email,
           phone: student.phone,
         });
-        res.responseSuccess({ student, token });
+        res.responseSuccess({ data: student, token });
       })
       .catch(err => res.responseAppError(err));
   }

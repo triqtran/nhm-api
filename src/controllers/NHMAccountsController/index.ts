@@ -31,8 +31,7 @@ class NHMAccountController implements INHMAccountControllers {
   ): void {
     const { email, password } = req.body;
     if (!email || !password) {
-      res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
-      return;
+      return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
     }
     NHMAccountDAL.signInAccount(email, password)
       .then(account => {
@@ -48,7 +47,7 @@ class NHMAccountController implements INHMAccountControllers {
           email: account.email,
           phone: account.phone,
         });
-        res.responseSuccess({ account, token });
+        res.responseSuccess({ data: account, token });
       })
       .catch(err => res.responseAppError(err));
   }
