@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 type NHM_Account_Type = 'admin' | 'teacher';
@@ -16,7 +16,10 @@ interface NHMAccountsAttributes {
 export interface IngredientInput extends Optional<NHMAccountsAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<NHMAccountsAttributes> {}
 
-class NHMAccounts extends Model<NHMAccountsAttributes, IngredientInput> implements NHMAccountsAttributes {
+class NHMAccounts
+  extends Model<NHMAccountsAttributes, IngredientInput>
+  implements NHMAccountsAttributes
+{
   public id!: number;
   public name!: string;
   public email!: string;
@@ -27,24 +30,27 @@ class NHMAccounts extends Model<NHMAccountsAttributes, IngredientInput> implemen
   public updated_at?: Date | undefined;
 }
 
-NHMAccounts.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+NHMAccounts.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false },
+    password: { type: DataTypes.STRING, allowNull: false },
+    phone: { type: DataTypes.STRING },
+    role: { type: DataTypes.STRING },
+    created_at: { type: DataTypes.TIME, allowNull: false, defaultValue: new Date() },
+    updated_at: { type: DataTypes.TIME },
   },
-  name: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, allowNull: false },
-  password: { type: DataTypes.STRING, allowNull: false },
-  phone: { type: DataTypes.STRING },
-  role: { type: DataTypes.STRING },
-  created_at: { type: DataTypes.TIME, allowNull: false },
-  updated_at: { type: DataTypes.TIME }
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'nhm_accounts',
-})
+  {
+    timestamps: true,
+    sequelize: dbConnection,
+    paranoid: true,
+    tableName: 'nhm_accounts',
+  }
+);
 
 export default NHMAccounts;

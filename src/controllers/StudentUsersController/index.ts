@@ -61,7 +61,7 @@ class StudentUsersController implements IStudentControllers {
 
   signUpStudent(req: Request<any, StudentUserBodyReq>, res: Response, next: NextFunction): void {
     const data = req.body;
-    StudentsDAL.addNewStudent({ ...data, status: 'registered', created_at: new Date() })
+    StudentsDAL.addNewStudent(data)
       .then(student => {
         if (!student) {
           return res.responseAppError(errors.CAN_NOT_SIGN_UP_NEW_STUDENT);

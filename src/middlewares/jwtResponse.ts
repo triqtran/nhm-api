@@ -28,7 +28,6 @@ class JwtResponse {
             console.error('[jwtResponse]', e);
             return false;
           });
-      case 'register':
       default:
         return Promise.resolve(false);
     }

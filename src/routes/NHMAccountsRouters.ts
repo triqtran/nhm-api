@@ -25,6 +25,8 @@ router.get('/hello', (req, res, next) => {
   res.send('Hello Nihaoma Account!');
 });
 
+router.get('/profile', authHandler, ctrl.addNewNHMAccount as express.RequestHandler);
+
 router.get('/:id', ctrl.getNHMAccountById as express.RequestHandler<NHMAccountParamsReq>);
 
 router.post('/login', ctrl.signInNHMAccount as express.RequestHandler);

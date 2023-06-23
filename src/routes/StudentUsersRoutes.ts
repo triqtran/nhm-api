@@ -25,7 +25,7 @@ router.get('/hello', (req, res, next) => {
   res.send('Hello Student Users!');
 });
 
-router.get('/me', authHandler, ctrl.getStudentOwnProfile as express.RequestHandler);
+router.get('/profile', authHandler, ctrl.getStudentOwnProfile as express.RequestHandler);
 
 router.get('/:id', ctrl.getStudentById as express.RequestHandler<StudentUserParamsReq>);
 
