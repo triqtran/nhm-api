@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 export type StudentStatus = 'registered' | 'active' | 'suspended';
