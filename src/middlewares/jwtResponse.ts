@@ -31,7 +31,7 @@ class JwtResponse {
       case 'admin':
       case 'teacher':
         return NHMAccountDAL.getAccountById(id)
-          .then(() => true)
+          .then(existAccount => !!existAccount)
           .catch(e => {
             console.error('[jwtResponse]', e);
             return false;
