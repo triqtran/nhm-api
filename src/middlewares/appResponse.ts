@@ -6,7 +6,11 @@ const handler = (req: Request, res: Response, next: NextFunction): void => {
     res.status(statusCode).json(data);
   };
 
-  res.responseError = (code: string, show: string, error: ErrorResType): void => {
+  res.responseError = (
+    code: string,
+    show: string,
+    error: ErrorResType
+  ): void => {
     const err = { code, show, error } as ErrorStruct;
     if (error) {
       if (error instanceof Error) {
@@ -20,13 +24,13 @@ const handler = (req: Request, res: Response, next: NextFunction): void => {
     res.responseData(400, { success: false, error: err });
   };
 
-  res.responseAppError = (err: ErrorStruct): void => {
+  res.responseAppError = (err: any): void => {
     const e = {
       code: err?.code || 'ERROR_INTERNAL_SERVER',
       show: err?.show || 'Something was wrong.',
-      error: err.error,
+      error: err?.error || err,
     } as ErrorStruct;
-    res.responseData(400, { success: false, error: e });
+    res.responseError(e.code, e.show, e.error);
   };
 
   res.responseFailAuth = (code: string, show: string, error: ErrorResType) => {
@@ -43,7 +47,8 @@ const handler = (req: Request, res: Response, next: NextFunction): void => {
   };
 
   res.responseSuccess = (data: any) => {
-    const restData = data && data.data ? { success: true, ...data } : { success: true, data };
+    const restData =
+      data && data.data ? { success: true, ...data } : { success: true, data };
     res.responseData(200, restData);
   };
 

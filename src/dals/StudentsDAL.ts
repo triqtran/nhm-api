@@ -1,8 +1,14 @@
 import Students from 'models/Students';
 
-const throwError = (funcName: string, errMessage: string = 'Method not implemented.') => {
-  console.error(`[StudentsDAL.${funcName}]`, errMessage);
-  return new Error(`[StudentsDAL.${funcName}] ${errMessage}`);
+const throwError =
+  (funcName: string) =>
+  (errMessage: string = 'Method not implemented.') => {
+    console.error(`[StudentsDAL.${funcName}]`, errMessage);
+    throw errMessage;
+  };
+
+const throwNewError = (err: string = 'Error not implemented.') => {
+  throw new Error(err);
 };
 
 export type ListStudentsResponse = {
@@ -21,16 +27,14 @@ interface IStudentsDAL {
 class StudentsDAL implements IStudentsDAL {
   addNewStudent(data: any): Promise<Students> {
     return Students.findOne({ where: { email: data.email } })
-      .then(exist => {
-        if (exist) throw throwError('addNewStudent', 'This student has already existed!');
-        return Students.create(data, { returning: true }).then(res => {
+      .then((exist) => {
+        if (exist) throwNewError('This student has already existed!');
+        return Students.create(data, { returning: true }).then((res) => {
           if (res?.dataValues) return res.dataValues as Students;
-          throw throwError('addNewStudent', 'Can not create student!');
+          return throwNewError('Can not create student!');
         });
       })
-      .catch(err => {
-        throw throwError('addNewStudent', err);
-      });
+      .catch(throwError('addNewStudent'));
   }
   updateStudentById(data: any, id: number): Promise<Students> {
     return Students.update(data, {
@@ -47,38 +51,30 @@ class StudentsDAL implements IStudentsDAL {
       ],
       returning: true,
     })
-      .then(res => {
+      .then((res) => {
         if (res?.length > 0 && res[1]) return res[1][0];
-        throw throwError('updateStudentById');
+        return throwNewError('updateStudentById');
       })
-      .catch(err => {
-        throw throwError('updateStudentById', err);
-      });
+      .catch(throwError('updateStudentById'));
   }
   listStudentsByCourse(paging: any): Promise<ListStudentsResponse> {
     return Students.findAndCountAll({ where: paging })
-      .then(res => {
-        const resData = res.rows.map(item => item.dataValues);
+      .then((res) => {
+        const resData = res.rows.map((item) => item.dataValues);
         return { count: res.count, data: resData } as ListStudentsResponse;
       })
-      .catch(err => {
-        throw throwError('listStudentsByCourse', err);
-      });
+      .catch(throwError('listStudentsByCourse'));
   }
   getStudentById(id: number): Promise<Students> {
     return Students.findOne({ where: { id } })
-      .then(res => (res?.dataValues || null) as Students)
-      .catch(err => {
-        throw throwError('getStudentById', err);
-      });
+      .then((res) => (res?.dataValues || null) as Students)
+      .catch(throwError('getStudentById'));
   }
 
   signInStudent(email: string, password: string): Promise<Students> {
     return Students.findOne({ where: { email, password } })
-      .then(res => (res?.dataValues || null) as Students)
-      .catch(err => {
-        throw throwError('getStudentById', err);
-      });
+      .then((res) => (res?.dataValues || null) as Students)
+      .catch(throwError('signInStudent'));
   }
 }
 
