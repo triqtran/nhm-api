@@ -76,7 +76,7 @@ class NHMAccountController implements INHMAccountControllers {
   }
 
   listNHMAccounts(req: Request, res: Response, next: NextFunction): void {
-    NHMAccountDAL.listAccounts(req)
+    NHMAccountDAL.listAccounts(req.query)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }

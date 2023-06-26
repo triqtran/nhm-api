@@ -67,6 +67,13 @@ interface DecodedUserType {
   email?: string;
 }
 
+interface Paging {
+  page: number;
+  limit: number;
+  filters: { [key: string]: any };
+  order: any;
+}
+
 declare module 'express' {
   interface Response {
     responseData: (
@@ -86,6 +93,7 @@ declare module 'express' {
   }
   interface Request {
     userDecoded: DecodedUserType;
+    paging: Paging;
   }
 }
 

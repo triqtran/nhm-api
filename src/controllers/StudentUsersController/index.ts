@@ -25,6 +25,10 @@ const errors = {
     code: 'error',
     show: 'Can not sign up new student',
   } as ErrorStruct,
+  CAN_NOT_PERFORM_THIS_ACTION: {
+    code: 'error',
+    show: 'You can not perform this action',
+  } as ErrorStruct,
 };
 
 class StudentUsersController implements IStudentControllers {
@@ -98,13 +102,19 @@ class StudentUsersController implements IStudentControllers {
     res: Response,
     next: NextFunction
   ): void {
+    if (
+      req.params.id != req.userDecoded.id &&
+      !['teacher', 'admin'].includes(req.userDecoded.type)
+    ) {
+      return res.responseAppError(errors.CAN_NOT_PERFORM_THIS_ACTION);
+    }
     StudentsDAL.updateStudentById(req?.body, req.params.id)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
 
   listStudents(req: Request, res: Response, next: NextFunction): void {
-    StudentsDAL.listStudentsByCourse(req)
+    StudentsDAL.listStudentsByCourse(req.paging)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }

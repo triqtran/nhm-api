@@ -6,6 +6,7 @@ import {
   StudentUserParamsReq,
 } from 'controllers/StudentUsersController/interfaces';
 import { authHandler } from 'middlewares/jwtResponse';
+import { parsePaging } from 'middlewares';
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -19,7 +20,7 @@ router.put(
   ctrl.updateStudent as express.RequestHandler<StudentUserParamsReq, StudentUserBodyReq>
 );
 
-router.get('/list', authHandler, ctrl.listStudents as express.RequestHandler);
+router.get('/list', authHandler, parsePaging, ctrl.listStudents as express.RequestHandler);
 
 router.get('/hello', (req, res, next) => {
   res.send('Hello Student Users!');
