@@ -9,7 +9,7 @@
     "build": "tsc && tsc-alias -p tsconfig.json",
     "remote:prod": "NODE_ENV=production node app.js",
     "lint": "eslint --ext .ts src/",
-    "lint:fix": "eslint --ext .ts --fix"
+    "lint:fix": "eslint --ext .ts src/ --fix"
   },
   "repository": {
     "type": "git",
