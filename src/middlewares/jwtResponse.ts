@@ -5,7 +5,7 @@ import { DecodedUserKind, DecodedUserType, ErrorStruct } from '@tsenv';
 import StudentsDAL from 'dals/StudentsDAL';
 import { NHMAccountDAL } from 'dals/index';
 
-const throwError = (errMessage: string = 'Method is not permitted!'): ErrorStruct => {
+const throwError = (errMessage = 'Method is not permitted!'): ErrorStruct => {
   console.error('[jwtResponse}]', errMessage);
   return { code: 'error', show: errMessage, error: new Error(errMessage) };
 };
@@ -22,8 +22,11 @@ class JwtResponse {
     switch (type) {
       case 'student': {
         return StudentsDAL.getStudentById(id)
-          .then(existStudent => existStudent && existStudent.status !== 'suspended')
-          .catch(e => {
+          .then(
+            (existStudent) =>
+              existStudent && existStudent.status !== 'suspended'
+          )
+          .catch((e) => {
             console.error('[jwtResponse]', e);
             return false;
           });
@@ -31,8 +34,8 @@ class JwtResponse {
       case 'admin':
       case 'teacher':
         return NHMAccountDAL.getAccountById(id)
-          .then(existAccount => !!existAccount)
-          .catch(e => {
+          .then((existAccount) => !!existAccount)
+          .catch((e) => {
             console.error('[jwtResponse]', e);
             return false;
           });
@@ -44,15 +47,23 @@ class JwtResponse {
   verify(req: Request, res: Response, next: NextFunction) {
     const authToken = req.header('Authorization') as string;
     if (!authToken || authToken.trim() === '' || !authToken.includes('Bearer'))
-      return res.responseAppError(throwError('Not found authentication token!'));
+      return res.responseAppError(
+        throwError('Not found authentication token!')
+      );
     const jwtToken = authToken.substring(7);
     JWToken.verify(jwtToken, config.JWT_SECRET, (jwtErr, decode) => {
-      if (jwtErr) return res.responseAppError(throwError('Invalid authentication token!'));
+      if (jwtErr)
+        return res.responseAppError(
+          throwError('Invalid authentication token!')
+        );
       req.userDecoded = decode as JwtPayload;
       logDecode(req.userDecoded, jwtToken);
       return JwtResponse.exist(req.userDecoded.id, req.userDecoded.type)
-        .then(result => {
-          if (!result) res.responseAppError(throwError('User is not found or has been disabled!'));
+        .then((result) => {
+          if (!result)
+            res.responseAppError(
+              throwError('User is not found or has been disabled!')
+            );
           next();
         })
         .catch((e: Error) => res.responseAppError(throwError(e.message)));
@@ -66,10 +77,14 @@ class JwtResponse {
   verifyRole(role: DecodedUserKind[]) {
     const authRole = (req: Request, res: Response, next: NextFunction) => {
       if (!req.userDecoded) {
-        return res.responseAppError(throwError('Can not find valid authentication!'));
+        return res.responseAppError(
+          throwError('Can not find valid authentication!')
+        );
       }
       if (role.includes(req.userDecoded.type)) {
-        return res.responseAppError(throwError('You can not perform this action!'));
+        return res.responseAppError(
+          throwError('You can not perform this action!')
+        );
       }
       next();
     };

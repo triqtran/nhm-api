@@ -2,12 +2,12 @@ import NHMAccounts from 'models/NHMAccounts';
 
 const throwError =
   (funcName: string) =>
-  (errMessage: string = 'Method not implemented.') => {
+  (errMessage = 'Method not implemented.') => {
     console.error(`[StudentsDAL.${funcName}]`, errMessage);
     throw errMessage;
   };
 
-const throwNewError = (err: string = 'Error not implemented.') => {
+const throwNewError = (err = 'Error not implemented.') => {
   throw new Error(err);
 };
 
@@ -28,10 +28,7 @@ class NHMAccountsDAL implements INHMAccountsDAL {
   addNewAccount(req: any): Promise<NHMAccounts> {
     return NHMAccounts.findOne({ where: { email: req.email } })
       .then((exist) => {
-        if (exist)
-          return throwNewError(
-            'This account has already existed!'
-          );
+        if (exist) return throwNewError('This account has already existed!');
         return NHMAccounts.create(req, { returning: true }).then((res) => {
           if (res?.dataValues) return res.dataValues as NHMAccounts;
           return throwNewError('Can not create account!');

@@ -3,12 +3,12 @@ import Students from 'models/Students';
 
 const throwError =
   (funcName: string) =>
-  (errMessage: string = 'Method not implemented.') => {
+  (errMessage = 'Method not implemented.') => {
     console.error(`[StudentsDAL.${funcName}]`, errMessage);
     throw errMessage;
   };
 
-const throwNewError = (err: string = 'Error not implemented.') => {
+const throwNewError = (err = 'Error not implemented.') => {
   throw new Error(err);
 };
 
@@ -28,9 +28,9 @@ interface IStudentsDAL {
 class StudentsDAL implements IStudentsDAL {
   addNewStudent(data: any): Promise<Students> {
     return Students.findOne({ where: { email: data.email } })
-      .then(exist => {
+      .then((exist) => {
         if (exist) throwNewError('This student has already existed!');
-        return Students.create(data, { returning: true }).then(res => {
+        return Students.create(data, { returning: true }).then((res) => {
           if (res?.dataValues) return res.dataValues as Students;
           return throwNewError('Can not create student!');
         });
@@ -52,7 +52,7 @@ class StudentsDAL implements IStudentsDAL {
       ],
       returning: true,
     })
-      .then(res => {
+      .then((res) => {
         if (res?.length > 0 && res[1]) return res[1][0];
         return throwNewError('updateStudentById');
       })
@@ -64,21 +64,21 @@ class StudentsDAL implements IStudentsDAL {
       limit: paging.limit,
       offset: (paging.page - 1) * paging.limit,
     })
-      .then(res => {
-        const resData = res.rows.map(item => item.dataValues);
+      .then((res) => {
+        const resData = res.rows.map((item) => item.dataValues);
         return { count: res.count, data: resData } as ListStudentsResponse;
       })
       .catch(throwError('listStudentsByCourse'));
   }
   getStudentById(id: number): Promise<Students> {
     return Students.findOne({ where: { id } })
-      .then(res => (res?.dataValues || null) as Students)
+      .then((res) => (res?.dataValues || null) as Students)
       .catch(throwError('getStudentById'));
   }
 
   signInStudent(email: string, password: string): Promise<Students> {
     return Students.findOne({ where: { email, password } })
-      .then(res => (res?.dataValues || null) as Students)
+      .then((res) => (res?.dataValues || null) as Students)
       .catch(throwError('signInStudent'));
   }
 }

@@ -1,3 +1,5 @@
+// disable temporary
+/* eslint-disable @typescript-eslint/ban-types */
 export type OwnerProfileRequest = {};
 
 export type OwnerScheduleRequest = {};
