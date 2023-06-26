@@ -10,11 +10,11 @@ export default class AxiosServices {
   };
 
   constructor(baseURL: string) {
-    this.service = axios.create({ baseURL, timeout: 50000, validateStatus: () => false });
+    this.service = axios.create({ baseURL, timeout: 50000, validateStatus: null });
     this.service.interceptors.request.use(
       config => {
         config.data["token"] = this.token;
-        return config
+        return config;
       },
       error => Promise.reject(error)
     )
@@ -25,7 +25,7 @@ export default class AxiosServices {
         if (response.status != 200) {
           return Promise.reject(response.data)
         }
-        return response.data
+        return response;
       },
       error => Promise.reject(error)
     );

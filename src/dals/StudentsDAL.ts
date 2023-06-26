@@ -16,7 +16,6 @@ export type ListStudentsResponse = {
   count: number;
   data: Array<Students>;
 };
-
 interface IStudentsDAL {
   addNewStudent(data: any): Promise<Students>;
   updateStudentById(data: any, id: number): Promise<Students>;

@@ -7,6 +7,7 @@ import IStudentControllers, {
 } from './interfaces';
 import { ErrorStruct } from '@tsenv';
 import jwtResponse from 'middlewares/jwtResponse';
+import AyotreeServices from 'requests/ayotrees/AyotreeServices';
 
 const errors = {
   STUDENT_USER_IS_DISABLED: {
@@ -42,7 +43,7 @@ class StudentUsersController implements IStudentControllers {
       return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
     }
     StudentsDAL.signInStudent(email, password)
-      .then(student => {
+      .then((student) => {
         if (!student) {
           return res.responseAppError(errors.WRONG_EMAIL_OR_PASSWORD);
         }
@@ -60,13 +61,17 @@ class StudentUsersController implements IStudentControllers {
 
         res.responseSuccess({ data: student, token });
       })
-      .catch(err => res.responseAppError(err));
+      .catch((err) => res.responseAppError(err));
   }
 
-  signUpStudent(req: Request<any, StudentUserBodyReq>, res: Response, next: NextFunction): void {
+  signUpStudent(
+    req: Request<any, StudentUserBodyReq>,
+    res: Response,
+    next: NextFunction
+  ): void {
     const data = req.body;
     StudentsDAL.addNewStudent(data)
-      .then(student => {
+      .then((student) => {
         if (!student) {
           return res.responseAppError(errors.CAN_NOT_SIGN_UP_NEW_STUDENT);
         }
@@ -79,22 +84,37 @@ class StudentUsersController implements IStudentControllers {
         });
         res.responseSuccess({ data: student, token });
       })
-      .catch(err => res.responseAppError(err));
+      .catch((err) => res.responseAppError(err));
   }
   getStudentOwnProfile(req: Request, res: Response, next: NextFunction): void {
     StudentsDAL.getStudentById(req.userDecoded.id)
-      .then(student => {
+      .then((student) => {
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
         }
+        if (student.ayotree_student_id) {
+          return AyotreeServices.inst()
+            .getStudentViaId({
+              student: {
+                StudentID: student.ayotree_student_id,
+                CampusID: 5604,
+              },
+            })
+            .then((ayotreeResult) => {
+              res.responseSuccess({
+                ...student,
+                ayotree_profile: ayotreeResult,
+              });
+            });
+        }
         res.responseSuccess(student);
       })
-      .catch(err => res.responseAppError(err));
+      .catch((err) => res.responseAppError(err));
   }
   addNewStudent(req: Request, res: Response, next: NextFunction): void {
     StudentsDAL.addNewStudent(req)
-      .then(result => res.responseSuccess(result))
-      .catch(err => res.responseAppError(err));
+      .then((result) => res.responseSuccess(result))
+      .catch((err) => res.responseAppError(err));
   }
 
   updateStudent(
@@ -109,20 +129,24 @@ class StudentUsersController implements IStudentControllers {
       return res.responseAppError(errors.CAN_NOT_PERFORM_THIS_ACTION);
     }
     StudentsDAL.updateStudentById(req?.body, req.params.id)
-      .then(result => res.responseSuccess(result))
-      .catch(err => res.responseAppError(err));
+      .then((result) => res.responseSuccess(result))
+      .catch((err) => res.responseAppError(err));
   }
 
   listStudents(req: Request, res: Response, next: NextFunction): void {
     StudentsDAL.listStudentsByCourse(req.paging)
-      .then(result => res.responseSuccess(result))
-      .catch(err => res.responseAppError(err));
+      .then((result) => res.responseSuccess(result))
+      .catch((err) => res.responseAppError(err));
   }
 
-  getStudentById(req: Request<StudentUserParamsReq>, res: Response, next: NextFunction): void {
+  getStudentById(
+    req: Request<StudentUserParamsReq>,
+    res: Response,
+    next: NextFunction
+  ): void {
     StudentsDAL.getStudentById(req.params.id)
-      .then(result => res.responseSuccess(result))
-      .catch(err => res.responseAppError(err));
+      .then((result) => res.responseSuccess(result))
+      .catch((err) => res.responseAppError(err));
   }
 }
 

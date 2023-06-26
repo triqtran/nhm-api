@@ -48,6 +48,7 @@
     "eslint": "^8.43.0",
     "eslint-config-prettier": "^8.8.0",
     "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.6",
     "tsconfig-paths": "^4.2.0",
