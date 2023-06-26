@@ -44,15 +44,15 @@ class JwtResponse {
   verify(req: Request, res: Response, next: NextFunction) {
     const authToken = req.header('Authorization') as string;
     if (!authToken || authToken.trim() === '' || !authToken.includes('Bearer'))
-      res.responseAppError(throwError());
+      return res.responseAppError(throwError('Not found authentication token!'));
     const jwtToken = authToken.substring(7);
     JWToken.verify(jwtToken, config.JWT_SECRET, (jwtErr, decode) => {
-      if (jwtErr) return res.responseAppError(throwError());
+      if (jwtErr) return res.responseAppError(throwError('Invalid authentication token!'));
       req.userDecoded = decode as JwtPayload;
       logDecode(req.userDecoded, jwtToken);
       return JwtResponse.exist(req.userDecoded.id, req.userDecoded.type)
         .then(result => {
-          if (!result) res.responseAppError(throwError());
+          if (!result) res.responseAppError(throwError('User is not found or has been disabled!'));
           next();
         })
         .catch((e: Error) => res.responseAppError(throwError(e.message)));
