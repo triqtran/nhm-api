@@ -28,7 +28,7 @@ const handler = (req: Request, res: Response, next: NextFunction): void => {
     const e = {
       code: err?.code || 'ERROR_INTERNAL_SERVER',
       show: err?.show || 'Something was wrong.',
-      error: err?.error || err,
+      error: err?.show ? err.show : err?.error || err,
     } as ErrorStruct;
     res.responseError(e.code, e.show, e.error);
   };
