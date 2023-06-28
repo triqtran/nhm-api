@@ -50,7 +50,6 @@ class StudentUsersController implements IStudentControllers {
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
         }
-        // TODO: Create JWT:
         const token = jwtResponse.generate({
           id: student.id,
           name: `${student.first_name} ${student.last_name}`,
@@ -92,12 +91,12 @@ class StudentUsersController implements IStudentControllers {
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
         }
-        if (student.ayotree_student_id) {
+        if (student.ayotree_student_id && student.ayotree_campus_id) {
           return AyotreeServices.inst()
             .getStudentViaId({
               student: {
                 StudentID: student.ayotree_student_id,
-                CampusID: 5604,
+                CampusID: student.ayotree_campus_id,
               },
             })
             .then((ayotreeResult) => {

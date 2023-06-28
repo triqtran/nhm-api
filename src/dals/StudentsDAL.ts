@@ -46,6 +46,8 @@ class StudentsDAL implements IStudentsDAL {
         'email',
         'phone',
         'status',
+        'ayotree_student_id',
+        'ayotree_campus_id',
         'password',
         'updated_at',
       ],
