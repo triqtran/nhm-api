@@ -10,7 +10,8 @@ interface StudentNotifictionsAttributes {
 }
 export interface IngredientInput
   extends Optional<StudentNotifictionsAttributes, 'id' | 'updated_at'> {}
-export interface IngredientOuput extends Required<StudentNotifictionsAttributes> {}
+export interface IngredientOuput
+  extends Required<StudentNotifictionsAttributes> {}
 
 class StudentNotifictions
   extends Model<StudentNotifictionsAttributes, IngredientInput>

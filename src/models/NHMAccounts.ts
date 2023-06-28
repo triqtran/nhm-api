@@ -13,7 +13,8 @@ interface NHMAccountsAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<NHMAccountsAttributes, 'id' | 'updated_at'> {}
+export interface IngredientInput
+  extends Optional<NHMAccountsAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<NHMAccountsAttributes> {}
 
 class NHMAccounts

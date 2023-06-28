@@ -12,7 +12,8 @@ interface NotificationsAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<NotificationsAttributes, 'id' | 'updated_at'> {}
+export interface IngredientInput
+  extends Optional<NotificationsAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<NotificationsAttributes> {}
 
 class Notifications

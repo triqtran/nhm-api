@@ -8,7 +8,8 @@ interface StudentTrackingsAttributes {
   platform: string;
   created_at: Date;
 }
-export interface IngredientInput extends Optional<StudentTrackingsAttributes, 'id'> {}
+export interface IngredientInput
+  extends Optional<StudentTrackingsAttributes, 'id'> {}
 export interface IngredientOuput extends Required<StudentTrackingsAttributes> {}
 
 class StudentTrackings

@@ -7,7 +7,8 @@ interface NHMAccountLogsAttributes {
   action: string;
   created_at: Date;
 }
-export interface IngredientInput extends Optional<NHMAccountLogsAttributes, 'id'> {}
+export interface IngredientInput
+  extends Optional<NHMAccountLogsAttributes, 'id'> {}
 export interface IngredientOuput extends Required<NHMAccountLogsAttributes> {}
 
 class NHMAccountLogs

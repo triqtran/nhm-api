@@ -11,7 +11,8 @@ interface OnboardTestsAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<OnboardTestsAttributes, 'id' | 'updated_at'> {}
+export interface IngredientInput
+  extends Optional<OnboardTestsAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<OnboardTestsAttributes> {}
 
 class OnboardTests

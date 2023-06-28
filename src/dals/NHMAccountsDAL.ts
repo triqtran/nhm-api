@@ -27,9 +27,9 @@ interface INHMAccountsDAL {
 class NHMAccountsDAL implements INHMAccountsDAL {
   addNewAccount(req: any): Promise<NHMAccounts> {
     return NHMAccounts.findOne({ where: { email: req.email } })
-      .then((exist) => {
+      .then(exist => {
         if (exist) return throwNewError('This account has already existed!');
-        return NHMAccounts.create(req, { returning: true }).then((res) => {
+        return NHMAccounts.create(req, { returning: true }).then(res => {
           if (res?.dataValues) return res.dataValues as NHMAccounts;
           return throwNewError('Can not create account!');
         });
@@ -42,7 +42,7 @@ class NHMAccountsDAL implements INHMAccountsDAL {
       fields: ['email', 'name', 'password', 'phone'],
       returning: true,
     })
-      .then((res) => {
+      .then(res => {
         if (res?.length > 0 && res[1]) return res[1][0];
         return throwNewError('updateAccountById');
       })
@@ -50,21 +50,21 @@ class NHMAccountsDAL implements INHMAccountsDAL {
   }
   listAccounts(req: any): Promise<ListNHMAccountsResponse> {
     return NHMAccounts.findAndCountAll({ where: req })
-      .then((res) => {
-        const resData = res.rows.map((item) => item.dataValues);
+      .then(res => {
+        const resData = res.rows.map(item => item.dataValues);
         return { count: res.count, data: resData } as ListNHMAccountsResponse;
       })
       .catch(throwError('listAccounts'));
   }
   getAccountById(id: number): Promise<NHMAccounts> {
     return NHMAccounts.findOne({ where: { id } })
-      .then((res) => (res?.dataValues || null) as NHMAccounts)
+      .then(res => (res?.dataValues || null) as NHMAccounts)
       .catch(throwError('getAccountById'));
   }
 
   signInAccount(email: string, password: string): Promise<NHMAccounts> {
     return NHMAccounts.findOne({ where: { email, password } })
-      .then((res) => (res?.dataValues || null) as NHMAccounts)
+      .then(res => (res?.dataValues || null) as NHMAccounts)
       .catch(throwError('signInAccount'));
   }
 }

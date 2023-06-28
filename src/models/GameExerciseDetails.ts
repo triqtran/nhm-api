@@ -14,7 +14,8 @@ interface GameExerciseDetailsAttributes {
 }
 export interface IngredientInput
   extends Optional<GameExerciseDetailsAttributes, 'id' | 'updated_at'> {}
-export interface IngredientOuput extends Required<GameExerciseDetailsAttributes> {}
+export interface IngredientOuput
+  extends Required<GameExerciseDetailsAttributes> {}
 
 class GameExerciseDetails
   extends Model<GameExerciseDetailsAttributes, IngredientInput>

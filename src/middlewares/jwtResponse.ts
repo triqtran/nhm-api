@@ -23,10 +23,9 @@ class JwtResponse {
       case 'student': {
         return StudentsDAL.getStudentById(id)
           .then(
-            (existStudent) =>
-              existStudent && existStudent.status !== 'suspended'
+            existStudent => existStudent && existStudent.status !== 'suspended'
           )
-          .catch((e) => {
+          .catch(e => {
             console.error('[jwtResponse]', e);
             return false;
           });
@@ -34,8 +33,8 @@ class JwtResponse {
       case 'admin':
       case 'teacher':
         return NHMAccountDAL.getAccountById(id)
-          .then((existAccount) => !!existAccount)
-          .catch((e) => {
+          .then(existAccount => !!existAccount)
+          .catch(e => {
             console.error('[jwtResponse]', e);
             return false;
           });
@@ -59,7 +58,7 @@ class JwtResponse {
       req.userDecoded = decode as JwtPayload;
       logDecode(req.userDecoded, jwtToken);
       return JwtResponse.exist(req.userDecoded.id, req.userDecoded.type)
-        .then((result) => {
+        .then(result => {
           if (!result)
             res.responseAppError(
               throwError('User is not found or has been disabled!')

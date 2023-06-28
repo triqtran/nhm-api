@@ -21,18 +21,32 @@ router.post(
 router.put(
   '/update/:id',
   authHandler,
-  ctrl.updateNHMAccount as express.RequestHandler<NHMAccountParamsReq, NHMAccountBodyReq>
+  ctrl.updateNHMAccount as express.RequestHandler<
+    NHMAccountParamsReq,
+    NHMAccountBodyReq
+  >
 );
 
-router.get('/list', authHandler, ctrl.listNHMAccounts as express.RequestHandler);
+router.get(
+  '/list',
+  authHandler,
+  ctrl.listNHMAccounts as express.RequestHandler
+);
 
 router.get('/hello', (req, res, next) => {
   res.send('Hello Nihaoma Account!');
 });
 
-router.get('/profile', authHandler, ctrl.getNHMAccountOwnProfile as express.RequestHandler);
+router.get(
+  '/profile',
+  authHandler,
+  ctrl.getNHMAccountOwnProfile as express.RequestHandler
+);
 
-router.get('/:id', ctrl.getNHMAccountById as express.RequestHandler<NHMAccountParamsReq>);
+router.get(
+  '/:id',
+  ctrl.getNHMAccountById as express.RequestHandler<NHMAccountParamsReq>
+);
 
 router.post('/login', ctrl.signInNHMAccount as express.RequestHandler);
 
