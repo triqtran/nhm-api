@@ -9,6 +9,7 @@ import cors from 'cors';
 import routes from 'routes';
 import models from 'models';
 import { appResponse } from 'middlewares';
+import { noRouteHandler } from 'middlewares/appResponse';
 // initialize models and connect to database
 models();
 
@@ -23,6 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use('/', routes);
+
+app.use('*', noRouteHandler);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is listening on the port: ${process.env.PORT}`);

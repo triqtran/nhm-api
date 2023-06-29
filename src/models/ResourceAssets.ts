@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 export type Resorce_Assets_Type = 'voice' | 'audio' | 'ebook' | 'image';
@@ -12,10 +12,14 @@ interface ResourceAssetsAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<ResourceAssetsAttributes, 'id' | 'updated_at'> {}
+export interface IngredientInput
+  extends Optional<ResourceAssetsAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<ResourceAssetsAttributes> {}
 
-class ResourceAssets extends Model<ResourceAssetsAttributes, IngredientInput> implements ResourceAssetsAttributes {
+class ResourceAssets
+  extends Model<ResourceAssetsAttributes, IngredientInput>
+  implements ResourceAssetsAttributes
+{
   public id!: number;
   public alias?: string;
   public name?: string;
@@ -25,23 +29,28 @@ class ResourceAssets extends Model<ResourceAssetsAttributes, IngredientInput> im
   public updated_at?: Date | undefined;
 }
 
-ResourceAssets.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+ResourceAssets.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    alias: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING },
+    link: { type: DataTypes.STRING, allowNull: false },
+    type: { type: DataTypes.STRING, allowNull: false },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
-  alias: { type: DataTypes.STRING },
-  name: { type: DataTypes.STRING },
-  link: { type: DataTypes.STRING, allowNull: false },
-  type: { type: DataTypes.STRING, allowNull: false },
-  created_at: { type: DataTypes.TIME, allowNull: false },
-  updated_at: { type: DataTypes.TIME }
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'resource_assets',
-})
+  {
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: false,
+    sequelize: dbConnection,
+    tableName: 'resource_assets',
+  }
+);
 
 export default ResourceAssets;

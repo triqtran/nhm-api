@@ -1,38 +1,43 @@
-import Students from "models/Students";
+import { Paging } from '@tsenv';
+import Students from 'models/Students';
 
-const throwError = (
-  funcName: string,
-  errMessage: string = 'Method not implemented.',
-) => {
-  console.error('[StudentsDAL.${funcName}]', errMessage);
-  return new Error(`[StudentsDAL.${funcName}] ${errMessage}`)
+const throwError =
+  (funcName: string) =>
+  (errMessage = 'Method not implemented.') => {
+    console.error(`[StudentsDAL.${funcName}]`, errMessage);
+    throw errMessage;
+  };
+
+const throwNewError = (err = 'Error not implemented.') => {
+  throw new Error(err);
 };
 
 export type ListStudentsResponse = {
   count: number;
   data: Array<Students>;
-}
-
+};
 interface IStudentsDAL {
-  addNewStudent (req: any): Promise<Students>;
-  updateStudentById (req: any, id: number): Promise<Students>;
-  listStudentsByCourse (req: any): Promise<ListStudentsResponse>;
-  getStudentById (id: number): Promise<Students>;
+  addNewStudent(data: any): Promise<Students>;
+  updateStudentById(data: any, id: number): Promise<Students>;
+  listStudentsByCourse(paging: any): Promise<ListStudentsResponse>;
+  getStudentById(id: number): Promise<Students>;
+  signInStudent(email: string, password: string): Promise<Students>;
 }
 
 class StudentsDAL implements IStudentsDAL {
-  addNewStudent(req: any): Promise<Students> {
-    return Students.create(req, { returning: true })
-      .then(res => {
-        if (res?.dataValues) return res.dataValues as Students;
-        throw throwError('addNewStudent');
+  addNewStudent(data: any): Promise<Students> {
+    return Students.findOne({ where: { email: data.email } })
+      .then(exist => {
+        if (exist) throwNewError('This student has already existed!');
+        return Students.create(data, { returning: true }).then(res => {
+          if (res?.dataValues) return res.dataValues as Students;
+          return throwNewError('Can not create student!');
+        });
       })
-      .catch(err => {
-        throw throwError('addNewStudent', err);
-      });
+      .catch(throwError('addNewStudent'));
   }
-  updateStudentById(req: any, id: number): Promise<Students> {
-    return Students.update(req, {
+  updateStudentById(data: any, id: number): Promise<Students> {
+    return Students.update(data, {
       where: { id },
       fields: [
         'first_name',
@@ -41,6 +46,8 @@ class StudentsDAL implements IStudentsDAL {
         'email',
         'phone',
         'status',
+        'ayotree_student_id',
+        'ayotree_campus_id',
         'password',
         'updated_at',
       ],
@@ -48,31 +55,33 @@ class StudentsDAL implements IStudentsDAL {
     })
       .then(res => {
         if (res?.length > 0 && res[1]) return res[1][0];
-        throw throwError('updateStudentById');
+        return throwNewError('updateStudentById');
       })
-      .catch(err => {
-        throw throwError('updateStudentById', err);
-      });
+      .catch(throwError('updateStudentById'));
   }
-  listStudentsByCourse(req: any): Promise<ListStudentsResponse> {
-    return Students.findAndCountAll({ where: req })
+  listStudentsByCourse(paging: Paging): Promise<ListStudentsResponse> {
+    return Students.findAndCountAll({
+      where: paging.filters,
+      limit: paging.limit,
+      offset: (paging.page - 1) * paging.limit,
+    })
       .then(res => {
         const resData = res.rows.map(item => item.dataValues);
         return { count: res.count, data: resData } as ListStudentsResponse;
       })
-      .catch(err => {
-        throw throwError('listStudentsByCourse', err);
-      });
+      .catch(throwError('listStudentsByCourse'));
   }
   getStudentById(id: number): Promise<Students> {
     return Students.findOne({ where: { id } })
       .then(res => (res?.dataValues || null) as Students)
-      .catch(err => {
-        throw throwError('getStudentById', err);
-      });
+      .catch(throwError('getStudentById'));
   }
-  
+
+  signInStudent(email: string, password: string): Promise<Students> {
+    return Students.findOne({ where: { email, password } })
+      .then(res => (res?.dataValues || null) as Students)
+      .catch(throwError('signInStudent'));
+  }
 }
 
 export default new StudentsDAL();
-

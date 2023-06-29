@@ -6,6 +6,7 @@ import {
   StudentUserParamsReq,
 } from 'controllers/StudentUsersController/interfaces';
 import { authHandler } from 'middlewares/jwtResponse';
+import { parsePaging } from 'middlewares';
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -13,30 +14,43 @@ router.use(bodyParser.json());
 
 router.post(
   '/create',
-  ctrl.addNewStudent as express.RequestHandler,
+  authHandler,
+  ctrl.addNewStudent as express.RequestHandler
 );
 
 router.put(
   '/update/:id',
-  ctrl.updateStudent as express.RequestHandler<StudentUserParamsReq, StudentUserBodyReq>,
+  authHandler,
+  ctrl.updateStudent as express.RequestHandler<
+    StudentUserParamsReq,
+    StudentUserBodyReq
+  >
 );
 
 router.get(
   '/list',
   authHandler,
-  ctrl.listStudents as express.RequestHandler,
+  parsePaging,
+  ctrl.listStudents as express.RequestHandler
 );
 
+router.get('/hello', (req, res, next) => {
+  res.send('Hello Student Users!');
+});
+
 router.get(
-  '/hello',
-  (req, res, next) => {
-    res.send('Hello Student Users!');
-  }
+  '/profile',
+  authHandler,
+  ctrl.getStudentOwnProfile as express.RequestHandler
 );
 
 router.get(
   '/:id',
   ctrl.getStudentById as express.RequestHandler<StudentUserParamsReq>
 );
+
+router.post('/login', ctrl.signInStudent as express.RequestHandler);
+
+router.post('/signup', ctrl.signUpStudent as express.RequestHandler);
 
 export default router;

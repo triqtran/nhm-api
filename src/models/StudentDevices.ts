@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 interface StudentDevicesAttributes {
@@ -8,32 +8,40 @@ interface StudentDevicesAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<StudentDevicesAttributes, 'id' | 'updated_at'> {}
+export interface IngredientInput
+  extends Optional<StudentDevicesAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<StudentDevicesAttributes> {}
 
-class StudentDevices extends Model<StudentDevicesAttributes, IngredientInput> implements StudentDevicesAttributes {
-  public id!: number
+class StudentDevices
+  extends Model<StudentDevicesAttributes, IngredientInput>
+  implements StudentDevicesAttributes
+{
+  public id!: number;
   public student_id!: number;
   public device_token!: string;
   public created_at!: Date;
   public updated_at?: Date;
 }
 
-StudentDevices.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+StudentDevices.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    student_id: { type: DataTypes.INTEGER.UNSIGNED },
+    device_token: { type: DataTypes.STRING },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
-  student_id: { type: DataTypes.NUMBER },
-  device_token: { type: DataTypes.STRING },
-  created_at: { type: DataTypes.TIME },
-  updated_at: { type: DataTypes.TIME }
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'student_devices',
-})
+  {
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    sequelize: dbConnection,
+    tableName: 'student_devices',
+  }
+);
 
 export default StudentDevices;

@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 interface GameExerciseResultsAttributes {
@@ -15,10 +15,15 @@ interface GameExerciseResultsAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<GameExerciseResultsAttributes, 'id' | 'updated_at'> {}
-export interface IngredientOuput extends Required<GameExerciseResultsAttributes> {}
+export interface IngredientInput
+  extends Optional<GameExerciseResultsAttributes, 'id' | 'updated_at'> {}
+export interface IngredientOuput
+  extends Required<GameExerciseResultsAttributes> {}
 
-class GameExerciseResults extends Model<GameExerciseResultsAttributes, IngredientInput> implements GameExerciseResultsAttributes {
+class GameExerciseResults
+  extends Model<GameExerciseResultsAttributes, IngredientInput>
+  implements GameExerciseResultsAttributes
+{
   public id!: number;
   public game_exercise_id!: number;
   public student_id!: number;
@@ -31,26 +36,31 @@ class GameExerciseResults extends Model<GameExerciseResultsAttributes, Ingredien
   public updated_at?: Date;
 }
 
-GameExerciseResults.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+GameExerciseResults.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED },
+    student_id: { type: DataTypes.INTEGER.UNSIGNED },
+    question: { type: DataTypes.STRING, allowNull: false },
+    answers: { type: DataTypes.STRING, allowNull: false },
+    right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
+    student_answer_index: { type: DataTypes.INTEGER },
+    is_correct: { type: DataTypes.BOOLEAN },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
-  game_exercise_id: { type: DataTypes.INTEGER },
-  student_id: { type: DataTypes.INTEGER },
-  question: { type: DataTypes.STRING, allowNull: false },
-  answers: { type: DataTypes.STRING, allowNull: false },
-  right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
-  student_answer_index: { type: DataTypes.INTEGER },
-  is_correct: { type: DataTypes.BOOLEAN },
-  created_at: { type: DataTypes.TIME },
-  updated_at: { type: DataTypes.TIME },
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'game_exercise_results',
-})
+  {
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: false,
+    sequelize: dbConnection,
+    tableName: 'game_exercise_results',
+  }
+);
 
 export default GameExerciseResults;

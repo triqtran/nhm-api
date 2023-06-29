@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 interface StudentJourneysAttributes {
@@ -10,10 +10,14 @@ interface StudentJourneysAttributes {
   created_at: Date;
   updated_at?: Date;
 }
-export interface IngredientInput extends Optional<StudentJourneysAttributes, 'id' | 'updated_at'> {}
+export interface IngredientInput
+  extends Optional<StudentJourneysAttributes, 'id' | 'updated_at'> {}
 export interface IngredientOuput extends Required<StudentJourneysAttributes> {}
 
-class StudentJourneys extends Model<StudentJourneysAttributes, IngredientInput> implements StudentJourneysAttributes {
+class StudentJourneys
+  extends Model<StudentJourneysAttributes, IngredientInput>
+  implements StudentJourneysAttributes
+{
   public id!: number;
   public student_id!: number;
   public learning_level!: string;
@@ -23,23 +27,28 @@ class StudentJourneys extends Model<StudentJourneysAttributes, IngredientInput> 
   public updated_at?: Date | undefined;
 }
 
-StudentJourneys.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+StudentJourneys.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    student_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    learning_level: { type: DataTypes.STRING, allowNull: false },
+    course_package: { type: DataTypes.STRING, allowNull: false },
+    is_current: { type: DataTypes.BOOLEAN, allowNull: false },
+    created_at: { type: DataTypes.DATE },
+    updated_at: { type: DataTypes.DATE },
   },
-  student_id: { type: DataTypes.INTEGER, allowNull: false },
-  learning_level: { type: DataTypes.STRING, allowNull: false },
-  course_package: { type: DataTypes.STRING, allowNull: false },
-  is_current: { type: DataTypes.BOOLEAN, allowNull: false },
-  created_at: { type: DataTypes.TIME, allowNull: false },
-  updated_at: { type: DataTypes.TIME }
-}, {
-  timestamps: true,
-  sequelize: dbConnection,
-  paranoid: true,
-  tableName: 'student_journeys',
-})
+  {
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: false,
+    sequelize: dbConnection,
+    tableName: 'student_journeys',
+  }
+);
 
 export default StudentJourneys;

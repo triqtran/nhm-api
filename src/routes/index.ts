@@ -1,9 +1,11 @@
 import express, { Application } from 'express';
 import StudentUsersRoutes from './StudentUsersRoutes';
-import { authHandler } from 'middlewares/jwtResponse';
+import NHMAccountsRoutes from './NHMAccountsRouters';
 
 const routes: Application = express();
 
-routes.use('/student-users', authHandler, StudentUsersRoutes);
+routes.use('/student-users', StudentUsersRoutes);
+
+routes.use('/nhm-accounts', NHMAccountsRoutes);
 
 export default routes;
