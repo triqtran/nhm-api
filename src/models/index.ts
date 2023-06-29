@@ -10,6 +10,9 @@ import StudentJourneys from './StudentJourneys';
 import StudentNotifictions from './StudentNotifications';
 import Students from './Students';
 import StudentTrackings from './StudentTrackings';
+import Courses from './Courses';
+import Campus from './Campus';
+import Lessons from './Lessons';
 
 const nodeEnv = process.env.NODE_ENV;
 const isAlter = !!(nodeEnv && ['development', 'test'].includes(nodeEnv));
@@ -28,4 +31,7 @@ export default () =>
     StudentNotifictions.sync({ alter: isAlter }),
     Students.sync({ alter: isAlter }),
     StudentTrackings.sync({ alter: isAlter }),
+    Courses.sync({ alter: isAlter }),
+    Campus.sync({ alter: isAlter }),
+    Lessons.sync({ alter: isAlter }),
   ]);
