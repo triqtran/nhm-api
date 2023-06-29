@@ -1,5 +1,6 @@
 import { Paging } from '@tsenv';
 import Students from 'models/Students';
+import Campus from 'models/Campus';
 
 const throwError =
   (funcName: string) =>
@@ -12,6 +13,8 @@ const throwNewError = (err = 'Error not implemented.') => {
   throw new Error(err);
 };
 
+type CampusListResponse = Array<Campus>;
+
 export type ListStudentsResponse = {
   count: number;
   data: Array<Students>;
@@ -22,6 +25,7 @@ interface IStudentsDAL {
   listStudentsByCourse(paging: any): Promise<ListStudentsResponse>;
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
+  getCampusList(): Promise<CampusListResponse>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -81,6 +85,12 @@ class StudentsDAL implements IStudentsDAL {
     return Students.findOne({ where: { email, password } })
       .then(res => (res?.dataValues || null) as Students)
       .catch(throwError('signInStudent'));
+  }
+
+  getCampusList(): Promise<CampusListResponse> {
+    return Campus.findAll()
+      .then(resp => resp.map(item => item.dataValues) as CampusListResponse)
+      .catch(throwError('getCampusList'));
   }
 }
 
