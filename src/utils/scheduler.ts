@@ -66,7 +66,7 @@ const scheduleUpdateCourseAndLesionAction = async () => {
 };
 
 const updateCourseAndLesionScheduler = cron.schedule(
-  '*/10 * * * * *',
+  '0 * * * *',
   scheduleUpdateCourseAndLesionAction,
   scheduleOptions
 );

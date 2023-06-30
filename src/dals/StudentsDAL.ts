@@ -52,6 +52,8 @@ class StudentsDAL implements IStudentsDAL {
         'status',
         'ayotree_student_id',
         'ayotree_campus_id',
+        'ayotree_course_code',
+        'ayotree_course_title',
         'password',
         'updated_at',
       ],
@@ -59,7 +61,7 @@ class StudentsDAL implements IStudentsDAL {
     })
       .then(res => {
         if (res?.length > 0 && res[1]) return res[1][0];
-        return throwNewError('updateStudentById');
+        return throwNewError('Cannot update student');
       })
       .catch(throwError('updateStudentById'));
   }

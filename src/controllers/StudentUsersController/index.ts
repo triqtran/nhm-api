@@ -43,7 +43,7 @@ class StudentUsersController implements IStudentControllers {
       return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
     }
     StudentsDAL.signInStudent(email, password)
-      .then((student) => {
+      .then(student => {
         if (!student) {
           return res.responseAppError(errors.WRONG_EMAIL_OR_PASSWORD);
         }
@@ -60,7 +60,7 @@ class StudentUsersController implements IStudentControllers {
 
         res.responseSuccess({ data: student, token });
       })
-      .catch((err) => res.responseAppError(err));
+      .catch(err => res.responseAppError(err));
   }
 
   signUpStudent(
@@ -70,7 +70,7 @@ class StudentUsersController implements IStudentControllers {
   ): void {
     const data = req.body;
     StudentsDAL.addNewStudent(data)
-      .then((student) => {
+      .then(student => {
         if (!student) {
           return res.responseAppError(errors.CAN_NOT_SIGN_UP_NEW_STUDENT);
         }
@@ -83,11 +83,11 @@ class StudentUsersController implements IStudentControllers {
         });
         res.responseSuccess({ data: student, token });
       })
-      .catch((err) => res.responseAppError(err));
+      .catch(err => res.responseAppError(err));
   }
   getStudentOwnProfile(req: Request, res: Response, next: NextFunction): void {
     StudentsDAL.getStudentById(req.userDecoded.id)
-      .then((student) => {
+      .then(student => {
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
         }
@@ -99,21 +99,36 @@ class StudentUsersController implements IStudentControllers {
                 CampusID: student.ayotree_campus_id,
               },
             })
-            .then((ayotreeResult) => {
+            .then(ayotreeResult => {
+              const splitCourse = ayotreeResult?.Course?.split('|');
+              let courseCode: string | undefined = '';
+              if (splitCourse) courseCode = splitCourse.pop();
+              if (courseCode && courseCode !== student.ayotree_course_code) {
+                return StudentsDAL.updateStudentById(
+                  {
+                    ayotree_course_code: courseCode,
+                    ayotree_course_title: splitCourse?.join(' '),
+                  },
+                  student.id
+                ).then(() => ayotreeResult);
+              }
+              return ayotreeResult;
+            })
+            .then(ayotreeResult =>
               res.responseSuccess({
                 ...student,
                 ayotree_profile: ayotreeResult,
-              });
-            });
+              })
+            );
         }
         res.responseSuccess(student);
       })
-      .catch((err) => res.responseAppError(err));
+      .catch(err => res.responseAppError(err));
   }
   addNewStudent(req: Request, res: Response, next: NextFunction): void {
     StudentsDAL.addNewStudent(req)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 
   updateStudent(
@@ -128,14 +143,14 @@ class StudentUsersController implements IStudentControllers {
       return res.responseAppError(errors.CAN_NOT_PERFORM_THIS_ACTION);
     }
     StudentsDAL.updateStudentById(req?.body, req.params.id)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 
   listStudents(req: Request, res: Response, next: NextFunction): void {
     StudentsDAL.listStudentsByCourse(req.paging)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 
   getStudentById(
@@ -144,8 +159,8 @@ class StudentUsersController implements IStudentControllers {
     next: NextFunction
   ): void {
     StudentsDAL.getStudentById(req.params.id)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 }
 
