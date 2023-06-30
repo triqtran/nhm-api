@@ -33,6 +33,7 @@ interface ENV {
   AYOTREE_KEY: string
   AYOTREE_SECRET: string
   AYOTREE_API: string
+  AYOTREE_TIMEZONE: string
 
   // Ayotree - Campuses, classrooms, courses and lessons via APIs
   AYOTREE_LIST_CAMPUSES: string
@@ -79,6 +80,7 @@ interface Config {
   AYOTREE_KEY: string
   AYOTREE_SECRET: string
   AYOTREE_API: string
+  AYOTREE_TIMEZONE: string;
 
   // Ayotree - Campuses, classrooms, courses and lessons via APIs
   AYOTREE_LIST_CAMPUSES: string
@@ -122,6 +124,7 @@ const getConfig = (): ENV => {
     AYOTREE_KEY: process.env.AYOTREE_KEY as string,
     AYOTREE_SECRET: process.env.AYOTREE_SECRET as string,
     AYOTREE_API: process.env.AYOTREE_API as string,
+    AYOTREE_TIMEZONE: process.env.AYOTREE_TIMEZONE as string,
     AYOTREE_LIST_CAMPUSES: process.env.AYOTREE_LIST_CAMPUSES as string,
     AYOTREE_LIST_CLASSROOM: process.env.AYOTREE_LIST_CLASSROOM as string,
     AYOTREE_LIST_COURSES_BY_CAMPUS: process.env.AYOTREE_LIST_COURSES_BY_CAMPUS as string,

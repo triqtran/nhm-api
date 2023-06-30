@@ -30,7 +30,7 @@ export type AyotreeCourse = {
 };
 
 export type AyotreeLesson = {
-  LessonID:	number;
+  LessonID: number;
   LessonDate: Date;
   LessonStartTime: Date;
   Duration: number;
@@ -38,7 +38,12 @@ export type AyotreeLesson = {
   Comment: string;
 };
 
-export type AyotreeUserType = 'admin' | 'teacher' | 'student' | 'parent' | 'company';
+export type AyotreeUserType =
+  | 'admin'
+  | 'teacher'
+  | 'student'
+  | 'parent'
+  | 'company';
 
 export type AyotreeStudentStatus = 'Active' | 'Inactive';
 
@@ -73,7 +78,7 @@ export type AyotreeStudent = AyotreeUser & {
   Course?: string;
   Package?: string;
   Status?: AyotreeStudentStatus;
-}
+};
 
 export type AyotreeAvailabilityTeacher = AyotreeStudent & {
   TeacherPIN: string;
@@ -107,10 +112,10 @@ interface AyotreeResponse {
       Message?: string;
     };
     CurrentPage?: number | null;
-    TotalPage?: number| null;
+    TotalPage?: number | null;
     TotalRows?: number | null;
-  }
-};
+  };
+}
 
 // List all timezones by Ayotree platform: empty request - response
 export type ListAllTimezonesResponse = {
@@ -183,11 +188,11 @@ export type GetStudentViaStudentIDResponse = AyotreeResponse & {
 export type GetTeacherTeachingAvailabilityScheduleRequest = {
   teacher: {
     TeacherPIN: string;
-    CampusID: string;
+    CampusID: number;
     TimeZone: string;
     AvailabilityInfo: {
-      DateStart: Date;
-      DateEnd: Date;
+      DateStart: string;
+      DateEnd: string;
     };
   };
 };
@@ -201,11 +206,11 @@ export type GetTeacherTeachingAvailabilityScheduleResponse = AyotreeResponse & {
 // List courses by campus, timezone and paging: request - response
 export type ListCourseByCampusTimezoneRequest = {
   course: {
-    CampusID: string;
+    CampusID: number;
     TimeZone: string;
-    paging: {
-      CurrentPage: number;
-      TotalRows: number;
+    paging?: {
+      CurrentPage?: number;
+      TotalRows?: number;
     };
   };
 };
@@ -219,15 +224,15 @@ export type ListCourseByCampusTimezoneResponse = AyotreeResponse & {
 // List lessons by campus, course: request - response
 export type ListLessonsByCampusTeacherPINRequest = {
   schedule: {
-    TeachPIN: string;
-    CampusID: string;
+    TeachPIN?: string;
+    CampusID: number;
     TimeZone: string;
     courseInfo: {
       courseCode: string;
     };
     lessonInfo?: {
-      DateStart?: Date;
-      DateEnd?: Date;
+      StartDate?: string;
+      EndDate?: string;
     };
   };
 };

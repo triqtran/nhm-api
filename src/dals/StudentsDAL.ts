@@ -13,7 +13,7 @@ const throwNewError = (err = 'Error not implemented.') => {
   throw new Error(err);
 };
 
-type CampusListResponse = Array<Campus>;
+type CampusListResponse = Campus[] | null;
 
 export type ListStudentsResponse = {
   count: number;

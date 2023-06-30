@@ -10,7 +10,7 @@ import routes from 'routes';
 import models from 'models';
 import { appResponse } from 'middlewares';
 import { noRouteHandler } from 'middlewares/appResponse';
-import { updateCourseAndLesionScheduler } from 'utils/scheduler.js';
+import { updateCourseAndLesionScheduler } from 'utils/scheduler';
 // initialize models and connect to database
 models();
 
