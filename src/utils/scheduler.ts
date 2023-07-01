@@ -2,7 +2,6 @@ import cron, { ScheduleOptions } from 'node-cron';
 import StudentsDAL from 'dals/StudentsDAL';
 import AyotreeServices from 'requests/ayotrees/AyotreeServices';
 import config from '@config';
-import { AyotreeLesson } from 'requests/ayotrees/AyotreeTypes';
 
 const scheduleOptions: ScheduleOptions = {
   scheduled: false,
@@ -19,9 +18,10 @@ const scheduleUpdateCourseAndLesionAction = async () => {
     const listCampus = await StudentsDAL.getCampusList();
     if (!listCampus?.length) return;
     const updateTxs = [] as Promise<void>[];
+    const ayotreeService = AyotreeServices.inst();
     listCampus.forEach(campus => {
       updateTxs.push(
-        AyotreeServices.inst()
+        ayotreeService
           .listCoursesByCampusIdAndTimezone({
             course: {
               CampusID: campus.CampusID,
@@ -36,7 +36,7 @@ const scheduleUpdateCourseAndLesionAction = async () => {
             const lessonsTxs = [] as Promise<void>[];
             courses.forEach(course => {
               lessonsTxs.push(
-                AyotreeServices.inst()
+                ayotreeService
                   .listLessonsByCampusIdAndTeacher({
                     schedule: {
                       CampusID: campus.CampusID,
