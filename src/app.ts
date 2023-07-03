@@ -8,6 +8,8 @@ import logger from 'morgan';
 import cors from 'cors';
 import routes from 'routes';
 import models from 'models';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swaggerDocs';
 import { appResponse } from 'middlewares';
 import { noRouteHandler } from 'middlewares/appResponse';
 import { updateCourseAndLesionScheduler } from 'utils/scheduler';
@@ -26,6 +28,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 updateCourseAndLesionScheduler.start();
 // Routes
 app.use('/', routes);
+
+// Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('*', noRouteHandler);
 
