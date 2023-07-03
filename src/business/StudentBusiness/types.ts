@@ -18,14 +18,16 @@ export type RegisterRequest = {
   first_name: string;
   last_name: string;
   email: string;
+  user_name: string;
   password: string;
   phone: string;
   birthday: string;
 };
 
 export type SignInRequest = {
-  email: string;
+  email?: string;
   password: string;
+  user_name: string
 };
 
 export type UpdateRequest = {

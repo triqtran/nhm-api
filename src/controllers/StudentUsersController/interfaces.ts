@@ -9,6 +9,7 @@ export interface StudentUserBodyReq {
   first_name: string;
   last_name: string;
   email: string;
+  user_name: string;
   password: string;
   phone: string;
   birthday: string;
@@ -20,8 +21,9 @@ export interface StudentUserBodyReq {
 }
 
 export interface StudentUserSignInBodyReq {
-  email: string;
+  user_name: string;
   password: string;
+  email?: string;
 }
 
 export default interface IStudentControllers {

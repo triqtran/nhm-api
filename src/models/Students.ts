@@ -11,6 +11,7 @@ interface StudentsAttributes {
   email: string;
   phone: string;
   status: StudentStatus;
+  user_name: string;
   password: string;
   ayotree_student_id?: number;
   ayotree_campus_id?: number;
@@ -34,6 +35,7 @@ class Students
   public email!: string;
   public phone!: string;
   public status!: StudentStatus;
+  public user_name!: string;
   public password!: string;
   public ayotree_student_id?: number;
   public ayotree_campus_id?: number;
@@ -61,6 +63,7 @@ Students.init(
       defaultValue: 'registered',
       values: ['registered', 'active', 'suspended'],
     },
+    user_name: { type: DataTypes.STRING, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
     ayotree_student_id: { type: DataTypes.INTEGER },
     ayotree_campus_id: { type: DataTypes.INTEGER },

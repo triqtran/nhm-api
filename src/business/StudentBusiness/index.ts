@@ -26,7 +26,7 @@ interface IStudentBusiness {
 
 class StudentBusiness implements IStudentBusiness {
   signIn(data: SignInRequest): Promise<Students> {
-    return StudentsDAL.signInStudent(data.email, data.password);
+    return StudentsDAL.signInStudent(data.user_name, data.password);
   }
   register(data: RegisterRequest): Promise<Students> {
     return StudentsDAL.addNewStudent(data);

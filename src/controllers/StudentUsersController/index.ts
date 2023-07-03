@@ -7,6 +7,7 @@ import IStudentControllers, {
 import { ErrorStruct } from '@tsenv';
 import jwtResponse from 'middlewares/jwtResponse';
 import { StudentBusiness } from 'business';
+import { RegisterRequest } from 'business/StudentBusiness/types';
 
 const errors = {
   STUDENT_USER_IS_DISABLED: {
@@ -20,6 +21,18 @@ const errors = {
   MISSING_EMAIL_OR_PASSWORD: {
     code: 'error',
     show: 'Missing email or password',
+  } as ErrorStruct,
+  MISSING_INPUT: {
+    code: 'error',
+    show: 'Missing input',
+  } as ErrorStruct,
+  MISSING_USER_NAME_OR_PASSWORD: {
+    code: 'error',
+    show: 'Missing user_name or password',
+  } as ErrorStruct,
+  WRONG_USER_NAME_OR_PASSWORD: {
+    code: 'error',
+    show: 'Your user_name or password is wrong',
   } as ErrorStruct,
   CAN_NOT_SIGN_UP_NEW_STUDENT: {
     code: 'error',
@@ -37,14 +50,14 @@ class StudentUsersController implements IStudentControllers {
     res: Response<any, Record<string, any>>,
     next: NextFunction
   ): void {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
+    const { user_name, password } = req.body;
+    if (!user_name || !password) {
+      return res.responseAppError(errors.MISSING_USER_NAME_OR_PASSWORD);
     }
-    StudentBusiness.signIn({ email, password })
+    StudentBusiness.signIn({ user_name, password })
       .then(student => {
         if (!student) {
-          return res.responseAppError(errors.WRONG_EMAIL_OR_PASSWORD);
+          return res.responseAppError(errors.WRONG_USER_NAME_OR_PASSWORD);
         }
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
@@ -68,8 +81,8 @@ class StudentUsersController implements IStudentControllers {
     next: NextFunction
   ): void {
     const data = req.body;
-    if (!data.email || !data.password) {
-      return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
+    if (!data.user_name || !data.password) {
+      return res.responseAppError(errors.MISSING_USER_NAME_OR_PASSWORD);
     }
     StudentBusiness.register(data)
       .then(student => {
@@ -98,9 +111,15 @@ class StudentUsersController implements IStudentControllers {
       .catch(err => res.responseAppError(err));
   }
   addNewStudent(req: Request, res: Response, next: NextFunction): void {
-    const data = req.body;
-    if (!data.email || !data.password) {
-      return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
+    const data: RegisterRequest = req.body;
+    if (
+      !data.user_name ||
+      !data.password ||
+      !data.email ||
+      !data.first_name ||
+      !data.last_name
+    ) {
+      return res.responseAppError(errors.MISSING_INPUT);
     }
     StudentBusiness.register(data)
       .then(result => res.responseSuccess(result))
