@@ -50,7 +50,7 @@ class StudentBusiness implements IStudentBusiness {
           },
         })
         .then(ayotreeResult => {
-          const splitCourse = ayotreeResult?.Course?.split('|');
+          const splitCourse = ayotreeResult?.Course?.split('|')?.map(item => item.trim());
           let courseCode: string | undefined = '';
           if (splitCourse) courseCode = splitCourse.pop();
           if (courseCode && courseCode !== student.ayotree_course_code) {

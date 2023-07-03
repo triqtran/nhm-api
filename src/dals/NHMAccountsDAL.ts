@@ -13,7 +13,7 @@ const throwNewError = (err = 'Error not implemented.') => {
 
 export type ListNHMAccountsResponse = {
   count: number;
-  data: Array<NHMAccounts>;
+  data: NHMAccounts[];
 };
 
 interface INHMAccountsDAL {

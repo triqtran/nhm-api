@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { StudentsDAL } from 'dals';
 import IStudentControllers, {
   StudentUserBodyReq,
   StudentUserParamsReq,
@@ -7,8 +6,7 @@ import IStudentControllers, {
 } from './interfaces';
 import { ErrorStruct } from '@tsenv';
 import jwtResponse from 'middlewares/jwtResponse';
-import AyotreeServices from 'requests/ayotrees/AyotreeServices';
-import StudentBusiness from 'business/StudentBusiness';
+import { StudentBusiness } from 'business';
 
 const errors = {
   STUDENT_USER_IS_DISABLED: {
