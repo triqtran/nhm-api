@@ -17,12 +17,12 @@ type CampusListResponse = Campus[] | null;
 
 export type ListStudentsResponse = {
   count: number;
-  data: Array<Students>;
+  data: Students[];
 };
 interface IStudentsDAL {
   addNewStudent(data: any): Promise<Students>;
   updateStudentById(data: any, id: number): Promise<Students>;
-  listStudentsByCourse(paging: any): Promise<ListStudentsResponse>;
+  listStudents(paging: any): Promise<ListStudentsResponse>;
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
   getCampusList(): Promise<CampusListResponse>;
@@ -65,7 +65,7 @@ class StudentsDAL implements IStudentsDAL {
       })
       .catch(throwError('updateStudentById'));
   }
-  listStudentsByCourse(paging: Paging): Promise<ListStudentsResponse> {
+  listStudents(paging: Paging): Promise<ListStudentsResponse> {
     return Students.findAndCountAll({
       where: paging.filters,
       limit: paging.limit,

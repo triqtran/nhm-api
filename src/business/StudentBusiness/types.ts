@@ -1,14 +1,48 @@
 // disable temporary
+
+import Students, { StudentStatus } from 'models/Students';
+import { AyotreeStudent } from 'requests/ayotrees/AyotreeTypes';
+
 /* eslint-disable @typescript-eslint/ban-types */
 export type OwnerProfileRequest = {};
+
+export type OwnerProfileResponse = Students & {
+  ayotree_profile?: AyotreeStudent | null;
+};
 
 export type OwnerScheduleRequest = {};
 
 export type OwnerCourseRequest = {};
 
-export type RegisterRequest = {};
+export type RegisterRequest = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  phone: string;
+  birthday: string;
+};
 
 export type SignInRequest = {
-  username: string;
+  email: string;
   password: string;
+};
+
+export type UpdateRequest = {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  password?: string;
+  phone?: string;
+  birthday?: string;
+  status?: StudentStatus;
+  ayotree_student_id?: number;
+  ayotree_campus_id?: number;
+  ayotree_course_title?: string;
+  ayotree_course_code?: string;
+};
+
+export type ListStudentsResponse = {
+  data: Students[];
+  count: number;
 };
