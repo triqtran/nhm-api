@@ -1,35 +1,15 @@
 export default {
   // method of operation
-  post: {
+  get: {
     tags: ['Student APIs'],
-    description: 'Login',
-    operationId: 'login',
-    requestBody: {
-      required: true,
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              user_name: {
-                type: 'string',
-                example: 'test',
-              },
-              password: {
-                type: 'string',
-                example: 'test123',
-              },
-            },
-          },
-        },
-      },
-    },
-
+    description: 'Get Profile',
+    operationId: 'getProfile',
+    security: [{ bearerAuth: [] }],
     // expected responses
     responses: {
       // response code
       200: {
-        description: 'Login successful', // response desc.
+        description: 'Get student profile successful', // response desc.
         content: {
           'application/json': {
             schema: {
@@ -56,11 +36,35 @@ export default {
                     ayotree_course_title: 'Title Course',
                     created_at: '2023-07-01 01:05:24',
                     updated_at: '2023-07-03 14:41:11',
+                    ayotree_profile: {
+                      UserID: 12345,
+                      StudentID: 5694,
+                      PIN: '131231',
+                      TimeZone: 'SE Asia Standard Time',
+                      Title: '',
+                      AvataURL: 'url',
+                      FirstName: 'Test',
+                      MiddleInitail: '',
+                      LastName: 'Nguyen',
+                      FullName: 'Nguyen Test',
+                      Email: '@',
+                      Phone: '',
+                      Gender: 'Male',
+                      Birthday: 'Dec 21, 1991',
+                      TaxNumber: '',
+                      AdditionalContact: '',
+                      Nationality: 'Vietnam',
+                      Address1: '',
+                      Address2: '',
+                      Country: '',
+                      City: '',
+                      State: '',
+                      ZipCode: '',
+                      Course: 'itle Course` | Code001',
+                      Package: '',
+                      Status: 'Active',
+                    },
                   },
-                },
-                token: {
-                  type: 'string',
-                  example: 'eyJhbGciOiJIUzI1NiIsI...',
                 },
               },
             },
@@ -68,7 +72,7 @@ export default {
         },
       },
       400: {
-        description: 'Login fail',
+        description: 'Get student profile fail',
         content: {
           'application/json': {
             schema: {
@@ -82,8 +86,8 @@ export default {
                   type: 'object',
                   example: {
                     code: 'error',
-                    show: 'Your user_name or password is wrong',
-                    error: 'Your user_name or password is wrong',
+                    show: 'Not found authentication token!',
+                    error: 'Not found authentication token!',
                   },
                 },
               },
