@@ -1,8 +1,8 @@
-import { TAGS_NAME } from "swaggerDocs/utils";
+import { TAGS_NAME } from 'swaggerDocs/utils';
 
 export default {
   post: {
-    tags: [TAGS_NAME.STUDENT],
+    tags: [TAGS_NAME.ACCOUNT],
     description: 'Login',
     operationId: 'login',
     requestBody: {
@@ -12,7 +12,7 @@ export default {
           schema: {
             type: 'object',
             properties: {
-              user_name: {
+              email: {
                 type: 'string',
                 example: 'test',
               },

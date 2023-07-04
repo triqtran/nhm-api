@@ -63,7 +63,7 @@ Students.init(
       defaultValue: 'registered',
       values: ['registered', 'active', 'suspended'],
     },
-    user_name: { type: DataTypes.STRING, allowNull: false },
+    user_name: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
     ayotree_student_id: { type: DataTypes.INTEGER },
     ayotree_campus_id: { type: DataTypes.INTEGER },

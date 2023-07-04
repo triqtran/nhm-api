@@ -17,12 +17,12 @@ export default {
           first_name: {
             type: 'string',
             description: 'First Name',
-            example: 'test',
+            example: 'Donald',
           },
           last_name: {
             type: 'string',
             description: 'Last Name',
-            example: 'test',
+            example: 'Trump',
           },
           birthday: {
             type: 'date',
@@ -38,11 +38,6 @@ export default {
             type: 'string',
             description: 'Phone',
             example: '012345679',
-          },
-          status: {
-            type: 'string',
-            description: 'Status',
-            example: 'registered',
           },
           user_name: {
             type: 'string',

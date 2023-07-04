@@ -2,7 +2,7 @@ import { TAGS_NAME } from "swaggerDocs/utils";
 
 export default {
   get: {
-    tags: [TAGS_NAME.STUDENT],
+    tags: [TAGS_NAME.ACCOUNT],
     description: 'Get Profile',
     operationId: 'getProfile',
     security: [{ bearerAuth: [] }],

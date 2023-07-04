@@ -1,14 +1,10 @@
 import login from './login';
 import getProfile from './getProfile';
-import register from './register';
 import { genURLSwagger } from 'swaggerDocs/utils';
 
-const path = '/student-users/';
+const path = '/nhm-accounts/';
 
 export default {
-  [genURLSwagger(path, 'signup')]: {
-    ...register,
-  },
   [genURLSwagger(path, 'login')]: {
     ...login,
   },
