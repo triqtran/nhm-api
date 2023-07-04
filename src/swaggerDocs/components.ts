@@ -1,38 +1,118 @@
 export default {
   components: {
     schemas: {
-      Account: {
-        type: 'object', // data type
+      LogInRequest: {
+        type: 'object',
         properties: {
           user_name: {
-            type: 'string', // data-type
-            description: 'User name of student', // desc
-            example: 'test', // example of an id
+            type: 'string',
+            description: 'Username',
+            example: 'test',
           },
           password: {
-            type: 'string', // data-type
-            description: "Password of student", // desc
-            example: 'test123', // example of a title
-          },
-          completed: {
-            type: 'boolean', // data type
-            description: 'The status of the todo', // desc
-            example: false, // example of a completed value
+            type: 'string',
+            description: 'Password',
+            example: 'test123',
           },
         },
       },
-      Student: {
-        type: 'object', //data type
+      LogInResponse: {
+        type: 'object',
         properties: {
-          message: {
-            type: 'string', // data type
-            description: 'Error message', // desc
-            example: 'Not found', // example of an error message
+          success: {
+            type: 'boolean',
+            example: true,
           },
-          internal_code: {
-            type: 'string', // data type
-            description: 'Error internal code', // desc
-            example: 'Invalid parameters', // example of an error internal code
+          data: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'integer',
+                example: 1,
+              },
+              first_name: {
+                type: 'string',
+                example: 'Test',
+              },
+              last_name: {
+                type: 'string',
+                example: 'Nguyen',
+              },
+              birthday: {
+                type: 'string',
+                example: '01/01/2010',
+              },
+              email: {
+                type: 'string',
+                example: '@',
+              },
+              phone: {
+                type: 'string',
+                example: '0654721145',
+              },
+              status: {
+                type: 'string',
+                example: 'registered',
+              },
+              user_name: {
+                type: 'string',
+                example: 'test',
+              },
+              ayotree_student_id: {
+                type: 'integer',
+                example: 13245,
+              },
+              ayotree_campus_id: {
+                type: 'integer',
+                example: 5604,
+              },
+              ayotree_course_code: {
+                type: 'string',
+                example: 'Code001',
+              },
+              ayotree_course_title: {
+                type: 'string',
+                example: 'Title Course',
+              },
+              created_at: {
+                type: 'time',
+                example: '2023-07-01 01:05:24',
+              },
+              updated_at: {
+                type: 'time',
+                example: '2023-07-03 14:41:11',
+              },
+            },
+          },
+          token: {
+            type: 'string',
+            example: 'eyJhbGciOiJIUzI1NiIsI...',
+          },
+        },
+      },
+      LogInReponseError: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: false,
+          },
+          error: {
+            type: 'object',
+            properties: {
+              code: {
+                type: 'string',
+                example: 'error',
+              },
+              error: {
+                type: 'string',
+                example: 'Your user_name or password is wrong',
+              },
+              show: {
+                type: 'string',
+                example: 'Your user_name or password is wrong',
+              },
+            },
           },
         },
       },
