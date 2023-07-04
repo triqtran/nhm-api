@@ -78,13 +78,23 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('listStudentsByCourse'));
   }
   getStudentById(id: number): Promise<Students> {
-    return Students.findOne({ where: { id } })
+    return Students.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
       .then(res => (res?.dataValues || null) as Students)
       .catch(throwError('getStudentById'));
   }
 
   signInStudent(user_name: string, password: string): Promise<Students> {
-    return Students.findOne({ where: { user_name, password } })
+    return Students.findOne({
+      where: { user_name, password },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
       .then(res => (res?.dataValues || null) as Students)
       .catch(throwError('signInStudent'));
   }

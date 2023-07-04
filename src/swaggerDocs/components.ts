@@ -1,11 +1,19 @@
 export default {
   components: {
     securitySchemes: {
-      bearerAuth: {
+      studentAuth: {
         type: 'http',
         in: 'header',
         name: 'Authorization',
-        description: 'Need only token',
+        description: 'Token for student APIs',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      accountAuth: {
+        type: 'http',
+        in: 'header',
+        name: 'Authorization',
+        description: 'Token for account APIs',
         scheme: 'bearer',
         bearerFormat: 'JWT',
       },
@@ -53,5 +61,4 @@ export default {
       },
     },
   },
-  security: [{ bearerAuth: [] }],
 };
