@@ -2,11 +2,18 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
 export type GameExerciseStatus = 'new' | 'released' | 'closed';
+export type GameExerciseType = 'pin_yin' | 'vocabulary';
 
 interface GameExercisesAttributes {
   id: number;
   name: string;
   status: GameExerciseStatus;
+  total_level: number;
+  type: GameExerciseType;
+  description: string;
+  how_to_play: string;
+  // intro: "Review the Pin yin,Practice listening"
+  intro: string;
   created_at: Date;
   updated_at?: Date;
 }
@@ -21,6 +28,11 @@ class GameExercises
   public id!: number;
   public name!: string;
   public status!: GameExerciseStatus;
+  public total_level!: number;
+  public type!: GameExerciseType;
+  public description!: string;
+  public how_to_play!: string;
+  public intro!: string;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -34,6 +46,15 @@ GameExercises.init(
     },
     name: { type: DataTypes.STRING, allowNull: false },
     status: { type: DataTypes.STRING, allowNull: false },
+    total_level: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 4 },
+    type: {
+      type: DataTypes.STRING(12),
+      allowNull: false,
+      defaultValue: 'pin_yin',
+    },
+    description: { type: DataTypes.TEXT, allowNull: false },
+    how_to_play: { type: DataTypes.STRING, allowNull: true },
+    intro: { type: DataTypes.STRING, allowNull: true },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },

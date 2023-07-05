@@ -1,14 +1,21 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
+export type GameExerciseDetailType = 'text' | 'picture';
+
 interface GameExerciseDetailsAttributes {
   id: number;
   game_exercise_id: number;
   question: string;
-  // answers: "Dog,Cat,Mouse,Duck"
+  // answers: "Dog|Cat|Mouse|Duck"
   answers: string;
+  answers_image: string;
   // it means that: (Dog: 0), (Cat: 1), (Mouse: 2), (Duck: 3)
   right_answer_index: number;
+
+  level: string;
+  type: GameExerciseDetailType;
+
   created_at: Date;
   updated_at?: Date;
 }
@@ -25,7 +32,10 @@ class GameExerciseDetails
   public game_exercise_id!: number;
   public question!: string;
   public answers!: string;
+  public answers_image!: string;
   public right_answer_index!: number;
+  public level!: string;
+  public type!: GameExerciseDetailType;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -39,8 +49,11 @@ GameExerciseDetails.init(
     },
     game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     question: { type: DataTypes.STRING, allowNull: false },
-    answers: { type: DataTypes.STRING, allowNull: false },
+    answers: { type: DataTypes.STRING, allowNull: true },
+    answers_image: { type: DataTypes.TEXT, allowNull: true },
     right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
+    level: { type: DataTypes.STRING, allowNull: true },
+    type: { type: DataTypes.STRING(8), allowNull: true },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },

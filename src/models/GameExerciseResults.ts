@@ -8,8 +8,10 @@ interface GameExerciseResultsAttributes {
   question: string;
   // answers: "Dog,Cat,Mouse,Duck"
   answers: string;
+  answers_image: string;
   // it means that: (Dog: 0), (Cat: 1), (Mouse: 2), (Duck: 3)
   right_answer_index: number;
+  level: string;
   student_answer_index: number;
   is_correct: boolean;
   created_at: Date;
@@ -29,7 +31,9 @@ class GameExerciseResults
   public student_id!: number;
   public question!: string;
   public answers!: string;
+  public answers_image!: string;
   public right_answer_index!: number;
+  public level!: string;
   public student_answer_index!: number;
   public is_correct!: boolean;
   public created_at!: Date;
@@ -46,8 +50,10 @@ GameExerciseResults.init(
     game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED },
     student_id: { type: DataTypes.INTEGER.UNSIGNED },
     question: { type: DataTypes.STRING, allowNull: false },
-    answers: { type: DataTypes.STRING, allowNull: false },
+    answers: { type: DataTypes.STRING, allowNull: true },
+    answers_image: { type: DataTypes.TEXT, allowNull: true },
     right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
+    level: { type: DataTypes.STRING, allowNull: true },
     student_answer_index: { type: DataTypes.INTEGER },
     is_correct: { type: DataTypes.BOOLEAN },
     created_at: { type: DataTypes.DATE },
