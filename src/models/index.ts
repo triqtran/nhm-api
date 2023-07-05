@@ -13,6 +13,8 @@ import StudentTrackings from './StudentTrackings';
 import Courses from './Courses';
 import Campus from './Campus';
 import Lessons from './Lessons';
+import VocabularyBook from './VocabularyBook';
+import VocabularyBookStudent from './VocabularyBookStudents';
 
 const nodeEnv = process.env.NODE_ENV;
 const isAlter = !!(nodeEnv && ['development', 'test'].includes(nodeEnv));
@@ -34,4 +36,6 @@ export default () =>
     Courses.sync({ alter: isAlter }),
     Campus.sync({ alter: isAlter }),
     Lessons.sync({ alter: isAlter }),
+    VocabularyBook.sync({ alter: isAlter }),
+    VocabularyBookStudent.sync({ alter: isAlter }),
   ]);

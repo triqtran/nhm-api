@@ -14,6 +14,7 @@ interface GameExercisesAttributes {
   how_to_play: string;
   // intro: "Review the Pin yin,Practice listening"
   intro: string;
+  course_id: number;
   created_at: Date;
   updated_at?: Date;
 }
@@ -33,6 +34,7 @@ class GameExercises
   public description!: string;
   public how_to_play!: string;
   public intro!: string;
+  public course_id!: number;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -55,6 +57,7 @@ GameExercises.init(
     description: { type: DataTypes.TEXT, allowNull: false },
     how_to_play: { type: DataTypes.STRING, allowNull: true },
     intro: { type: DataTypes.STRING, allowNull: true },
+    course_id: { type: DataTypes.STRING, allowNull: false },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },
