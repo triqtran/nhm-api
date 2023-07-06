@@ -1,5 +1,6 @@
-import GameExercises from 'models/GameExercises';
+import GameExercises, { GameExercisesAttributes } from 'models/GameExercises';
 import GameExerciseDetails from 'models/GameExerciseDetails';
+import { WhereOptions } from 'sequelize';
 
 const throwError =
   (funcName: string) =>
@@ -22,22 +23,71 @@ type GameExercisesWithDetail = GameExercises & {
 };
 
 interface IGameExercisesDAL {
-  create(req: any): Promise<GameExercises>;
-  updateById(req: any, id: number): Promise<GameExercises>;
-  list(req: any): Promise<ListGameExerciesResponse>;
+  create(data: GameExercises): Promise<GameExercises>;
+  createDetail(data: GameExerciseDetails): Promise<GameExerciseDetails>;
+  createMultipleDetail(
+    data: GameExerciseDetails[]
+  ): Promise<GameExerciseDetails[]>;
+  updateDetail(
+    data: Partial<GameExerciseDetails>,
+    id: number
+  ): Promise<GameExerciseDetails>;
+  updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises>;
+  list(
+    where: WhereOptions<GameExercisesAttributes>
+  ): Promise<ListGameExerciesResponse>;
   getById(id: number): Promise<GameExercises>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
-  create(req: any): Promise<GameExercises> {
-    return GameExercises.create(req, { returning: true }).then(res => {
-      if (res?.dataValues) return res.dataValues as GameExercises;
-      return throwNewError('Can not create game exercise!');
-    });
+  create(data: GameExercises): Promise<GameExercises> {
+    return GameExercises.create(data, { returning: true })
+      .then(res => {
+        if (res?.dataValues) return res.dataValues as GameExercises;
+        return throwNewError('Can not create game exercise!');
+      })
+      .catch(throwError('create'));
   }
 
-  updateById(req: any, id: number): Promise<GameExercises> {
-    return GameExercises.update(req, {
+  createDetail(data: GameExerciseDetails): Promise<GameExerciseDetails> {
+    return GameExerciseDetails.create(data)
+      .then(res => {
+        if (res?.dataValues) return res.dataValues as GameExerciseDetails;
+        return throwNewError('Can not create game exercise detail');
+      })
+      .catch(throwError('createDetail'));
+  }
+
+  createMultipleDetail(
+    data: GameExerciseDetails[]
+  ): Promise<GameExerciseDetails[]> {
+    return GameExerciseDetails.bulkCreate(data)
+      .then(res => {
+        if (res.length > 0)
+          return res?.map(item => item.dataValues) as GameExerciseDetails[];
+        return throwNewError('Can not create multiple game exercise detail');
+      })
+      .catch(throwError('createMultipleDetail'));
+  }
+
+  updateDetail(
+    data: Partial<GameExerciseDetails>,
+    id: number
+  ): Promise<GameExerciseDetails> {
+    return GameExerciseDetails.update(data, {
+      where: { id },
+      returning: true,
+      fields: [],
+    })
+      .then(res => {
+        if (res?.length > 0 && res[1]) return res[1][0];
+        return throwNewError('Can not update game exercise detail');
+      })
+      .catch(throwError('updateDetail'));
+  }
+
+  updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises> {
+    return GameExercises.update(data, {
       where: {
         id,
       },
@@ -50,6 +100,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
         'intro',
         'total_level',
         'course_id',
+        'background_image',
         'is_trial',
       ],
       returning: true,
@@ -61,9 +112,11 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('updateById'));
   }
 
-  list(req: any): Promise<ListGameExerciesResponse> {
+  list(
+    where: WhereOptions<GameExercisesAttributes>
+  ): Promise<ListGameExerciesResponse> {
     return GameExercises.findAndCountAll({
-      where: req,
+      where,
     })
       .then(res => {
         const resData = res.rows.map(item => item.dataValues);

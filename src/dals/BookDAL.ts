@@ -1,4 +1,6 @@
-import Book from 'models/Book';
+import Book, { BookAttributes } from 'models/Book';
+import BookStudent from 'models/BookStudents';
+import { WhereOptions } from 'sequelize';
 
 const throwError =
   (funcName: string) =>
@@ -17,15 +19,19 @@ type ListBookResponse = {
 };
 
 interface IBookDAL {
-  create(req: any): Promise<Book>;
-  update(req: any, id: number): Promise<Book>;
-  list(req: any): Promise<ListBookResponse>;
+  create(data: Book): Promise<Book>;
+  update(data: Partial<Book>, id: number): Promise<Book>;
+  list(where: WhereOptions<BookAttributes>): Promise<ListBookResponse>;
   getById(id: number): Promise<Book>;
+  upsertBookStudent(
+    student_id: number,
+    data: Partial<BookStudent>
+  ): Promise<boolean>;
 }
 
 class BookDAL implements IBookDAL {
-  create(req: any): Promise<Book> {
-    return Book.create(req)
+  create(data: Book): Promise<Book> {
+    return Book.create(data)
       .then(res => {
         if (res?.dataValues) return res.dataValues as Book;
         return throwNewError('Can not create book');
@@ -33,8 +39,8 @@ class BookDAL implements IBookDAL {
       .catch(throwError('create'));
   }
 
-  update(req: any, id: number): Promise<Book> {
-    return Book.update(req, {
+  update(data: Partial<Book>, id: number): Promise<Book> {
+    return Book.update(data, {
       where: { id },
       returning: true,
       fields: [
@@ -46,6 +52,7 @@ class BookDAL implements IBookDAL {
         'short_description',
         'status',
         'url_file',
+        'background_image',
       ],
     })
       .then(res => {
@@ -55,9 +62,9 @@ class BookDAL implements IBookDAL {
       .catch(throwError('update'));
   }
 
-  list(req: any): Promise<ListBookResponse> {
+  list(where: WhereOptions<BookAttributes>): Promise<ListBookResponse> {
     return Book.findAndCountAll({
-      where: req,
+      where,
     })
       .then(res => {
         const resData = res.rows.map(item => item.dataValues);
@@ -75,6 +82,34 @@ class BookDAL implements IBookDAL {
         return throwNewError('Can not find this book');
       })
       .catch(throwError('getById'));
+  }
+
+  upsertBookStudent(
+    student_id: number,
+    data: Partial<BookStudent>
+  ): Promise<boolean> {
+    return BookStudent.findOne({
+      where: {
+        student_id,
+        book_id: data.book_id,
+      },
+    })
+      .then(existed => {
+        if (existed) {
+          return BookStudent.update(data, {
+            where: {
+              id: existed.id,
+            },
+            fields: ['current_chapter'],
+          }).then(() => true);
+        }
+        const createData = { ...data } as BookStudent;
+        return BookStudent.create({
+          ...createData,
+          student_id,
+        }).then(() => true);
+      })
+      .catch(throwError('upsertBookStudent'));
   }
 }
 

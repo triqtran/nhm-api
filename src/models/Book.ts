@@ -3,7 +3,7 @@ import dbConnection from './dbConnection';
 
 export type BookStatus = 'new' | 'released' | 'closed';
 
-interface BookAttributes {
+export interface BookAttributes {
   id: number;
   name: string;
   status: BookStatus;
