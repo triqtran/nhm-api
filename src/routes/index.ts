@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import multer, { Multer } from 'multer';
 import StudentUsersRoutes from './StudentUsersRoutes';
 import NHMAccountsRoutes from './NHMAccountsRouters';
+import ResourceRouters from './ResourceRouters';
 import { UploadControllers as ctrl } from 'controllers';
 
 const uploadMulter: Multer = multer();
@@ -17,5 +18,7 @@ routes.post(
 routes.use('/student-users', StudentUsersRoutes);
 
 routes.use('/nhm-accounts', NHMAccountsRoutes);
+
+routes.use('/resource', ResourceRouters);
 
 export default routes;
