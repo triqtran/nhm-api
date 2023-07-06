@@ -5,6 +5,7 @@ interface GameExerciseDetailsAttributes {
   id: number;
   game_exercise_id: number;
   question: string;
+  audio_url?: string;
   // answers: "Dog|Cat|Mouse|Duck"
   answers: string;
   answers_image: string;
@@ -28,6 +29,7 @@ class GameExerciseDetails
   public id!: number;
   public game_exercise_id!: number;
   public question!: string;
+  public audio_url?: string;
   public answers!: string;
   public answers_image!: string;
   public right_answer_index!: number;
@@ -44,7 +46,8 @@ GameExerciseDetails.init(
       primaryKey: true,
     },
     game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
-    question: { type: DataTypes.STRING, allowNull: false },
+    question: { type: DataTypes.STRING, allowNull: true },
+    audio_url: { type: DataTypes.STRING, allowNull: true },
     answers: { type: DataTypes.STRING, allowNull: true },
     answers_image: { type: DataTypes.TEXT, allowNull: true },
     right_answer_index: { type: DataTypes.INTEGER, allowNull: false },

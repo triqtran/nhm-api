@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, TINYINT } from 'sequelize';
 import dbConnection from './dbConnection';
 
 export type GameExerciseStatus = 'new' | 'released' | 'closed';
@@ -8,6 +8,7 @@ interface GameExercisesAttributes {
   id: number;
   name: string;
   status: GameExerciseStatus;
+  background_image: string;
   total_level: number;
   type: GameExerciseType;
   description: string;
@@ -30,6 +31,7 @@ class GameExercises
   public id!: number;
   public name!: string;
   public status!: GameExerciseStatus;
+  public background_image!: string;
   public total_level!: number;
   public type!: GameExerciseType;
   public description!: string;
@@ -51,6 +53,7 @@ GameExercises.init(
     name: { type: DataTypes.STRING, allowNull: false },
     status: { type: DataTypes.STRING, allowNull: false },
     total_level: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 4 },
+    background_image: { type: DataTypes.TEXT, allowNull: false },
     type: {
       type: DataTypes.STRING(12),
       allowNull: false,
@@ -59,8 +62,8 @@ GameExercises.init(
     description: { type: DataTypes.TEXT, allowNull: false },
     how_to_play: { type: DataTypes.STRING, allowNull: true },
     intro: { type: DataTypes.STRING, allowNull: true },
-    course_id: { type: DataTypes.INTEGER, allowNull: false },
-    is_trial: { type: DataTypes.BOOLEAN, allowNull: false },
+    course_id: { type: DataTypes.INTEGER, allowNull: true },
+    is_trial: { type: TINYINT, allowNull: false, defaultValue: false },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },
