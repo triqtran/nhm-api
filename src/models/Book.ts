@@ -14,6 +14,7 @@ interface BookAttributes {
   short_description: string;
   total_chapters: number;
   course_id: number;
+  is_trial: boolean;
   created_at: Date;
   updated_at?: Date;
 }
@@ -35,6 +36,7 @@ class Book
   public uploaded_by_id!: number;
   public uploaded_by_name!: string;
   public course_id!: number;
+  public is_trial!: boolean;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -59,6 +61,7 @@ Book.init(
     uploaded_by_id: { type: DataTypes.INTEGER, allowNull: true },
     uploaded_by_name: { type: DataTypes.STRING, allowNull: true },
     course_id: { type: DataTypes.INTEGER, allowNull: false },
+    is_trial: { type: DataTypes.BOOLEAN, allowNull: false },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },
