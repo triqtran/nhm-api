@@ -9,7 +9,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.get(
-  '/continue/:student_id/:course_id',
+  '/continue',
   authHandler,
   ctrl.listContinue as express.RequestHandler
 );

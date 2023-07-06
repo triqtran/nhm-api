@@ -19,6 +19,6 @@ routes.use('/student-users', StudentUsersRoutes);
 
 routes.use('/nhm-accounts', NHMAccountsRoutes);
 
-routes.use('/resource', ResourceRouters);
+routes.use('/resources', ResourceRouters);
 
 export default routes;
