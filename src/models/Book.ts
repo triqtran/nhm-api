@@ -1,12 +1,12 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
-export type VocabularyStatus = 'new' | 'released' | 'closed';
+export type BookStatus = 'new' | 'released' | 'closed';
 
-interface VocabularyBookAttributes {
+interface BookAttributes {
   id: number;
   name: string;
-  status: VocabularyStatus;
+  status: BookStatus;
   url_file: string;
   uploaded_by_id: number;
   uploaded_by_name: string;
@@ -17,17 +17,17 @@ interface VocabularyBookAttributes {
   updated_at?: Date;
 }
 export interface IngredientInput
-  extends Optional<VocabularyBookAttributes, 'id' | 'updated_at'> {}
-export interface IngredientOuput extends Required<VocabularyBookAttributes> {}
+  extends Optional<BookAttributes, 'id' | 'updated_at'> {}
+export interface IngredientOuput extends Required<BookAttributes> {}
 
-class VocabularyBook
-  extends Model<VocabularyBookAttributes, IngredientInput>
-  implements VocabularyBookAttributes
+class Book
+  extends Model<BookAttributes, IngredientInput>
+  implements BookAttributes
 {
   public id!: number;
   public name!: string;
   public url_file!: string;
-  public status!: VocabularyStatus;
+  public status!: BookStatus;
   public total_chapters!: number;
   public description!: string;
   public uploaded_by_id!: number;
@@ -37,7 +37,7 @@ class VocabularyBook
   public updated_at?: Date;
 }
 
-VocabularyBook.init(
+Book.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -65,8 +65,8 @@ VocabularyBook.init(
     updatedAt: 'updated_at',
     deletedAt: false,
     sequelize: dbConnection,
-    tableName: 'vocabulary_books',
+    tableName: 'books',
   }
 );
 
-export default VocabularyBook;
+export default Book;

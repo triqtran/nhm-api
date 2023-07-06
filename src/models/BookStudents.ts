@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
-interface VocabularyBookStudentAttributes {
+interface BookStudentAttributes {
   id: number;
   vocabulary_book_id: number;
   student_id: number;
@@ -10,13 +10,12 @@ interface VocabularyBookStudentAttributes {
   updated_at?: Date;
 }
 export interface IngredientInput
-  extends Optional<VocabularyBookStudentAttributes, 'id' | 'updated_at'> {}
-export interface IngredientOuput
-  extends Required<VocabularyBookStudentAttributes> {}
+  extends Optional<BookStudentAttributes, 'id' | 'updated_at'> {}
+export interface IngredientOuput extends Required<BookStudentAttributes> {}
 
-class VocabularyBookStudent
-  extends Model<VocabularyBookStudentAttributes, IngredientInput>
-  implements VocabularyBookStudentAttributes
+class BookStudent
+  extends Model<BookStudentAttributes, IngredientInput>
+  implements BookStudentAttributes
 {
   public id!: number;
   public vocabulary_book_id!: number;
@@ -26,7 +25,7 @@ class VocabularyBookStudent
   public updated_at?: Date;
 }
 
-VocabularyBookStudent.init(
+BookStudent.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -52,8 +51,8 @@ VocabularyBookStudent.init(
     updatedAt: 'updated_at',
     deletedAt: false,
     sequelize: dbConnection,
-    tableName: 'vocabulary_book_student',
+    tableName: 'book_student',
   }
 );
 
-export default VocabularyBookStudent;
+export default BookStudent;
