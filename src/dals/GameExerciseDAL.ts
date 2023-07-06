@@ -1,4 +1,4 @@
-import GameExercises, { GameExercisesAttributes } from 'models/GameExercises';
+import GameExercises from 'models/GameExercises';
 import GameExerciseDetails from 'models/GameExerciseDetails';
 import { WhereOptions } from 'sequelize';
 
@@ -33,9 +33,7 @@ interface IGameExercisesDAL {
     id: number
   ): Promise<GameExerciseDetails>;
   updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises>;
-  list(
-    where: WhereOptions<GameExercisesAttributes>
-  ): Promise<ListGameExerciesResponse>;
+  list(where: any): Promise<ListGameExerciesResponse>;
   getById(id: number): Promise<GameExercises>;
 }
 
@@ -112,9 +110,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('updateById'));
   }
 
-  list(
-    where: WhereOptions<GameExercisesAttributes>
-  ): Promise<ListGameExerciesResponse> {
+  list(where: any): Promise<ListGameExerciesResponse> {
     return GameExercises.findAndCountAll({
       where,
     })

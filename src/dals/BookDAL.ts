@@ -1,6 +1,5 @@
-import Book, { BookAttributes } from 'models/Book';
+import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
-import { WhereOptions } from 'sequelize';
 
 const throwError =
   (funcName: string) =>
@@ -21,7 +20,7 @@ type ListBookResponse = {
 interface IBookDAL {
   create(data: Book): Promise<Book>;
   update(data: Partial<Book>, id: number): Promise<Book>;
-  list(where: WhereOptions<BookAttributes>): Promise<ListBookResponse>;
+  list(where: any): Promise<ListBookResponse>;
   getById(id: number): Promise<Book>;
   upsertBookStudent(
     student_id: number,
@@ -62,7 +61,7 @@ class BookDAL implements IBookDAL {
       .catch(throwError('update'));
   }
 
-  list(where: WhereOptions<BookAttributes>): Promise<ListBookResponse> {
+  list(where: any): Promise<ListBookResponse> {
     return Book.findAndCountAll({
       where,
     })

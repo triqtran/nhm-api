@@ -1,4 +1,6 @@
+import { Paging } from '@tsenv';
 import NHMAccounts from 'models/NHMAccounts';
+import { WhereOptions } from 'sequelize';
 
 const throwError =
   (funcName: string) =>
@@ -17,27 +19,33 @@ export type ListNHMAccountsResponse = {
 };
 
 interface INHMAccountsDAL {
-  addNewAccount(req: any): Promise<NHMAccounts>;
-  updateAccountById(req: any, id: number): Promise<NHMAccounts>;
-  listAccounts(req: any): Promise<ListNHMAccountsResponse>;
+  addNewAccount(data: NHMAccounts): Promise<NHMAccounts>;
+  updateAccountById(
+    data: Partial<NHMAccounts>,
+    id: number
+  ): Promise<NHMAccounts>;
+  listAccounts(paging: Paging): Promise<ListNHMAccountsResponse>;
   signInAccount(email: string, password: string): Promise<NHMAccounts>;
   getAccountById(id: number): Promise<NHMAccounts>;
 }
 
 class NHMAccountsDAL implements INHMAccountsDAL {
-  addNewAccount(req: any): Promise<NHMAccounts> {
-    return NHMAccounts.findOne({ where: { email: req.email } })
+  addNewAccount(data: NHMAccounts): Promise<NHMAccounts> {
+    return NHMAccounts.findOne({ where: { email: data.email } })
       .then(exist => {
         if (exist) return throwNewError('This account has already existed!');
-        return NHMAccounts.create(req, { returning: true }).then(res => {
+        return NHMAccounts.create(data, { returning: true }).then(res => {
           if (res?.dataValues) return res.dataValues as NHMAccounts;
           return throwNewError('Can not create account!');
         });
       })
       .catch(throwError('addNewAccount'));
   }
-  updateAccountById(req: any, id: number): Promise<NHMAccounts> {
-    return NHMAccounts.update(req, {
+  updateAccountById(
+    data: Partial<NHMAccounts>,
+    id: number
+  ): Promise<NHMAccounts> {
+    return NHMAccounts.update(data, {
       where: { id },
       fields: ['email', 'name', 'password', 'phone'],
       returning: true,
@@ -48,8 +56,12 @@ class NHMAccountsDAL implements INHMAccountsDAL {
       })
       .catch(throwError('updateAccountById'));
   }
-  listAccounts(req: any): Promise<ListNHMAccountsResponse> {
-    return NHMAccounts.findAndCountAll({ where: req })
+  listAccounts(paging: Paging): Promise<ListNHMAccountsResponse> {
+    return NHMAccounts.findAndCountAll({
+      where: paging.filters,
+      limit: paging.limit,
+      offset: (paging.page - 1) * paging.limit,
+    })
       .then(res => {
         const resData = res.rows.map(item => item.dataValues);
         return { count: res.count, data: resData } as ListNHMAccountsResponse;

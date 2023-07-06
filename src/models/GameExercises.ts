@@ -4,7 +4,7 @@ import dbConnection from './dbConnection';
 export type GameExerciseStatus = 'new' | 'released' | 'closed';
 export type GameExerciseType = 'pin_yin' | 'vocabulary';
 
-export interface GameExercisesAttributes {
+interface GameExercisesAttributes {
   id: number;
   name: string;
   status: GameExerciseStatus;

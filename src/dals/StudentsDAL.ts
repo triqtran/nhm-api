@@ -20,9 +20,9 @@ export type ListStudentsResponse = {
   data: Students[];
 };
 interface IStudentsDAL {
-  addNewStudent(data: any): Promise<Students>;
-  updateStudentById(data: any, id: number): Promise<Students>;
-  listStudents(paging: any): Promise<ListStudentsResponse>;
+  addNewStudent(data: Students): Promise<Students>;
+  updateStudentById(data: Partial<Students>, id: number): Promise<Students>;
+  listStudents(paging: Paging): Promise<ListStudentsResponse>;
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
   getCampusList(): Promise<CampusListResponse>;
