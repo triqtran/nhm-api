@@ -11,6 +11,7 @@ interface BookAttributes {
   uploaded_by_id: number;
   uploaded_by_name: string;
   description: string;
+  short_description: string;
   total_chapters: number;
   course_id: number;
   created_at: Date;
@@ -30,6 +31,7 @@ class Book
   public status!: BookStatus;
   public total_chapters!: number;
   public description!: string;
+  public short_description!: string;
   public uploaded_by_id!: number;
   public uploaded_by_name!: string;
   public course_id!: number;
@@ -53,6 +55,7 @@ Book.init(
       defaultValue: 4,
     },
     description: { type: DataTypes.TEXT, allowNull: false },
+    short_description: { type: DataTypes.STRING, allowNull: true },
     uploaded_by_id: { type: DataTypes.INTEGER, allowNull: true },
     uploaded_by_name: { type: DataTypes.STRING, allowNull: true },
     course_id: { type: DataTypes.INTEGER, allowNull: false },

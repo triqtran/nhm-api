@@ -3,7 +3,7 @@ import dbConnection from './dbConnection';
 
 interface BookStudentAttributes {
   id: number;
-  vocabulary_book_id: number;
+  book_id: number;
   student_id: number;
   read_chapters: number;
   created_at: Date;
@@ -18,7 +18,7 @@ class BookStudent
   implements BookStudentAttributes
 {
   public id!: number;
-  public vocabulary_book_id!: number;
+  public book_id!: number;
   public student_id!: number;
   public read_chapters!: number;
   public created_at!: Date;
@@ -32,7 +32,7 @@ BookStudent.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    vocabulary_book_id: { type: DataTypes.INTEGER, allowNull: false },
+    book_id: { type: DataTypes.INTEGER, allowNull: false },
     student_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
