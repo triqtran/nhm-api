@@ -5,7 +5,7 @@ interface BookStudentAttributes {
   id: number;
   book_id: number;
   student_id: number;
-  read_chapters: number;
+  current_chapter: number;
   created_at: Date;
   updated_at?: Date;
 }
@@ -20,7 +20,7 @@ class BookStudent
   public id!: number;
   public book_id!: number;
   public student_id!: number;
-  public read_chapters!: number;
+  public current_chapter!: number;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -37,7 +37,7 @@ BookStudent.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    read_chapters: {
+    current_chapter: {
       type: DataTypes.TINYINT,
       allowNull: false,
       defaultValue: 0,
