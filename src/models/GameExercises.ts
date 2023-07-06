@@ -57,7 +57,7 @@ GameExercises.init(
     description: { type: DataTypes.TEXT, allowNull: false },
     how_to_play: { type: DataTypes.STRING, allowNull: true },
     intro: { type: DataTypes.STRING, allowNull: true },
-    course_id: { type: DataTypes.STRING, allowNull: false },
+    course_id: { type: DataTypes.INTEGER, allowNull: false },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },

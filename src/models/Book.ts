@@ -55,7 +55,7 @@ Book.init(
     description: { type: DataTypes.TEXT, allowNull: false },
     uploaded_by_id: { type: DataTypes.INTEGER, allowNull: true },
     uploaded_by_name: { type: DataTypes.STRING, allowNull: true },
-    course_id: { type: DataTypes.STRING, allowNull: false },
+    course_id: { type: DataTypes.INTEGER, allowNull: false },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },
