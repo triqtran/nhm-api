@@ -1,6 +1,7 @@
 import GameExercises from './GameExercises';
 import GameExerciseDetails from './GameExerciseDetails';
 import GameExerciseResults from './GameExerciseResults';
+import GameExerciseStudents from './GameExerciseStudents';
 import NHMAccountLogs from './NHMAccountLogs';
 import NHMAccounts from './NHMAccounts';
 import Notifications from './Notifications';
@@ -24,6 +25,7 @@ export default () =>
     GameExercises.sync({ alter: isAlter }),
     GameExerciseDetails.sync({ alter: isAlter }),
     GameExerciseResults.sync({ alter: isAlter }),
+    GameExerciseStudents.sync({ alter: isAlter }),
     NHMAccountLogs.sync({ alter: isAlter }),
     NHMAccounts.sync({ alter: isAlter }),
     Notifications.sync({ alter: isAlter }),
