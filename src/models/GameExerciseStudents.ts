@@ -33,7 +33,7 @@ GameExerciseStudents.init(
   {
     game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
     student_id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
-    level: { type: DataTypes.STRING, allowNull: true },
+    level: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
     total_correct_answers: { type: DataTypes.INTEGER },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },

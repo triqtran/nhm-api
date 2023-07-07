@@ -19,6 +19,8 @@ type ListGameExerciesResponse = {
   count: number;
 };
 
+type GameExerciseCustom = GameExerciseStudents & { game_info: GameExercises };
+
 type GameExercisesWithDetail = GameExercises & {
   details?: GameExerciseDetails[];
 };
@@ -36,7 +38,10 @@ interface IGameExercisesDAL {
   updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises>;
   list(where: any): Promise<ListGameExerciesResponse>;
   getById(id: number): Promise<GameExercises>;
-  getByStudentId(student_id: number, is_trial?: boolean): Promise<GameExerciseStudents>
+  getByStudentId(
+    student_id: number,
+    is_trial?: boolean
+  ): Promise<GameExerciseCustom[]>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -144,27 +149,36 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('getById'));
   }
 
-  getByStudentId(student_id: number, is_trial = false): Promise<GameExerciseStudents> {
-
+  getByStudentId(
+    student_id: number,
+    is_trial = false
+  ): Promise<GameExerciseCustom[]> {
     GameExerciseStudents.belongsTo(GameExercises, {
       as: 'game_info',
       foreignKey: 'game_exercise_id',
       targetKey: 'id',
     });
 
-     return GameExerciseStudents.findOne({
+    return GameExerciseStudents.findAll({
       where: { student_id },
       include: [
         {
           model: GameExercises,
           as: 'game_info',
           required: true,
-          where: { is_trial }
+          where: { is_trial },
+          attributes: [
+            'name',
+            'total_level',
+            'background_image',
+            'stars_to_win',
+          ],
         },
       ],
     })
       .then(res => {
-        if (res?.dataValues) return res.dataValues as GameExerciseStudents;
+        if (res?.length > 0)
+          return res.map(item => item.dataValues) as GameExerciseCustom[];
         return throwNewError('Can not find game exercise!');
       })
       .catch(throwError('getByStudentId'));
