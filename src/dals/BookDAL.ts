@@ -1,5 +1,6 @@
 import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
+import { Op } from 'sequelize';
 
 const throwError =
   (funcName: string) =>
@@ -26,6 +27,7 @@ interface IBookDAL {
     student_id: number,
     data: Partial<BookStudent>
   ): Promise<boolean>;
+  getByStudentId(student_id: number, is_trial?: boolean): Promise<BookStudent>;
 }
 
 class BookDAL implements IBookDAL {
@@ -109,6 +111,29 @@ class BookDAL implements IBookDAL {
         }).then(() => true);
       })
       .catch(throwError('upsertBookStudent'));
+  }
+
+  getByStudentId(student_id: number, is_trial = false): Promise<BookStudent> {
+    BookStudent.belongsTo(Book, {
+      as: 'book_info',
+      foreignKey: 'book_id',
+      targetKey: 'id',
+    });
+
+    return BookStudent.findOne({
+      where: { student_id },
+      include: {
+        model: Book,
+        as: 'book_info',
+        required: true,
+        where: { is_trial },
+      },
+    })
+      .then(res => {
+        if (res?.dataValues) return res.dataValues as BookStudent;
+        return throwNewError('Can not find this book');
+      })
+      .catch(throwError('getByStudentId'));
   }
 }
 

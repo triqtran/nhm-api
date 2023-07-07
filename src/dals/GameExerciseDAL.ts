@@ -1,6 +1,7 @@
 import GameExercises from 'models/GameExercises';
 import GameExerciseDetails from 'models/GameExerciseDetails';
-import { WhereOptions } from 'sequelize';
+import { Op } from 'sequelize';
+import GameExerciseStudents from 'models/GameExerciseStudents';
 
 const throwError =
   (funcName: string) =>
@@ -35,6 +36,7 @@ interface IGameExercisesDAL {
   updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises>;
   list(where: any): Promise<ListGameExerciesResponse>;
   getById(id: number): Promise<GameExercises>;
+  getByStudentId(student_id: number, is_trial?: boolean): Promise<GameExerciseStudents>
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -140,6 +142,32 @@ class GameExercisesDAL implements IGameExercisesDAL {
         return throwNewError('Can not find game exercise!');
       })
       .catch(throwError('getById'));
+  }
+
+  getByStudentId(student_id: number, is_trial = false): Promise<GameExerciseStudents> {
+
+    GameExerciseStudents.belongsTo(GameExercises, {
+      as: 'game_info',
+      foreignKey: 'game_exercise_id',
+      targetKey: 'id',
+    });
+
+     return GameExerciseStudents.findOne({
+      where: { student_id },
+      include: [
+        {
+          model: GameExercises,
+          as: 'game_info',
+          required: true,
+          where: { is_trial }
+        },
+      ],
+    })
+      .then(res => {
+        if (res?.dataValues) return res.dataValues as GameExerciseStudents;
+        return throwNewError('Can not find game exercise!');
+      })
+      .catch(throwError('getByStudentId'));
   }
 }
 

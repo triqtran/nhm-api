@@ -30,7 +30,7 @@ interface INHMAccountsDAL {
 }
 
 class NHMAccountsDAL implements INHMAccountsDAL {
-  addNewAccount(data: NHMAccounts): Promise<NHMAccounts> {
+  addNewAccount(data: any): Promise<NHMAccounts> {
     return NHMAccounts.findOne({ where: { email: data.email } })
       .then(exist => {
         if (exist) return throwNewError('This account has already existed!');
