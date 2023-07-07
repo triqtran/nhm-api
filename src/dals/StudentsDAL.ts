@@ -1,6 +1,7 @@
 import { Paging } from '@tsenv';
 import Students from 'models/Students';
 import Campus from 'models/Campus';
+import StudentDevices from 'models/StudentDevices';
 
 const throwError =
   (funcName: string) =>
@@ -26,6 +27,10 @@ interface IStudentsDAL {
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
   getCampusList(): Promise<CampusListResponse>;
+  upsertStudentDeviceToken(
+    student_id: number,
+    device_token: string
+  ): Promise<StudentDevices>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -103,6 +108,26 @@ class StudentsDAL implements IStudentsDAL {
     return Campus.findAll()
       .then(resp => resp.map(item => item.dataValues) as CampusListResponse)
       .catch(throwError('getCampusList'));
+  }
+
+  upsertStudentDeviceToken(
+    id: number,
+    device_token: string
+  ): Promise<StudentDevices> {
+    return StudentDevices.findOne({
+      where: { id },
+    })
+      .then(res => {
+        if (res?.dataValues) return res.update({ device_token });
+        return StudentDevices.create({
+          student_id: id,
+          device_token,
+        }).then((created) => {
+           if (created?.dataValues) return created.dataValues as StudentDevices;
+           return throwNewError('Can not create student devices!');
+        });
+      })
+      .catch(throwError('updateStudentDeviceToken'));
   }
 }
 

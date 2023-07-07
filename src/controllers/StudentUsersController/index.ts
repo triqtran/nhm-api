@@ -50,7 +50,7 @@ class StudentUsersController implements IStudentControllers {
     res: Response<any, Record<string, any>>,
     next: NextFunction
   ): void {
-    const { user_name, password } = req.body;
+    const { user_name, password, token } = req.body;
     if (!user_name || !password) {
       return res.responseAppError(errors.MISSING_USER_NAME_OR_PASSWORD);
     }
