@@ -9,7 +9,7 @@ interface StudentDevicesAttributes {
   updated_at?: Date;
 }
 export interface IngredientInput
-  extends Optional<StudentDevicesAttributes, 'id' | 'updated_at'> {}
+  extends Optional<StudentDevicesAttributes, 'id' | 'updated_at' | 'created_at'> {}
 export interface IngredientOuput extends Required<StudentDevicesAttributes> {}
 
 class StudentDevices

@@ -26,7 +26,18 @@ interface IStudentBusiness {
 
 class StudentBusiness implements IStudentBusiness {
   signIn(data: SignInRequest): Promise<Students> {
-    return StudentsDAL.signInStudent(data.user_name, data.password);
+    return StudentsDAL.signInStudent(data.user_name, data.password)
+      .then(student => {
+        if (student && data.device_token)
+          return StudentsDAL.upsertStudentDeviceToken(
+            student.id,
+            data.device_token
+          ).then(() => student as Students);
+        return student as Students;
+      })
+      .catch(err => {
+        throw err;
+      });
   }
   register(data: RegisterRequest): Promise<Students> {
     return StudentsDAL.addNewStudent(data);
@@ -50,7 +61,9 @@ class StudentBusiness implements IStudentBusiness {
           },
         })
         .then(ayotreeResult => {
-          const splitCourse = ayotreeResult?.Course?.split('|')?.map(item => item.trim());
+          const splitCourse = ayotreeResult?.Course?.split('|')?.map(item =>
+            item.trim()
+          );
           let courseCode: string | undefined = '';
           if (splitCourse) courseCode = splitCourse.pop();
           if (courseCode && courseCode !== student.ayotree_course_code) {

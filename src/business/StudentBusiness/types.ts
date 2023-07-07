@@ -27,7 +27,8 @@ export type RegisterRequest = {
 export type SignInRequest = {
   email?: string;
   password: string;
-  user_name: string
+  user_name: string;
+  device_token: string;
 };
 
 export type UpdateRequest = {
