@@ -136,7 +136,9 @@ class BookDAL implements IBookDAL {
       .then(res => {
         if (res?.length > 0)
           return res.map(item => item.dataValues) as BookStudentCustom[];
-        console.error('BookDAL.listBookStudentByStudentId: Student has not read any book yet');
+        console.error(
+          'BookDAL.listBookStudentByStudentId: Student has not read any book yet'
+        );
         return [];
       })
       .catch(throwError('listBookStudentByStudentId'));
@@ -163,7 +165,10 @@ class BookDAL implements IBookDAL {
           ],
         },
       ],
-    }).then(result => result?.dataValues as BookStudentCustom);
+    }).then(result => {
+      if (!result?.dataValues) return null;
+      return result.dataValues as BookStudentCustom;
+    });
   }
 }
 
