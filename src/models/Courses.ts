@@ -6,7 +6,7 @@ interface CoursesAttributes {
   CourseCode: string;
   CourseTitle: string;
   SchedulingType: string;
-  LearningType: string;
+  LearningLevel: string;
   CourseCategories: string;
   StartDate: Date;
   EndDate: Date;
@@ -16,7 +16,7 @@ interface CoursesAttributes {
 }
 
 export interface IngredientInput
-  extends Optional<CoursesAttributes, 'updated_at'> {}
+  extends Optional<CoursesAttributes, 'updated_at' | 'created_at'> {}
 export interface IngredientOutput extends Required<CoursesAttributes> {}
 
 class Courses
@@ -27,7 +27,7 @@ class Courses
   public CourseCode!: string;
   public CourseTitle!: string;
   public SchedulingType!: string;
-  public LearningType!: string;
+  public LearningLevel!: string;
   public CourseCategories!: string;
   public StartDate!: Date;
   public EndDate!: Date;
@@ -51,7 +51,7 @@ Courses.init(
     SchedulingType: {
       type: DataTypes.STRING,
     },
-    LearningType: {
+    LearningLevel: {
       type: DataTypes.STRING,
     },
     CourseCategories: {

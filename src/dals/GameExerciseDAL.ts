@@ -206,10 +206,12 @@ class GameExercisesDAL implements IGameExercisesDAL {
           ],
         },
       ],
-    }).then(result => {
-      if (!result?.dataValues) return null;
-      return result?.dataValues as GameExerciseCustom;
-    });
+    })
+      .then(result => {
+        if (!result?.dataValues) return null;
+        return result?.dataValues as GameExerciseCustom;
+      })
+      .catch(throwError('getGameStudentLastest'));
   }
 }
 

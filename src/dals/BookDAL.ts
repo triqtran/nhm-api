@@ -165,10 +165,12 @@ class BookDAL implements IBookDAL {
           ],
         },
       ],
-    }).then(result => {
-      if (!result?.dataValues) return null;
-      return result.dataValues as BookStudentCustom;
-    });
+    })
+      .then(result => {
+        if (!result?.dataValues) return null;
+        return result.dataValues as BookStudentCustom;
+      })
+      .catch(throwError('getBookStudentLastest'));
   }
 }
 
