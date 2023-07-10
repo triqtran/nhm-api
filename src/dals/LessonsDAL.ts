@@ -13,21 +13,20 @@ const throwNewError = (err = 'Error not implemented.') => {
 };
 
 interface ILessonsDAL {
-  getUpcomingClass(course_code?: string): Promise<Lessons[]>;
+  getUpcomingClass(course_code?: string): Promise<Lessons | null>;
   upsert(data: any): Promise<Lessons>;
 }
 
 class LessonsDAL implements ILessonsDAL {
-  getUpcomingClass(course_code?: string): Promise<Lessons[]> {
+  getUpcomingClass(course_code?: string): Promise<Lessons | null> {
     if (!course_code) throwNewError('Not find course code');
-    return Lessons.findAll({
+    return Lessons.findOne({
       where: {
         CourseCode: course_code,
         LessonStart: {
           [Op.gt]: new Date(),
         },
       },
-      limit: 3,
       order: [['LessonStart', 'desc']],
     }).catch(throwError('getUpcomingClass'));
   }
