@@ -31,6 +31,7 @@ interface IStudentsDAL {
     student_id: number,
     device_token: string
   ): Promise<StudentDevices>;
+  removeStudentDeviceToken(student_id: number): Promise<Number>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -122,12 +123,22 @@ class StudentsDAL implements IStudentsDAL {
         return StudentDevices.create({
           student_id: id,
           device_token,
-        }).then((created) => {
-           if (created?.dataValues) return created.dataValues as StudentDevices;
-           return throwNewError('Can not create student devices!');
+        }).then(created => {
+          if (created?.dataValues) return created.dataValues as StudentDevices;
+          return throwNewError('Can not create student devices!');
         });
       })
       .catch(throwError('updateStudentDeviceToken'));
+  }
+
+  removeStudentDeviceToken(student_id: number): Promise<Number> {
+    return StudentDevices.destroy({
+      where: { student_id },
+    })
+      .then(resp => {
+        return resp;
+      })
+      .catch(throwError('removeStudentDeviceToken'));
   }
 }
 

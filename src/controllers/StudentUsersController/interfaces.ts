@@ -61,5 +61,5 @@ export default interface IStudentControllers {
     res: Response,
     next: NextFunction
   ) => void;
-  logout: (req: Request, res: Response) => void;
+  logout: (req: Request, res: Response, next: NextFunction) => void;
 }
