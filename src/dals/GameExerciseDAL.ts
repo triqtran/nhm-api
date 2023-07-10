@@ -3,6 +3,9 @@ import GameExerciseDetails from 'models/GameExerciseDetails';
 import { col, fn } from 'sequelize';
 import GameExerciseStudents from 'models/GameExerciseStudents';
 
+const logError = (funcName: string, err: string) =>
+  `GameExerciseDAL.${funcName}: ${err}`;
+
 const throwError =
   (funcName: string) =>
   (errMessage = 'Method not implemented.') => {
@@ -19,10 +22,15 @@ type ListGameExerciesResponse = {
   count: number;
 };
 
-type GameExerciseCustom = GameExerciseStudents & { game_info: GameExercises };
+type GameExerciseStudentsResponseIncludingGameExercises =
+  GameExerciseStudents & { game_info: GameExercises };
 
 type GameExercisesWithDetail = GameExercises & {
   details?: GameExerciseDetails[];
+};
+
+type GameExerciseResponseIncludingGameExerciseStudent = GameExercises & {
+  game_student: GameExerciseStudents[];
 };
 
 interface IGameExercisesDAL {
@@ -38,13 +46,16 @@ interface IGameExercisesDAL {
   updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises>;
   list(where: any): Promise<ListGameExerciesResponse>;
   getById(id: number): Promise<GameExercises>;
-  listBookStudentByStudentId(
+  listGameStudentByStudentId(
     student_id: number,
     is_trial?: boolean
-  ): Promise<GameExerciseCustom[]>;
+  ): Promise<GameExerciseStudentsResponseIncludingGameExercises[]>;
   getGameStudentLastest(
     student_id: number
   ): Promise<GameExerciseStudents | null>;
+  listGameWithoutPaging(
+    filters: any
+  ): Promise<GameExerciseResponseIncludingGameExerciseStudent[]>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -152,10 +163,10 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('getById'));
   }
 
-  listBookStudentByStudentId(
+  listGameStudentByStudentId(
     student_id: number,
     is_trial = false
-  ): Promise<GameExerciseCustom[]> {
+  ): Promise<GameExerciseStudentsResponseIncludingGameExercises[]> {
     return GameExerciseStudents.findAll({
       where: { student_id },
       attributes: [
@@ -174,17 +185,20 @@ class GameExercisesDAL implements IGameExercisesDAL {
     })
       .then(res => {
         if (res?.length > 0)
-          return res.map(item => item.dataValues) as GameExerciseCustom[];
-        console.error(
-          'GameExerciseDAL.listBookStudentByStudentId: Student has not played any game yet!'
+          return res.map(
+            item => item.dataValues
+          ) as GameExerciseStudentsResponseIncludingGameExercises[];
+        logError(
+          'listGameStudentByStudentId',
+          'Student has not played any game yet!'
         );
         return [];
       })
-      .catch(throwError('listBookStudentByStudentId'));
+      .catch(throwError('listGameStudentByStudentId'));
   }
   getGameStudentLastest(
     student_id: number
-  ): Promise<GameExerciseCustom | null> {
+  ): Promise<GameExerciseStudentsResponseIncludingGameExercises | null> {
     GameExerciseStudents.belongsTo(GameExercises, {
       as: 'game_info',
       foreignKey: 'game_exercise_id',
@@ -212,7 +226,34 @@ class GameExercisesDAL implements IGameExercisesDAL {
           ],
         },
       ],
-    }).then(result => result?.dataValues as GameExerciseCustom);
+    }).then(
+      result =>
+        result?.dataValues as GameExerciseStudentsResponseIncludingGameExercises
+    );
+  }
+  listGameWithoutPaging(
+    filters: any
+  ): Promise<GameExerciseResponseIncludingGameExerciseStudent[]> {
+    return GameExercises.findAll({
+      where: filters,
+      include: {
+        model: GameExerciseStudents,
+        as: 'game_student',
+        required: false,
+        order: [['updated_at', 'desc']],
+      },
+    })
+      .then(resp => {
+        if (resp.length <= 0) {
+          logError('listGameWithoutPaging', 'Not found any game');
+          return [];
+        }
+        return resp.map(
+          item =>
+            item.dataValues as GameExerciseResponseIncludingGameExerciseStudent
+        );
+      })
+      .catch(throwError('listGameWithoutPaging'));
   }
 }
 

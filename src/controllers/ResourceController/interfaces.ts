@@ -9,4 +9,6 @@ export interface ResourceParamsBody {}
 
 export default interface IResourceControllers {
   listContinue: (req: Request, res: Response, next: NextFunction) => void;
+  listEbook: (req: Request, res: Response, next: NextFunction) => void;
+  listGame: (req: Request, res: Response, next: NextFunction) => void;
 }

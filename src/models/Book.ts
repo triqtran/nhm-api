@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
+import BookStudent from './BookStudents';
 
 export type BookStatus = 'new' | 'released' | 'closed';
 

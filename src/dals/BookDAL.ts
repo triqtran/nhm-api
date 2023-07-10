@@ -1,6 +1,8 @@
 import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
-import { Op } from 'sequelize';
+
+const logError = (funcName: string, err: string) =>
+  `BookDAL.${funcName}: ${err}`;
 
 const throwError =
   (funcName: string) =>
@@ -18,7 +20,9 @@ type ListBookResponse = {
   count: number;
 };
 
-type BookStudentCustom = BookStudent & { book_info: Book };
+type BookStudentResponseIncludeBook = BookStudent & { book_info: Book };
+
+type BookResponseIncludeBookStudent = Book & { book_student: BookStudent };
 
 interface IBookDAL {
   create(data: Book): Promise<Book>;
@@ -32,9 +36,12 @@ interface IBookDAL {
   listBookStudentByStudentId(
     student_id: number,
     is_trial?: boolean
-  ): Promise<BookStudentCustom[]>;
+  ): Promise<BookStudentResponseIncludeBook[]>;
 
-  getBookStudentLastest(student_id: number): Promise<BookStudentCustom | null>;
+  getBookStudentLastest(
+    student_id: number
+  ): Promise<BookStudentResponseIncludeBook | null>;
+  listBookWithoutPaging(where: any): Promise<BookResponseIncludeBookStudent[]>;
 }
 
 class BookDAL implements IBookDAL {
@@ -123,7 +130,7 @@ class BookDAL implements IBookDAL {
   listBookStudentByStudentId(
     student_id: number,
     is_trial = false
-  ): Promise<BookStudentCustom[]> {
+  ): Promise<BookStudentResponseIncludeBook[]> {
     return BookStudent.findAll({
       where: { student_id },
       include: {
@@ -135,14 +142,21 @@ class BookDAL implements IBookDAL {
     })
       .then(res => {
         if (res?.length > 0)
-          return res.map(item => item.dataValues) as BookStudentCustom[];
-        console.error('BookDAL.listBookStudentByStudentId: Student has not read any book yet');
+          return res.map(
+            item => item.dataValues
+          ) as BookStudentResponseIncludeBook[];
+        logError(
+          'listBookStudentByStudentId',
+          'Student has not read any book yet'
+        );
         return [];
       })
       .catch(throwError('listBookStudentByStudentId'));
   }
 
-  getBookStudentLastest(student_id: number): Promise<BookStudentCustom | null> {
+  getBookStudentLastest(
+    student_id: number
+  ): Promise<BookStudentResponseIncludeBook | null> {
     return BookStudent.findOne({
       where: {
         student_id,
@@ -163,7 +177,30 @@ class BookDAL implements IBookDAL {
           ],
         },
       ],
-    }).then(result => result?.dataValues as BookStudentCustom);
+    }).then(result => result?.dataValues as BookStudentResponseIncludeBook);
+  }
+
+  listBookWithoutPaging(
+    filters: any
+  ): Promise<BookResponseIncludeBookStudent[]> {
+    return Book.findAll({
+      where: filters,
+      include: {
+        model: BookStudent,
+        as: 'book_student',
+        required: false,
+      },
+    })
+      .then(resp => {
+        if (resp.length <= 0) {
+          logError('listBookWithoutPaging', 'Not found any book');
+          return [];
+        }
+        return resp.map(
+          item => item.dataValues as BookResponseIncludeBookStudent
+        );
+      })
+      .catch(throwError('listBookWithoutPaging'));
   }
 }
 

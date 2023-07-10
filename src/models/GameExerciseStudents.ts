@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 import GameExercises from './GameExercises';
+import GameExerciseDetails from './GameExerciseDetails';
 
 interface GameExerciseStudentsAttributes {
   game_exercise_id: number;
@@ -53,6 +54,16 @@ GameExerciseStudents.belongsTo(GameExercises, {
   as: 'game_info',
   foreignKey: 'game_exercise_id',
   targetKey: 'id',
+});
+
+GameExercises.hasMany(GameExerciseStudents, {
+  as: 'game_student',
+  foreignKey: 'game_exercise_id'
+});
+
+GameExercises.hasMany(GameExerciseDetails, {
+  as: 'game_detail',
+  foreignKey: 'game_exercise_id',
 });
 
 export default GameExerciseStudents;

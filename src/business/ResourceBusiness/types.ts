@@ -1,3 +1,6 @@
+import Book from 'models/Book';
+import GameExercises from 'models/GameExercises';
+
 type ContinueResourceType = 'Game' | 'Book';
 
 export type ContinueListRequest = {
@@ -11,4 +14,11 @@ export type ContinueResourceResponse = {
   object_background_image: string;
   process: number;
   type: ContinueResourceType;
+};
+
+export type EbookResponse = Book & { current_chapter: number };
+
+export type GameExerciseResponse = GameExercises & {
+  current_level: string | number;
+  detail_levels: string[];
 };

@@ -62,4 +62,9 @@ BookStudent.belongsTo(Book, {
   targetKey: 'id',
 });
 
+Book.hasOne(BookStudent, {
+  as: 'book_student',
+  foreignKey: 'book_id',
+});
+
 export default BookStudent;
