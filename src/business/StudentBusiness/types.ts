@@ -1,5 +1,3 @@
-// disable temporary
-
 import Students, { StudentStatus } from 'models/Students';
 import { AyotreeStudent } from 'requests/ayotrees/AyotreeTypes';
 
@@ -48,4 +46,10 @@ export type UpdateRequest = {
 export type ListStudentsResponse = {
   data: Students[];
   count: number;
+};
+
+export type HomeResponse = {
+  book: any;
+  game_exercise: any;
+  lessons: any;
 };
