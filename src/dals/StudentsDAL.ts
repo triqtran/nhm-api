@@ -60,7 +60,7 @@ class StudentsDAL implements IStudentsDAL {
         'ayotree_course_code',
         'ayotree_course_title',
         'password',
-        'updated_at',
+        'level',
       ],
       returning: true,
     })
@@ -122,9 +122,9 @@ class StudentsDAL implements IStudentsDAL {
         return StudentDevices.create({
           student_id: id,
           device_token,
-        }).then((created) => {
-           if (created?.dataValues) return created.dataValues as StudentDevices;
-           return throwNewError('Can not create student devices!');
+        }).then(created => {
+          if (created?.dataValues) return created.dataValues as StudentDevices;
+          return throwNewError('Can not create student devices!');
         });
       })
       .catch(throwError('updateStudentDeviceToken'));

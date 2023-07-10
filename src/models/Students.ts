@@ -17,6 +17,7 @@ interface StudentsAttributes {
   ayotree_campus_id?: number;
   ayotree_course_title?: string;
   ayotree_course_code?: string;
+  level?: string;
   created_at: Date;
   updated_at?: Date;
 }
@@ -41,6 +42,7 @@ class Students
   public ayotree_campus_id?: number;
   public ayotree_course_code?: string;
   public ayotree_course_title?: string;
+  public level?: string;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -69,6 +71,7 @@ Students.init(
     ayotree_campus_id: { type: DataTypes.INTEGER },
     ayotree_course_code: { type: DataTypes.STRING },
     ayotree_course_title: { type: DataTypes.STRING },
+    level: { type: DataTypes.STRING },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },

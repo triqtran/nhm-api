@@ -8,8 +8,8 @@ interface CoursesAttributes {
   SchedulingType: string;
   LearningType: string;
   CourseCategories: string;
-  StartDate: string;
-  EndDate: string;
+  StartDate: Date;
+  EndDate: Date;
   CourseTimeZone: string;
   created_at: Date;
   updated_at?: Date;
@@ -29,8 +29,8 @@ class Courses
   public SchedulingType!: string;
   public LearningType!: string;
   public CourseCategories!: string;
-  public StartDate!: string;
-  public EndDate!: string;
+  public StartDate!: Date;
+  public EndDate!: Date;
   public CourseTimeZone!: string;
   public created_at!: Date;
   public updated_at?: Date;
@@ -58,10 +58,10 @@ Courses.init(
       type: DataTypes.STRING,
     },
     StartDate: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
     },
     EndDate: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
     },
     CourseTimeZone: {
       type: DataTypes.STRING,

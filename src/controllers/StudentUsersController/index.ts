@@ -157,6 +157,12 @@ class StudentUsersController implements IStudentControllers {
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
+
+  homeResource(req: Request, res: Response, next: NextFunction): void {
+    StudentBusiness.getHomeResource(req.userDecoded.id)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
 }
 
 export default new StudentUsersController();
