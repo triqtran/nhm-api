@@ -55,4 +55,6 @@ router.post('/signup', ctrl.signUpStudent as express.RequestHandler);
 
 router.post('/logout', authHandler, ctrl.logout as express.RequestHandler);
 
+router.get('/book', authHandler, ctrl.homeResource as express.RequestHandler);
+
 export default router;

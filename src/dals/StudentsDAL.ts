@@ -61,7 +61,7 @@ class StudentsDAL implements IStudentsDAL {
         'ayotree_course_code',
         'ayotree_course_title',
         'password',
-        'updated_at',
+        'level',
       ],
       returning: true,
     })

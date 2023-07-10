@@ -7,8 +7,8 @@ interface LessonsAttributes {
   CourseTitle: string;
   TeacherPIN: string;
   TeacherName: string;
-  LessonStart: string;
-  LessonEnd: string;
+  LessonStart: Date;
+  LessonEnd: Date;
   ClassRoomID: string;
   ClassRoomName: string;
   Comment?: string;
@@ -31,8 +31,8 @@ class Lessons
   public CourseTitle!: string;
   public TeacherPIN!: string;
   public TeacherName!: string;
-  public LessonStart!: string;
-  public LessonEnd!: string;
+  public LessonStart!: Date;
+  public LessonEnd!: Date;
   public ClassRoomID!: string;
   public ClassRoomName!: string;
   public Comment?: string;
@@ -61,10 +61,10 @@ Lessons.init(
       type: DataTypes.STRING,
     },
     LessonStart: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
     },
     LessonEnd: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
     },
     ClassRoomID: {
       type: DataTypes.STRING,

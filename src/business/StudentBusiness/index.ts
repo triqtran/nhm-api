@@ -23,6 +23,7 @@ interface IStudentBusiness {
   list: (paging: Paging) => Promise<ListStudentsResponse>;
   getById: (id: number) => Promise<Students>;
   logout: (student_id: number) => Promise<Number>;
+  getHomeResource: (id: number) => Promise<any>;
 }
 
 class StudentBusiness implements IStudentBusiness {
@@ -97,6 +98,10 @@ class StudentBusiness implements IStudentBusiness {
   }
   logout(student_id: number): Promise<Number> {
     return StudentsDAL.removeStudentDeviceToken(student_id);
+  }
+
+  getHomeResource(id: number): Promise<any> {
+    return StudentsDAL.getStudentById(id).then(student => {});
   }
 }
 

@@ -44,6 +44,8 @@ export default interface IStudentControllers {
     next: NextFunction
   ) => void;
 
+  homeResource: (req: Request, res: Response, next: NextFunction) => void;
+
   // from portal
   addNewStudent: (
     req: Request<any, StudentUserBodyReq>,
