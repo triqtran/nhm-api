@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
+import GameExercises from './GameExercises';
 
 interface GameExerciseStudentsAttributes {
   game_exercise_id: number;
@@ -47,5 +48,11 @@ GameExerciseStudents.init(
     tableName: 'game_exercise_students',
   }
 );
+
+GameExerciseStudents.belongsTo(GameExercises, {
+  as: 'game_info',
+  foreignKey: 'game_exercise_id',
+  targetKey: 'id',
+});
 
 export default GameExerciseStudents;

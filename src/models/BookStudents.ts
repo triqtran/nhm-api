@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
+import Book from './Book';
 
 interface BookStudentAttributes {
   id: number;
@@ -54,5 +55,11 @@ BookStudent.init(
     tableName: 'book_student',
   }
 );
+
+BookStudent.belongsTo(Book, {
+  as: 'book_info',
+  foreignKey: 'book_id',
+  targetKey: 'id',
+});
 
 export default BookStudent;

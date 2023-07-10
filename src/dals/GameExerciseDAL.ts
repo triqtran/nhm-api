@@ -156,12 +156,6 @@ class GameExercisesDAL implements IGameExercisesDAL {
     student_id: number,
     is_trial = false
   ): Promise<GameExerciseCustom[]> {
-    GameExerciseStudents.belongsTo(GameExercises, {
-      as: 'game_info',
-      foreignKey: 'game_exercise_id',
-      targetKey: 'id',
-    });
-
     return GameExerciseStudents.findAll({
       where: { student_id },
       include: [
@@ -189,12 +183,6 @@ class GameExercisesDAL implements IGameExercisesDAL {
   getGameStudentLastest(
     student_id: number
   ): Promise<GameExerciseCustom | null> {
-    GameExerciseStudents.belongsTo(GameExercises, {
-      as: 'game_info',
-      foreignKey: 'game_exercise_id',
-      targetKey: 'id',
-    });
-
     return GameExerciseStudents.findOne({
       where: {
         student_id,
