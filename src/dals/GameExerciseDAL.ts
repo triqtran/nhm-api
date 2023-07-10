@@ -104,7 +104,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
         'description',
         'intro',
         'total_level',
-        'course_id',
+        'level',
         'background_image',
         'is_trial',
       ],

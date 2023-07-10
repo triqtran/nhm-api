@@ -16,7 +16,7 @@ interface GameExercisesAttributes {
   // intro: "Review the Pin yin,Practice listening"
   intro: string;
   stars_to_win?: number;
-  course_id: number;
+  level: string;
   is_trial: boolean;
   created_at: Date;
   updated_at?: Date;
@@ -38,7 +38,7 @@ class GameExercises
   public description!: string;
   public how_to_play!: string;
   public intro!: string;
-  public course_id!: number;
+  public level!: string;
   public stars_to_win?: number;
   public is_trial!: boolean;
   public created_at!: Date;
@@ -64,7 +64,7 @@ GameExercises.init(
     description: { type: DataTypes.TEXT, allowNull: false },
     how_to_play: { type: DataTypes.STRING, allowNull: true },
     intro: { type: DataTypes.STRING, allowNull: true },
-    course_id: { type: DataTypes.INTEGER, allowNull: true },
+    level: { type: DataTypes.STRING(50), allowNull: true },
     stars_to_win: { type: DataTypes.TINYINT, defaultValue: 10 },
     is_trial: { type: TINYINT, allowNull: false, defaultValue: false },
     created_at: { type: DataTypes.DATE },

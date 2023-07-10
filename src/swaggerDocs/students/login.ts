@@ -20,6 +20,10 @@ export default {
                 type: 'string',
                 example: 'test123',
               },
+              device_token: {
+                type: 'string',
+                example: 'token123',
+              },
             },
           },
         },
