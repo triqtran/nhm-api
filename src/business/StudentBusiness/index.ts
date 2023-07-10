@@ -114,46 +114,44 @@ class StudentBusiness implements IStudentBusiness {
         const data = {
           book: null,
           game_exercise: null,
-          lessons: null,
+          lesson: null,
         } as HomeResponse;
         // book
         if (book.status === 'fulfilled' && book.value) {
           const bookData = book.value;
           data.book = {
-            book_id: bookData?.book_id,
-            name: bookData?.book_info.name,
-            url_file: bookData?.book_info.url_file,
-            background_image: bookData?.book_info.background_image,
-            level: bookData?.book_info.level,
-          };
-          if (bookData?.book_info.total_chapters)
-            data.book.process =
+            book_id: bookData.book_id,
+            name: bookData.book_info.name,
+            url_file: bookData.book_info.url_file,
+            background_image: bookData.book_info.background_image,
+            level: bookData.book_info.level,
+            process:
               (bookData.current_chapter / bookData.book_info.total_chapters) *
-              100;
+              100,
+          };
         }
 
         // game exercise
         if (game_exercise.status === 'fulfilled' && game_exercise.value) {
           const gameData = game_exercise.value;
           data.game_exercise = {
-            game_exercise_id: gameData?.game_exercise_id,
-            name: gameData?.game_info.name,
-            background_image: gameData?.game_info.background_image,
-            type: gameData?.game_info.type,
-            gameLevel: gameData?.game_info.level,
-            currentLevel: gameData?.level,
-          };
-          if (gameData?.game_info.stars_to_win)
-            data.game_exercise.process =
+            game_exercise_id: gameData.game_exercise_id,
+            name: gameData.game_info.name,
+            background_image: gameData.game_info.background_image,
+            type: gameData.game_info.type,
+            gameLevel: gameData.game_info.level,
+            currentLevel: gameData.level,
+            process:
               (gameData.total_correct_answers /
                 gameData.game_info.stars_to_win) *
-              100;
+              100,
+          };
         }
 
         // lessons
         if (lessons.status === 'fulfilled' && lessons.value) {
           const lessonData = lessons.value;
-          data.lessons = {
+          data.lesson = {
             course_title: lessonData.CourseTitle,
             course_code: lessonData.CourseCode,
             lesson_start: lessonData.LessonStart,

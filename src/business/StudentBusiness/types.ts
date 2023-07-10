@@ -51,5 +51,5 @@ export type ListStudentsResponse = {
 export type HomeResponse = {
   book: any;
   game_exercise: any;
-  lessons: any;
+  lesson: any;
 };
