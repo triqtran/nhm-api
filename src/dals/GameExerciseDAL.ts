@@ -42,6 +42,9 @@ interface IGameExercisesDAL {
     student_id: number,
     is_trial?: boolean
   ): Promise<GameExerciseCustom[]>;
+  getGameStudentLastest(
+    student_id: number
+  ): Promise<GameExerciseStudents | null>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -178,6 +181,38 @@ class GameExercisesDAL implements IGameExercisesDAL {
         return [];
       })
       .catch(throwError('listBookStudentByStudentId'));
+  }
+  getGameStudentLastest(
+    student_id: number
+  ): Promise<GameExerciseCustom | null> {
+    GameExerciseStudents.belongsTo(GameExercises, {
+      as: 'game_info',
+      foreignKey: 'game_exercise_id',
+      targetKey: 'id',
+    });
+
+    return GameExerciseStudents.findOne({
+      where: {
+        student_id,
+      },
+      order: [['updated_at', 'desc']],
+      include: [
+        {
+          model: GameExercises,
+          as: 'game_info',
+          required: true,
+          attributes: [
+            'id',
+            'name',
+            'background_image',
+            'total_level',
+            'type',
+            'stars_to_win',
+            'level',
+          ],
+        },
+      ],
+    }).then(result => result?.dataValues as GameExerciseCustom);
   }
 }
 

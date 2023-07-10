@@ -33,6 +33,8 @@ interface IBookDAL {
     student_id: number,
     is_trial?: boolean
   ): Promise<BookStudentCustom[]>;
+
+  getBookStudentLastest(student_id: number): Promise<BookStudentCustom | null>;
 }
 
 class BookDAL implements IBookDAL {
@@ -138,6 +140,30 @@ class BookDAL implements IBookDAL {
         return [];
       })
       .catch(throwError('listBookStudentByStudentId'));
+  }
+
+  getBookStudentLastest(student_id: number): Promise<BookStudentCustom | null> {
+    return BookStudent.findOne({
+      where: {
+        student_id,
+      },
+      order: [['updated_at', 'desc']],
+      include: [
+        {
+          model: Book,
+          as: 'book_info',
+          required: true,
+          attributes: [
+            'id',
+            'name',
+            'url_file',
+            'total_chapters',
+            'background_image',
+            'level',
+          ],
+        },
+      ],
+    }).then(result => result?.dataValues as BookStudentCustom);
   }
 }
 

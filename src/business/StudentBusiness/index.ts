@@ -7,10 +7,14 @@ import {
   OwnerProfileResponse,
   UpdateRequest,
   ListStudentsResponse,
+  HomeResponse,
 } from './types';
 import Students from 'models/Students';
 import AyotreeServices from 'requests/ayotrees/AyotreeServices';
 import { Paging } from '@tsenv';
+import BookDAL from 'dals/BookDAL';
+import GameExerciseDAL from 'dals/GameExerciseDAL';
+import LessonsDAL from 'dals/LessonsDAL';
 
 interface IStudentBusiness {
   // student owner
@@ -22,7 +26,7 @@ interface IStudentBusiness {
   update: (id: number, data: UpdateRequest) => Promise<Students>;
   list: (paging: Paging) => Promise<ListStudentsResponse>;
   getById: (id: number) => Promise<Students>;
-  logout: (student_id: number) => Promise<Number>;
+  logout: (student_id: number) => Promise<number>;
   getHomeResource: (id: number) => Promise<any>;
 }
 
@@ -96,12 +100,29 @@ class StudentBusiness implements IStudentBusiness {
   getById(id: number): Promise<Students> {
     return StudentsDAL.getStudentById(id);
   }
-  logout(student_id: number): Promise<Number> {
+  logout(student_id: number): Promise<number> {
     return StudentsDAL.removeStudentDeviceToken(student_id);
   }
 
-  getHomeResource(id: number): Promise<any> {
-    return StudentsDAL.getStudentById(id).then(student => {});
+  getHomeResource(id: number): Promise<HomeResponse> {
+    return StudentsDAL.getStudentById(id).then(student => {
+      return Promise.allSettled([
+        BookDAL.getBookStudentLastest(id),
+        GameExerciseDAL.getGameStudentLastest(id),
+        LessonsDAL.getUpcomingClass(student.ayotree_course_code),
+      ]).then(([book, game_exercise, lessons]) => {
+        const data = {
+          book: null,
+          game_exercise: null,
+          lessons: null,
+        } as HomeResponse;
+        if (book.status === 'fulfilled') data.book = book.value;
+        if (game_exercise.status === 'fulfilled')
+          data.game_exercise = game_exercise.value;
+        if (lessons.status === 'fulfilled') data.lessons = lessons.value;
+        return data;
+      });
+    });
   }
 }
 

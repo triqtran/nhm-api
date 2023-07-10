@@ -31,7 +31,7 @@ interface IStudentsDAL {
     student_id: number,
     device_token: string
   ): Promise<StudentDevices>;
-  removeStudentDeviceToken(student_id: number): Promise<Number>;
+  removeStudentDeviceToken(student_id: number): Promise<number>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -131,7 +131,7 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('updateStudentDeviceToken'));
   }
 
-  removeStudentDeviceToken(student_id: number): Promise<Number> {
+  removeStudentDeviceToken(student_id: number): Promise<number> {
     return StudentDevices.destroy({
       where: { student_id },
     })
