@@ -39,7 +39,7 @@ class GameExercises
   public how_to_play!: string;
   public intro!: string;
   public level!: string;
-  public stars_to_win?: number;
+  public stars_to_win!: number;
   public is_trial!: boolean;
   public created_at!: Date;
   public updated_at?: Date;

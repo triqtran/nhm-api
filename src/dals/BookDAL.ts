@@ -29,7 +29,7 @@ interface IBookDAL {
     student_id: number,
     data: Partial<BookStudent>
   ): Promise<boolean>;
-  getByStudentId(
+  listBookStudentByStudentId(
     student_id: number,
     is_trial?: boolean
   ): Promise<BookStudentCustom[]>;
@@ -118,16 +118,10 @@ class BookDAL implements IBookDAL {
       .catch(throwError('upsertBookStudent'));
   }
 
-  getByStudentId(
+  listBookStudentByStudentId(
     student_id: number,
     is_trial = false
   ): Promise<BookStudentCustom[]> {
-    BookStudent.belongsTo(Book, {
-      as: 'book_info',
-      foreignKey: 'book_id',
-      targetKey: 'id',
-    });
-
     return BookStudent.findAll({
       where: { student_id },
       include: {
@@ -140,9 +134,10 @@ class BookDAL implements IBookDAL {
       .then(res => {
         if (res?.length > 0)
           return res.map(item => item.dataValues) as BookStudentCustom[];
-        return throwNewError('Can not find this book');
+        console.error('BookDAL.listBookStudentByStudentId: Student has not read any book yet');
+        return [];
       })
-      .catch(throwError('getByStudentId'));
+      .catch(throwError('listBookStudentByStudentId'));
   }
 }
 

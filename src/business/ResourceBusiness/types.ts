@@ -1,6 +1,3 @@
-import GameExercises from 'models/GameExercises';
-import Book from 'models/Book';
-
 type ContinueResourceType = 'Game' | 'Book';
 
 export type ContinueListRequest = {
@@ -8,8 +5,8 @@ export type ContinueListRequest = {
 };
 
 export type ContinueResourceResponse = {
-  object_id: number;
-  student_id: number;
+  object_id?: number;
+  student_id?: number;
   object_name: string;
   object_background_image: string;
   process: number;

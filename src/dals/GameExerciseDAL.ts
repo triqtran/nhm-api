@@ -1,6 +1,6 @@
 import GameExercises from 'models/GameExercises';
 import GameExerciseDetails from 'models/GameExerciseDetails';
-import { Op } from 'sequelize';
+import { col, fn } from 'sequelize';
 import GameExerciseStudents from 'models/GameExerciseStudents';
 
 const throwError =
@@ -38,7 +38,7 @@ interface IGameExercisesDAL {
   updateById(data: Partial<GameExercises>, id: number): Promise<GameExercises>;
   list(where: any): Promise<ListGameExerciesResponse>;
   getById(id: number): Promise<GameExercises>;
-  getByStudentId(
+  listBookStudentByStudentId(
     student_id: number,
     is_trial?: boolean
   ): Promise<GameExerciseCustom[]>;
@@ -149,39 +149,35 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('getById'));
   }
 
-  getByStudentId(
+  listBookStudentByStudentId(
     student_id: number,
     is_trial = false
   ): Promise<GameExerciseCustom[]> {
-    GameExerciseStudents.belongsTo(GameExercises, {
-      as: 'game_info',
-      foreignKey: 'game_exercise_id',
-      targetKey: 'id',
-    });
-
     return GameExerciseStudents.findAll({
       where: { student_id },
-      include: [
-        {
-          model: GameExercises,
-          as: 'game_info',
-          required: true,
-          where: { is_trial },
-          attributes: [
-            'name',
-            'total_level',
-            'background_image',
-            'stars_to_win',
-          ],
-        },
+      attributes: [
+        'game_exercise_id',
+        'student_id',
+        [fn('sum', col('total_correct_answers')), 'total_correct_answers'],
       ],
+      include: {
+        model: GameExercises,
+        as: 'game_info',
+        required: true,
+        where: { is_trial },
+        attributes: ['name', 'total_level', 'background_image', 'stars_to_win'],
+      },
+      group: 'game_exercise_id',
     })
       .then(res => {
         if (res?.length > 0)
           return res.map(item => item.dataValues) as GameExerciseCustom[];
-        return throwNewError('Can not find game exercise!');
+        console.error(
+          'GameExerciseDAL.listBookStudentByStudentId: Student has not played any game yet!'
+        );
+        return [];
       })
-      .catch(throwError('getByStudentId'));
+      .catch(throwError('listBookStudentByStudentId'));
   }
 }
 
