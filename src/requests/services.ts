@@ -16,6 +16,9 @@ export default class AxiosServices {
     });
     this.service.interceptors.request.use(
       config => {
+        console.log('---------------------------------------');
+        console.log('Calling request to Ayotree:', config.url);
+        console.log('---------------------------------------');
         config.data['token'] = this.token;
         return config;
       },

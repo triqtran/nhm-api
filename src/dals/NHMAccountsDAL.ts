@@ -1,6 +1,5 @@
 import { Paging } from '@tsenv';
 import NHMAccounts from 'models/NHMAccounts';
-import { WhereOptions } from 'sequelize';
 
 const throwError =
   (funcName: string) =>

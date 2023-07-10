@@ -199,12 +199,6 @@ class GameExercisesDAL implements IGameExercisesDAL {
   getGameStudentLastest(
     student_id: number
   ): Promise<GameExerciseStudentsResponseIncludingGameExercises | null> {
-    GameExerciseStudents.belongsTo(GameExercises, {
-      as: 'game_info',
-      foreignKey: 'game_exercise_id',
-      targetKey: 'id',
-    });
-
     return GameExerciseStudents.findOne({
       where: {
         student_id,
@@ -226,11 +220,14 @@ class GameExercisesDAL implements IGameExercisesDAL {
           ],
         },
       ],
-    }).then(
-      result =>
-        result?.dataValues as GameExerciseStudentsResponseIncludingGameExercises
-    );
+    })
+      .then(result => {
+        if (!result?.dataValues) return null;
+        return result?.dataValues as GameExerciseStudentsResponseIncludingGameExercises;
+      })
+      .catch(throwError('getGameStudentLastest'));
   }
+
   listGameWithoutPaging(
     filters: any
   ): Promise<GameExerciseResponseIncludingGameExerciseStudent[]> {

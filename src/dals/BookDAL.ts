@@ -177,9 +177,13 @@ class BookDAL implements IBookDAL {
           ],
         },
       ],
-    }).then(result => result?.dataValues as BookStudentResponseIncludeBook);
+    })
+      .then(result => {
+        if (!result?.dataValues) return null;
+        return result.dataValues as BookStudentResponseIncludeBook;
+      })
+      .catch(throwError('getBookStudentLastest'));
   }
-
   listBookWithoutPaging(
     filters: any
   ): Promise<BookResponseIncludeBookStudent[]> {

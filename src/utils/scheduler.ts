@@ -2,6 +2,10 @@ import cron, { ScheduleOptions } from 'node-cron';
 import StudentsDAL from 'dals/StudentsDAL';
 import AyotreeServices from 'requests/ayotrees/AyotreeServices';
 import config from '@config';
+import CoursesDAL from 'dals/CoursesDAL';
+import Courses from 'models/Courses';
+import Lessons from 'models/Lessons';
+import LessonsDAL from 'dals/LessonsDAL';
 
 const scheduleOptions: ScheduleOptions = {
   scheduled: false,
@@ -31,9 +35,15 @@ const scheduleUpdateCourseAndLesionAction = async () => {
           .then(async courses => {
             // TODO: Update Courses into database
             //
-            //
+            const upsertCoursesTxs: Promise<Courses>[] = [];
 
-            const lessonsTxs = [] as Promise<void>[];
+            courses.forEach(course => {
+              upsertCoursesTxs.push(CoursesDAL.upsert(course));
+            });
+
+            await Promise.allSettled(upsertCoursesTxs);
+
+            const lessonsTxs: Promise<void>[] = [];
             courses.forEach(course => {
               lessonsTxs.push(
                 ayotreeService
@@ -50,10 +60,15 @@ const scheduleUpdateCourseAndLesionAction = async () => {
                       },
                     },
                   })
-                  .then(lessons => {
+                  .then(async lessons => {
                     // TODO: Update Lessons into database
                     //
-                    //
+                    const upsertLessonsTxs: Promise<Lessons>[] = [];
+                    lessons.forEach(lesson => {
+                      upsertLessonsTxs.push(LessonsDAL.upsert(lesson));
+                    });
+
+                    await Promise.allSettled(upsertLessonsTxs);
                   })
               );
             });
