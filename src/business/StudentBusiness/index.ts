@@ -22,6 +22,7 @@ interface IStudentBusiness {
   update: (id: number, data: UpdateRequest) => Promise<Students>;
   list: (paging: Paging) => Promise<ListStudentsResponse>;
   getById: (id: number) => Promise<Students>;
+  logout: (student_id: number) => Promise<any>;
 }
 
 class StudentBusiness implements IStudentBusiness {
@@ -93,6 +94,9 @@ class StudentBusiness implements IStudentBusiness {
   }
   getById(id: number): Promise<Students> {
     return StudentsDAL.getStudentById(id);
+  }
+  logout(student_id: number): Promise<any> {
+    return Promise.resolve(true);
   }
 }
 

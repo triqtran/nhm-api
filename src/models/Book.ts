@@ -13,7 +13,7 @@ interface BookAttributes {
   description: string;
   short_description: string;
   total_chapters: number;
-  course_id: number;
+  level: string;
   background_image: string;
   is_trial: boolean;
   created_at: Date;
@@ -38,7 +38,7 @@ class Book
   public uploaded_by_name!: string;
   public background_image!: string;
   public is_trial!: boolean;
-  public course_id!: number;
+  public level!: string;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -68,7 +68,7 @@ Book.init(
       allowNull: false,
       defaultValue: false,
     },
-    course_id: { type: DataTypes.INTEGER, allowNull: false },
+    level: { type: DataTypes.STRING(50), allowNull: false },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },

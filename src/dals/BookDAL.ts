@@ -52,7 +52,7 @@ class BookDAL implements IBookDAL {
       fields: [
         'name',
         'total_chapters',
-        'course_id',
+        'level',
         'description',
         'is_trial',
         'short_description',

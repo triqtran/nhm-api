@@ -8,6 +8,8 @@ import { ErrorStruct } from '@tsenv';
 import jwtResponse from 'middlewares/jwtResponse';
 import { StudentBusiness } from 'business';
 import { RegisterRequest } from 'business/StudentBusiness/types';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 
 const errors = {
   STUDENT_USER_IS_DISABLED: {
@@ -157,6 +159,12 @@ class StudentUsersController implements IStudentControllers {
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
+
+  logout(req: Request, res: Response): void {
+    StudentBusiness.logout(req.userDecoded.id)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  };
 }
 
 export default new StudentUsersController();

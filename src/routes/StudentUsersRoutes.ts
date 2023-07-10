@@ -53,4 +53,6 @@ router.post('/login', ctrl.signInStudent as express.RequestHandler);
 
 router.post('/signup', ctrl.signUpStudent as express.RequestHandler);
 
+router.post('/logout', ctrl.signUpStudent as express.RequestHandler);
+
 export default router;
