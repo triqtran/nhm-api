@@ -1,4 +1,11 @@
-import { ContinueResourceResponse, EbookResponse, GameExerciseResponse } from './types';
+import {
+  ContinueResourceResponse,
+  EbookResponse,
+  GameExerciseResponse,
+  GetAllGameLevelResponse,
+  LevelsQuestionsResponse,
+  QuestionResponse,
+} from './types';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
 import BookDAL from 'dals/BookDAL';
 
@@ -6,6 +13,13 @@ interface IResourceBusiness {
   listContinue: (student_id: number) => Promise<ContinueResourceResponse[]>;
   listEbook: (level?: string) => Promise<EbookResponse[]>;
   listGame: (level?: string) => Promise<GameExerciseResponse[]>;
+  listLevelsOfGame: (
+    game_exercise_id: number
+  ) => Promise<GetAllGameLevelResponse>;
+  getQuestionsOfLevel: (
+    game_exercise_id: number,
+    level: string
+  ) => Promise<LevelsQuestionsResponse>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -21,7 +35,8 @@ class ResourceBusiness implements IResourceBusiness {
           return {
             object_name: item.game_info.name,
             object_background_image: item.game_info.background_image,
-            process: (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
+            process:
+              (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
             type: 'Game',
           } as ContinueResourceResponse;
         });
@@ -29,7 +44,8 @@ class ResourceBusiness implements IResourceBusiness {
           return {
             object_name: item?.book_info.name,
             object_background_image: item.book_info.background_image,
-            process: (item.current_chapter / item.book_info.total_chapters) * 100,
+            process:
+              (item.current_chapter / item.book_info.total_chapters) * 100,
             type: 'Book',
           } as ContinueResourceResponse;
         });
@@ -52,7 +68,7 @@ class ResourceBusiness implements IResourceBusiness {
               short_description: item.short_description,
               description: item.description,
               total_chapters: item.total_chapters,
-              current_chapter: item.book_student?.current_chapter || 0,
+              current_chapter: item.book_student?.current_chapter || null,
               url_file: item.url_file,
             } as EbookResponse)
         )
@@ -79,6 +95,29 @@ class ResourceBusiness implements IResourceBusiness {
             } as GameExerciseResponse)
         )
       )
+      .catch(err => {
+        throw err;
+      });
+  }
+
+  listLevelsOfGame(game_exercise_id: number): Promise<GetAllGameLevelResponse> {
+    return GameExerciseDAL.getAllLevelViaGameId(game_exercise_id);
+  }
+
+  getQuestionsOfLevel(
+    game_exercise_id: number,
+    level: string
+  ): Promise<LevelsQuestionsResponse> {
+    return Promise.all([
+      GameExerciseDAL.listQuestionsOfLevel(game_exercise_id, level),
+      GameExerciseDAL.getGameStudent(game_exercise_id, level),
+    ])
+      .then(([questions, gameStudent]) => {
+        return {
+          total_correct_answers: gameStudent?.total_correct_answers || null,
+          questions: questions,
+        } as LevelsQuestionsResponse;
+      })
       .catch(err => {
         throw err;
       });

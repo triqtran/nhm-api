@@ -18,7 +18,7 @@ interface GameExerciseDetailsAttributes {
   updated_at?: Date;
 }
 export interface IngredientInput
-  extends Optional<GameExerciseDetailsAttributes, 'id' | 'updated_at'> {}
+  extends Optional<GameExerciseDetailsAttributes, 'id' | 'updated_at' | 'created_at'> {}
 export interface IngredientOuput
   extends Required<GameExerciseDetailsAttributes> {}
 

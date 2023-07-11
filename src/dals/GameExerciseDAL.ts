@@ -1,7 +1,8 @@
 import GameExercises from 'models/GameExercises';
 import GameExerciseDetails from 'models/GameExerciseDetails';
-import { col, fn } from 'sequelize';
+import { col, fn, where } from 'sequelize';
 import GameExerciseStudents from 'models/GameExerciseStudents';
+import { GetAllGameLevelResponse } from 'business/ResourceBusiness/types';
 
 const logError = (funcName: string, err: string) =>
   `GameExerciseDAL.${funcName}: ${err}`;
@@ -23,7 +24,9 @@ type ListGameExerciesResponse = {
 };
 
 type GameExerciseStudentsResponseIncludingGameExercises =
-  GameExerciseStudents & { game_info: GameExercises };
+  GameExerciseStudents & {
+    game_info: GameExercises;
+  };
 
 type GameExercisesWithDetail = GameExercises & {
   details?: GameExerciseDetails[];
@@ -56,6 +59,17 @@ interface IGameExercisesDAL {
   listGameWithoutPaging(
     filters: any
   ): Promise<GameExerciseResponseIncludingGameExerciseStudent[]>;
+  getAllLevelViaGameId(
+    game_exercise_id: number
+  ): Promise<GetAllGameLevelResponse>;
+  listQuestionsOfLevel(
+    game_exercise_id: number,
+    level: string
+  ): Promise<GameExerciseDetails[]>;
+  getGameStudent(
+    game_exercise_id: number,
+    level: string
+  ): Promise<GameExerciseStudents>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -251,6 +265,48 @@ class GameExercisesDAL implements IGameExercisesDAL {
         );
       })
       .catch(throwError('listGameWithoutPaging'));
+  }
+
+  getAllLevelViaGameId(
+    game_exercise_id: number
+  ): Promise<GetAllGameLevelResponse> {
+    return GameExerciseDetails.findAll({
+      where: { game_exercise_id },
+      order: [['level', 'asc']],
+      group: ['level'],
+      attributes: ['level'],
+    })
+      .then(resp => {
+        return resp.map(item => item.level) as GetAllGameLevelResponse;
+      })
+      .catch(throwError('getAllLevelViaGameId'));
+  }
+
+  listQuestionsOfLevel(
+    game_exercise_id: number,
+    level: string
+  ): Promise<GameExerciseDetails[]> {
+    return GameExerciseDetails.findAll({
+      where: { game_exercise_id, level },
+      attributes: [
+        'question',
+        'audio_url',
+        'answers',
+        'answers_image',
+        'right_answer_index',
+      ],
+    })
+      .then(resp => resp?.map(item => item.dataValues as GameExerciseDetails))
+      .catch(throwError('listQuestionsOfLevel'));
+  }
+
+  getGameStudent(
+    game_exercise_id: number,
+    level: string
+  ): Promise<GameExerciseStudents> {
+    return GameExerciseStudents.findOne({ where: { game_exercise_id, level } })
+      .then(resp => resp?.dataValues as GameExerciseStudents)
+      .catch(throwError('getGameStudent'));
   }
 }
 

@@ -18,9 +18,22 @@ class ResourceController implements IResourceControllers {
       .catch(err => res.responseAppError(err));
   }
   listGame(req: Request, res: Response, next: NextFunction): void {
-     ResourceBusiness.listGame(req.userDecoded.level)
-       .then(result => res.responseSuccess(result))
-       .catch(err => res.responseAppError(err));
+    ResourceBusiness.listGame(req.userDecoded.level)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+  listLevelsOfGame(req: Request, res: Response, next: NextFunction): void {
+    ResourceBusiness.listLevelsOfGame(parseInt(req.params.id))
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+  listQuestionsOfLevel(req: Request, res: Response, next: NextFunction): void {
+    ResourceBusiness.getQuestionsOfLevel(
+      parseInt(req.params.id),
+      req.params.level
+    )
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 }
 
