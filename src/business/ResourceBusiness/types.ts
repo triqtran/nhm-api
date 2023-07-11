@@ -19,7 +19,7 @@ export type ContinueResourceResponse = {
   student_id?: number;
   object_name: string;
   object_background_image: string;
-  process: number;
+  process?: number;
   type: ContinueResourceType;
 };
 
