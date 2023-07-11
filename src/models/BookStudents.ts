@@ -3,7 +3,6 @@ import dbConnection from './dbConnection';
 import Book from './Book';
 
 interface BookStudentAttributes {
-  id: number;
   book_id: number;
   student_id: number;
   current_chapter: number;
@@ -11,14 +10,13 @@ interface BookStudentAttributes {
   updated_at?: Date;
 }
 export interface IngredientInput
-  extends Optional<BookStudentAttributes, 'id' | 'updated_at'> {}
+  extends Optional<BookStudentAttributes, 'created_at' | 'updated_at'> {}
 export interface IngredientOuput extends Required<BookStudentAttributes> {}
 
 class BookStudent
   extends Model<BookStudentAttributes, IngredientInput>
   implements BookStudentAttributes
 {
-  public id!: number;
   public book_id!: number;
   public student_id!: number;
   public current_chapter!: number;
@@ -28,15 +26,11 @@ class BookStudent
 
 BookStudent.init(
   {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    book_id: { type: DataTypes.INTEGER, allowNull: false },
+    book_id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
     student_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
     },
     current_chapter: {
       type: DataTypes.TINYINT,

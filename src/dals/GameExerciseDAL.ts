@@ -70,6 +70,7 @@ interface IGameExercisesDAL {
     game_exercise_id: number,
     level: string
   ): Promise<GameExerciseStudents>;
+  
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {

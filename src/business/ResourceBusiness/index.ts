@@ -4,9 +4,11 @@ import {
   GameExerciseResponse,
   GetAllGameLevelResponse,
   QuestionResponse,
+  UpsertBookStudentRequest,
 } from './types';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
 import BookDAL from 'dals/BookDAL';
+import BookStudent from 'models/BookStudents';
 
 interface IResourceBusiness {
   listContinue: (student_id: number) => Promise<ContinueResourceResponse[]>;
@@ -19,6 +21,7 @@ interface IResourceBusiness {
     game_exercise_id: number,
     level: string
   ) => Promise<QuestionResponse[]>;
+  upsertBookStudent: (data: UpsertBookStudentRequest) => Promise<boolean>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -79,22 +82,28 @@ class ResourceBusiness implements IResourceBusiness {
   listGame(level?: string): Promise<GameExerciseResponse[]> {
     return GameExerciseDAL.listGameWithoutPaging({ level })
       .then(games =>
-        games.map(
-          game =>
-            ({
-              background_image: game.background_image,
-              total_level: game.total_level,
-              name: game.name,
-              description: game.description,
-              how_to_play: game.how_to_play,
-              intro: game.intro,
-              current_level: game.game_student?.[0]?.level || null,
-              total_correct_answers:
-                game.game_student?.[0]?.total_correct_answers || null,
-              stars_to_win: game.stars_to_win,
-              type: game.type,
-            } as GameExerciseResponse)
-        )
+        games.map(game => {
+          let totalFinishExercise = 0;
+          game.game_student?.forEach(item => {
+            if (item.total_correct_answers === game.stars_to_win)
+              totalFinishExercise++;
+          });
+          return {
+            background_image: game.background_image,
+            total_level: game.total_level,
+            name: game.name,
+            description: game.description,
+            how_to_play: game.how_to_play,
+            intro: game.intro,
+            current_level: game.game_student?.[0]?.level || null,
+            total_correct_answers:
+              game.game_student?.[0]?.total_correct_answers || null,
+            stars_to_win: game.stars_to_win,
+            type: game.type,
+            total_levels_completed: totalFinishExercise,
+            is_finish: totalFinishExercise === game.total_level,
+          } as GameExerciseResponse;
+        })
       )
       .catch(err => {
         throw err;
@@ -110,6 +119,10 @@ class ResourceBusiness implements IResourceBusiness {
     level: string
   ): Promise<QuestionResponse[]> {
     return GameExerciseDAL.listQuestionsOfLevel(game_exercise_id, level);
+  }
+
+  upsertBookStudent(data: BookStudent): Promise<boolean> {
+    return BookDAL.upsertBookStudent(data);
   }
 }
 

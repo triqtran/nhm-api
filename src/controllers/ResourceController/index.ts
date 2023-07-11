@@ -35,6 +35,11 @@ class ResourceController implements IResourceControllers {
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
+  saveChapterOfBook(req: Request, res: Response, next: NextFunction): void {
+    ResourceBusiness.upsertBookStudent(req.body)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
 }
 
 export default new ResourceController();

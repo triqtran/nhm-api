@@ -29,10 +29,7 @@ interface IBookDAL {
   update(data: Partial<Book>, id: number): Promise<Book>;
   list(where: any): Promise<ListBookResponse>;
   getById(id: number): Promise<Book>;
-  upsertBookStudent(
-    student_id: number,
-    data: Partial<BookStudent>
-  ): Promise<boolean>;
+  upsertBookStudent(data: BookStudent): Promise<boolean>;
   listBookStudentByStudentId(
     student_id: number,
     is_trial?: boolean
@@ -99,31 +96,9 @@ class BookDAL implements IBookDAL {
       .catch(throwError('getById'));
   }
 
-  upsertBookStudent(
-    student_id: number,
-    data: Partial<BookStudent>
-  ): Promise<boolean> {
-    return BookStudent.findOne({
-      where: {
-        student_id,
-        book_id: data.book_id,
-      },
-    })
-      .then(existed => {
-        if (existed) {
-          return BookStudent.update(data, {
-            where: {
-              id: existed.id,
-            },
-            fields: ['current_chapter'],
-          }).then(() => true);
-        }
-        const createData = { ...data } as BookStudent;
-        return BookStudent.create({
-          ...createData,
-          student_id,
-        }).then(() => true);
-      })
+  upsertBookStudent(data: BookStudent): Promise<boolean> {
+    return BookStudent.upsert(data)
+      .then(() => true)
       .catch(throwError('upsertBookStudent'));
   }
 
