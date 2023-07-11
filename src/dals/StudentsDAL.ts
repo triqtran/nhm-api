@@ -2,6 +2,7 @@ import { Paging } from '@tsenv';
 import Students from 'models/Students';
 import Campus from 'models/Campus';
 import StudentDevices from 'models/StudentDevices';
+import Courses from 'models/Courses';
 
 const throwError =
   (funcName: string) =>
@@ -15,6 +16,8 @@ const throwNewError = (err = 'Error not implemented.') => {
 };
 
 type CampusListResponse = Campus[] | null;
+
+type StudentResponseIncludingCourse = Students & { course: Courses };
 
 export type ListStudentsResponse = {
   count: number;
@@ -32,6 +35,7 @@ interface IStudentsDAL {
     device_token: string
   ): Promise<StudentDevices>;
   removeStudentDeviceToken(student_id: number): Promise<number>;
+  getStudentViaIdIncludingCourse(student_id: number): Promise<StudentResponseIncludingCourse>
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -139,6 +143,22 @@ class StudentsDAL implements IStudentsDAL {
         return resp;
       })
       .catch(throwError('removeStudentDeviceToken'));
+  }
+
+  getStudentViaIdIncludingCourse(id: number): Promise<StudentResponseIncludingCourse> {
+     return Students.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['password'],
+       },
+       include: {
+         model: Courses,
+         as: 'course',
+         required: true
+      }
+    })
+      .then(res => (res?.dataValues || null) as StudentResponseIncludingCourse)
+      .catch(throwError('getStudentViaIdIncludingCourse'));
   }
 }
 

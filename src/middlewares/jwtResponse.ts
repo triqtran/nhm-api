@@ -89,9 +89,24 @@ class JwtResponse {
     };
     return authRole as RequestHandler<any, any>;
   }
+
+  getLearningLevel(req: Request, res: Response, next: NextFunction) {
+    return StudentsDAL.getStudentViaIdIncludingCourse(req.userDecoded.id)
+      .then(student => {
+        if (!student) {
+          res.responseAppError(
+            throwError('Student has not had any courses yet!')
+          );
+        }
+        req.userDecoded.level = student.course.LearningLevel;
+        next();
+      })
+      .catch((e: Error) => res.responseAppError(throwError(e.message)));
+  }
 }
 const jwtResponse = new JwtResponse();
 
 export const authHandler = jwtResponse.verify as RequestHandler<any, any>;
+export const levelHandler = jwtResponse.getLearningLevel as RequestHandler<any, any>;
 export const authRoleHanlder = jwtResponse.verifyRole;
 export default jwtResponse;
