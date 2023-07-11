@@ -2,16 +2,24 @@ import {
   ContinueResourceResponse,
   EbookResponse,
   GameExerciseResponse,
+  GetAllGameLevelResponse,
+  LevelsQuestionsResponse,
+  QuestionResponse,
 } from './types';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
-import StudentsDAL from 'dals/StudentsDAL';
 import BookDAL from 'dals/BookDAL';
-import GameExercises from 'models/GameExercises';
 
 interface IResourceBusiness {
   listContinue: (student_id: number) => Promise<ContinueResourceResponse[]>;
-  listEbook: (student_id: number) => Promise<EbookResponse[]>;
-  listGame: (student_id: number) => Promise<GameExerciseResponse[]>;
+  listEbook: (level?: string) => Promise<EbookResponse[]>;
+  listGame: (level?: string) => Promise<GameExerciseResponse[]>;
+  listLevelsOfGame: (
+    game_exercise_id: number
+  ) => Promise<GetAllGameLevelResponse>;
+  getQuestionsOfLevel: (
+    game_exercise_id: number,
+    level: string
+  ) => Promise<LevelsQuestionsResponse>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -49,9 +57,8 @@ class ResourceBusiness implements IResourceBusiness {
       });
   }
 
-  listEbook(student_id: number): Promise<EbookResponse[]> {
-    return StudentsDAL.getStudentById(student_id)
-      .then(student => BookDAL.listBookWithoutPaging({ level: student.level }))
+  listEbook(level?: string): Promise<EbookResponse[]> {
+    return BookDAL.listBookWithoutPaging({ level })
       .then(books =>
         books.map(
           item =>
@@ -61,7 +68,7 @@ class ResourceBusiness implements IResourceBusiness {
               short_description: item.short_description,
               description: item.description,
               total_chapters: item.total_chapters,
-              current_chapter: item.book_student?.current_chapter || 0,
+              current_chapter: item.book_student?.current_chapter || null,
               url_file: item.url_file,
             } as EbookResponse)
         )
@@ -70,11 +77,8 @@ class ResourceBusiness implements IResourceBusiness {
         throw err;
       });
   }
-  listGame(student_id: number): Promise<GameExerciseResponse[]> {
-    return StudentsDAL.getStudentById(student_id)
-      .then(student =>
-        GameExerciseDAL.listGameWithoutPaging({ level: student.level })
-      )
+  listGame(level?: string): Promise<GameExerciseResponse[]> {
+    return GameExerciseDAL.listGameWithoutPaging({ level })
       .then(games =>
         games.map(
           game =>
@@ -91,6 +95,29 @@ class ResourceBusiness implements IResourceBusiness {
             } as GameExerciseResponse)
         )
       )
+      .catch(err => {
+        throw err;
+      });
+  }
+
+  listLevelsOfGame(game_exercise_id: number): Promise<GetAllGameLevelResponse> {
+    return GameExerciseDAL.getAllLevelViaGameId(game_exercise_id);
+  }
+
+  getQuestionsOfLevel(
+    game_exercise_id: number,
+    level: string
+  ): Promise<LevelsQuestionsResponse> {
+    return Promise.all([
+      GameExerciseDAL.listQuestionsOfLevel(game_exercise_id, level),
+      GameExerciseDAL.getGameStudent(game_exercise_id, level),
+    ])
+      .then(([questions, gameStudent]) => {
+        return {
+          total_correct_answers: gameStudent?.total_correct_answers || null,
+          questions: questions,
+        } as LevelsQuestionsResponse;
+      })
       .catch(err => {
         throw err;
       });

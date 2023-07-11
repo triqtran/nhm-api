@@ -27,4 +27,16 @@ router.get(
   ctrl.listGame as express.RequestHandler
 );
 
+router.get(
+  '/game-exercises/:id/levels',
+  authHandler,
+  ctrl.listLevelsOfGame as express.RequestHandler
+);
+
+router.get(
+  '/game-exercises/:id/levels/:level',
+  authHandler,
+  ctrl.listQuestionsOfLevel as express.RequestHandler
+);
+
 export default router;

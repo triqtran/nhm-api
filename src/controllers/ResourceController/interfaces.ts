@@ -11,4 +11,10 @@ export default interface IResourceControllers {
   listContinue: (req: Request, res: Response, next: NextFunction) => void;
   listEbook: (req: Request, res: Response, next: NextFunction) => void;
   listGame: (req: Request, res: Response, next: NextFunction) => void;
+  listLevelsOfGame: (req: Request, res: Response, next: NextFunction) => void;
+  listQuestionsOfLevel: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void;
 }
