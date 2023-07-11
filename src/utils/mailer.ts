@@ -12,7 +12,11 @@ type MailOption = {
 };
 
 interface IMailer {
-  generatePassword(user_id: number): string;
+  generateConfirmCode(length?: number): string;
+  generateAndUpdateConfirmCode(
+    user_id: number,
+    lengthPassword?: number
+  ): Promise<string>;
   sendEmail(mailOption: MailOption): Promise<any>;
   getHtmlForgotPasswordContent(password: string): string;
   sendEmailForgotPassword(email: string): Promise<any>;
@@ -36,8 +40,31 @@ class Mailer implements IMailer {
     },
   } as SMTPTransport.Options);
 
-  generatePassword(user_id: number): string {
-    return '123456789';
+  generateConfirmCode(length = 10): string {
+    const chars =
+      '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const charsLength = chars.length;
+    let password = '';
+
+    for (let i = 0; i <= length; i++) {
+      const randomNumber = Math.floor(Math.random() * charsLength);
+      password += chars.charAt(randomNumber);
+    }
+
+    return password;
+  }
+
+  generateAndUpdateConfirmCode(
+    user_id: number,
+    lengthPassword = 10
+  ): Promise<string> {
+    const confirm_code = this.generateConfirmCode(lengthPassword);
+    return StudentsDAL.updateStudentById(
+      {
+        confirm_code,
+      },
+      user_id
+    ).then(() => confirm_code);
   }
 
   sendEmail(mailOption: MailOption): Promise<any> {
@@ -47,28 +74,30 @@ class Mailer implements IMailer {
           console.log('Error sending mail:', error);
           return reject(error);
         }
+        console.log('Send email successfully!');
         return resolve(info.response);
       });
     });
   }
 
   getHtmlForgotPasswordContent(password: string): string {
-    return `<div style="text-align: center; width: 100%; color: black;"><h1 style="color:#B86E5F;">Nihaoma Mandarin Learning Lab</h1><h3>Your new password is: </h3><div style="padding: 20px 30px;"><b style="font-size: 30px;">${password}</b></div><p>Please login and change your new password!</p></div>`;
+    return `<div style="text-align: center; width: 100%; color: black;"><h1 style="color:#B86E5F;">Nihaoma Mandarin Learning Lab</h1><h3>Your verified code is: </h3><div style="padding: 20px 30px;"><b style="font-size: 30px;">${password}</b></div><p>Do not share this code for anyone!</p></div>`;
   }
 
   sendEmailForgotPassword(mail: string): Promise<any> {
     return StudentsDAL.getStudentByMail(mail).then(student => {
       if (!student) throw 'Can not find account for this email!';
-      const password = this.generatePassword(student.id);
 
-      const mailOption = {
-        from: 'Nihaoma Mandarin Service',
-        to: `${student.email}`,
-        subject: '[Reset Password] - Nihaoma Mandarin Service',
-        html: this.getHtmlForgotPasswordContent(password),
-      } as MailOption;
+      return this.generateAndUpdateConfirmCode(student.id).then(code => {
+        const mailOption = {
+          from: 'Nihaoma Mandarin Service',
+          to: `${student.email}`,
+          subject: '[Reset Password] - Nihaoma Mandarin Service',
+          html: this.getHtmlForgotPasswordContent(code),
+        } as MailOption;
 
-      return this.sendEmail(mailOption);
+        return this.sendEmail(mailOption);
+      });
     });
   }
 }

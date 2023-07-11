@@ -30,10 +30,15 @@ interface IStudentsDAL {
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
   getCampusList(): Promise<CampusListResponse>;
-  upsertStudentDeviceToken(student_id: number, device_token: string): Promise<StudentDevices>;
+  upsertStudentDeviceToken(
+    student_id: number,
+    device_token: string
+  ): Promise<StudentDevices>;
   removeStudentDeviceToken(student_id: number): Promise<number>;
   getStudentByMail(email: string): Promise<Students>;
-  getStudentViaIdIncludingCourse(student_id: number): Promise<StudentResponseIncludingCourse>;
+  getStudentViaIdIncludingCourse(
+    student_id: number
+  ): Promise<StudentResponseIncludingCourse>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -64,6 +69,7 @@ class StudentsDAL implements IStudentsDAL {
         'ayotree_course_title',
         'password',
         'level',
+        'confirm_code',
       ],
       returning: true,
     })
@@ -113,7 +119,10 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('getCampusList'));
   }
 
-  upsertStudentDeviceToken(id: number, device_token: string): Promise<StudentDevices> {
+  upsertStudentDeviceToken(
+    id: number,
+    device_token: string
+  ): Promise<StudentDevices> {
     return StudentDevices.findOne({
       where: { id },
     })
@@ -151,7 +160,9 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('getStudentByMail'));
   }
 
-  getStudentViaIdIncludingCourse(id: number): Promise<StudentResponseIncludingCourse> {
+  getStudentViaIdIncludingCourse(
+    id: number
+  ): Promise<StudentResponseIncludingCourse> {
     return Students.findOne({
       where: { id },
       attributes: {
