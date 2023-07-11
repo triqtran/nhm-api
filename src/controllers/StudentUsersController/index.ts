@@ -169,6 +169,12 @@ class StudentUsersController implements IStudentControllers {
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
+
+  forgotPassword(req: Request, res: Response, next: NextFunction): void {
+    StudentBusiness.forgotPassword(req.body.email)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
 }
 
 export default new StudentUsersController();

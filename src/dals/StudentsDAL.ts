@@ -32,6 +32,7 @@ interface IStudentsDAL {
     device_token: string
   ): Promise<StudentDevices>;
   removeStudentDeviceToken(student_id: number): Promise<number>;
+  getStudentByMail(email: string): Promise<Students>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -139,6 +140,17 @@ class StudentsDAL implements IStudentsDAL {
         return resp;
       })
       .catch(throwError('removeStudentDeviceToken'));
+  }
+
+  getStudentByMail(email: string): Promise<Students> {
+    return Students.findOne({
+      where: { email },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
+      .then(res => (res?.dataValues || null) as Students)
+      .catch(throwError('getStudentByMail'));
   }
 }
 

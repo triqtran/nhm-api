@@ -15,6 +15,7 @@ import { Paging } from '@tsenv';
 import BookDAL from 'dals/BookDAL';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
 import LessonsDAL from 'dals/LessonsDAL';
+import mailer from 'utils/mailer';
 
 interface IStudentBusiness {
   // student owner
@@ -28,6 +29,7 @@ interface IStudentBusiness {
   getById: (id: number) => Promise<Students>;
   logout: (student_id: number) => Promise<number>;
   getHomeResource: (id: number) => Promise<any>;
+  forgotPassword: (email: string) => Promise<boolean>;
 }
 
 class StudentBusiness implements IStudentBusiness {
@@ -160,6 +162,10 @@ class StudentBusiness implements IStudentBusiness {
         return data;
       });
     });
+  }
+
+  forgotPassword(email: string): Promise<boolean> {
+    return mailer.sendEmailForgotPassword(email).then(() => true);
   }
 }
 
