@@ -1,5 +1,5 @@
 import config from '@config';
-import { S3 } from 'aws-sdk';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import path from 'path';
 
 export interface IUploadBusiness {
@@ -7,15 +7,22 @@ export interface IUploadBusiness {
 
   getNameUpload(folder?: string): string;
 
-  s3UploadFile(file: Express.Multer.File): Promise<S3.ManagedUpload.SendData>;
+  s3UploadFile(file: Express.Multer.File): Promise<string>;
 }
 
 class UploadBusiness implements IUploadBusiness {
-  s3 = new S3({
-    signatureVersion: 'v4',
+  // s3 = new S3Client({
+  //   signatureVersion: 'v4',
+  //   region: config.S3_AWS_DEFAULT_REGION,
+  //   accessKeyId: config.S3_ACCESS_KEY_ID,
+  //   secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+  // });
+  s3 = new S3Client({
     region: config.S3_AWS_DEFAULT_REGION,
-    accessKeyId: config.S3_ACCESS_KEY_ID,
-    secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+    credentials: {
+      accessKeyId: config.S3_ACCESS_KEY_ID,
+      secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+    },
   });
 
   guidGenerator(): string {
@@ -34,16 +41,17 @@ class UploadBusiness implements IUploadBusiness {
     return `${folder}/${dateForm}/${timeForm}_${this.guidGenerator()}`;
   }
 
-  s3UploadFile(file: Express.Multer.File): Promise<S3.ManagedUpload.SendData> {
+  s3UploadFile(file: Express.Multer.File): Promise<string> {
     const fileExtension = path.extname(file.originalname);
+    const Key = `${this.getNameUpload()}${fileExtension}`;
     const uploadParams = {
       Bucket: config.S3_IMAGE_STORAGE_NAME,
-      Key: `${this.getNameUpload()}${fileExtension}`,
+      Key,
       Body: file.buffer,
       ContentType: file.mimetype,
     };
 
-    return this.s3.upload(uploadParams).promise();
+    return this.s3.send(new PutObjectCommand(uploadParams)).then(() => Key);
   }
 }
 
