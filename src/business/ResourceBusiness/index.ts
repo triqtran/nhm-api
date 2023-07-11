@@ -38,13 +38,13 @@ class ResourceBusiness implements IResourceBusiness {
     ])
       .then(([gameExercises, books]) => {
         const wrapGameData = gameExercises.map(item => {
-          const correctAnswerToCompleteGame =
-            item.game_info.total_level * item.game_info.stars_to_win;
+          // const correctAnswerToCompleteGame =
+          //   item.game_info.total_level * item.game_info.stars_to_win;
           return {
             object_name: item.game_info.name,
             object_background_image: item.game_info.background_image,
-            process:
-              (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
+            // process:
+            //   (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
             type: 'Game',
           } as ContinueResourceResponse;
         });
@@ -52,8 +52,8 @@ class ResourceBusiness implements IResourceBusiness {
           return {
             object_name: item?.book_info.name,
             object_background_image: item.book_info.background_image,
-            process:
-              (item.current_chapter / item.book_info.total_chapters) * 100,
+            // process:
+            //   (item.current_chapter / item.book_info.total_chapters) * 100,
             type: 'Book',
           } as ContinueResourceResponse;
         });
