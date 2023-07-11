@@ -4,11 +4,14 @@ import {
   GameExerciseResponse,
   GetAllGameLevelResponse,
   QuestionResponse,
+  SaveGameExerciseResultRequest,
   UpsertBookStudentRequest,
 } from './types';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
 import BookDAL from 'dals/BookDAL';
 import BookStudent from 'models/BookStudents';
+import GameExerciseResults from 'models/GameExerciseResults';
+import GameExerciseStudents from 'models/GameExerciseStudents';
 
 interface IResourceBusiness {
   listContinue: (student_id: number) => Promise<ContinueResourceResponse[]>;
@@ -22,6 +25,9 @@ interface IResourceBusiness {
     level: string
   ) => Promise<QuestionResponse[]>;
   upsertBookStudent: (data: UpsertBookStudentRequest) => Promise<boolean>;
+  saveGameExerciseResult: (
+    data: SaveGameExerciseResultRequest
+  ) => Promise<boolean>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -123,6 +129,26 @@ class ResourceBusiness implements IResourceBusiness {
 
   upsertBookStudent(data: BookStudent): Promise<boolean> {
     return BookDAL.upsertBookStudent(data);
+  }
+
+  saveGameExerciseResult(data: GameExerciseResults): Promise<boolean> {
+    return GameExerciseDAL.createGameExerciseResult({
+      ...data,
+      is_correct: data.right_answer_index === data.student_answer_index,
+    } as GameExerciseResults)
+      .then(gameExerciseResult => {
+        if (gameExerciseResult.is_correct) {
+          return GameExerciseDAL.upsertGameExerciseStudent({
+            game_exercise_id: gameExerciseResult.game_exercise_id,
+            student_id: gameExerciseResult.student_id,
+            level: gameExerciseResult.level,
+          } as GameExerciseStudents).then(() => true);
+        }
+        return true;
+      })
+      .catch(err => {
+        throw err;
+      });
   }
 }
 

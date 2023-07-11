@@ -11,6 +11,7 @@ interface GameExerciseResultsAttributes {
   answers_image: string;
   // it means that: (Dog: 0), (Cat: 1), (Mouse: 2), (Duck: 3)
   right_answer_index: number;
+  audio_url?: string;
   level: string;
   student_answer_index: number;
   is_correct: boolean;
@@ -36,6 +37,7 @@ class GameExerciseResults
   public level!: string;
   public student_answer_index!: number;
   public is_correct!: boolean;
+  public audio_url?: string;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -53,6 +55,7 @@ GameExerciseResults.init(
     answers: { type: DataTypes.STRING, allowNull: true },
     answers_image: { type: DataTypes.TEXT, allowNull: true },
     right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
+    audio_url: { type: DataTypes.TEXT, allowNull: true },
     level: { type: DataTypes.STRING, allowNull: true },
     student_answer_index: { type: DataTypes.INTEGER },
     is_correct: { type: DataTypes.BOOLEAN },

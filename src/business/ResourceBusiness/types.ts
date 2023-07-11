@@ -1,11 +1,14 @@
 import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
 import GameExerciseDetails from 'models/GameExerciseDetails';
+import GameExerciseResults from 'models/GameExerciseResults';
 import GameExercises from 'models/GameExercises';
 
 type ContinueResourceType = 'Game' | 'Book';
 
 export type UpsertBookStudentRequest = BookStudent;
+
+export type SaveGameExerciseResultRequest = GameExerciseResults;
 
 export type ContinueListRequest = {
   student_id: number;

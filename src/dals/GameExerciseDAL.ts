@@ -3,6 +3,7 @@ import GameExerciseDetails from 'models/GameExerciseDetails';
 import { col, fn, where } from 'sequelize';
 import GameExerciseStudents from 'models/GameExerciseStudents';
 import { GetAllGameLevelResponse } from 'business/ResourceBusiness/types';
+import GameExerciseResults from 'models/GameExerciseResults';
 
 const logError = (funcName: string, err: string) =>
   `GameExerciseDAL.${funcName}: ${err}`;
@@ -70,7 +71,10 @@ interface IGameExercisesDAL {
     game_exercise_id: number,
     level: string
   ): Promise<GameExerciseStudents>;
-  
+  upsertGameExerciseStudent(data: GameExerciseStudents): Promise<boolean>;
+  createGameExerciseResult(
+    data: GameExerciseResults
+  ): Promise<GameExerciseResults>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -308,6 +312,35 @@ class GameExercisesDAL implements IGameExercisesDAL {
     return GameExerciseStudents.findOne({ where: { game_exercise_id, level } })
       .then(resp => resp?.dataValues as GameExerciseStudents)
       .catch(throwError('getGameStudent'));
+  }
+
+  upsertGameExerciseStudent(data: GameExerciseStudents): Promise<boolean> {
+    return GameExerciseStudents.findOne({
+      where: {
+        game_exercise_id: data.game_exercise_id,
+        student_id: data.student_id,
+        level: data.level,
+      },
+    })
+      .then(gameExerciseStudent => {
+        if (!gameExerciseStudent)
+          return GameExerciseStudents.create({
+            ...data,
+            total_correct_answers: 1,
+          });
+        return gameExerciseStudent.update({
+          total_correct_answers: gameExerciseStudent.total_correct_answers + 1,
+        });
+      })
+      .then(() => true)
+      .catch(throwError('upsertGameExerciseStudent'));
+  }
+  createGameExerciseResult(
+    data: GameExerciseResults
+  ): Promise<GameExerciseResults> {
+    return GameExerciseResults.create(data)
+      .then(created => created.dataValues as GameExerciseResults)
+      .catch(throwError('upsertGameExerciseStudent'));
   }
 }
 

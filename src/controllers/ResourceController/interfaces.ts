@@ -17,9 +17,6 @@ export default interface IResourceControllers {
     res: Response,
     next: NextFunction
   ) => void;
-  saveChapterOfBook: (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => void;
+  saveChapterOfBook: (req: Request, res: Response, next: NextFunction) => void;
+  saveGameExerciseResult: (req: Request, res: Response, next: NextFunction) => void;
 }

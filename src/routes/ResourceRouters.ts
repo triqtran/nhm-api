@@ -39,4 +39,16 @@ router.get(
   ctrl.listQuestionsOfLevel as express.RequestHandler
 );
 
+router.post(
+  '/ebooks/student',
+  authHandler,
+  ctrl.saveChapterOfBook as express.RequestHandler
+);
+
+router.post(
+  '/game-exercises/student',
+  authHandler,
+  ctrl.saveGameExerciseResult as express.RequestHandler
+);
+
 export default router;
