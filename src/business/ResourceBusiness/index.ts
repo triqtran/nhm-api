@@ -1,17 +1,11 @@
-import {
-  ContinueResourceResponse,
-  EbookResponse,
-  GameExerciseResponse,
-} from './types';
+import { ContinueResourceResponse, EbookResponse, GameExerciseResponse } from './types';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
-import StudentsDAL from 'dals/StudentsDAL';
 import BookDAL from 'dals/BookDAL';
-import GameExercises from 'models/GameExercises';
 
 interface IResourceBusiness {
   listContinue: (student_id: number) => Promise<ContinueResourceResponse[]>;
-  listEbook: (student_id: number) => Promise<EbookResponse[]>;
-  listGame: (student_id: number) => Promise<GameExerciseResponse[]>;
+  listEbook: (level?: string) => Promise<EbookResponse[]>;
+  listGame: (level?: string) => Promise<GameExerciseResponse[]>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -27,8 +21,7 @@ class ResourceBusiness implements IResourceBusiness {
           return {
             object_name: item.game_info.name,
             object_background_image: item.game_info.background_image,
-            process:
-              (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
+            process: (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
             type: 'Game',
           } as ContinueResourceResponse;
         });
@@ -36,8 +29,7 @@ class ResourceBusiness implements IResourceBusiness {
           return {
             object_name: item?.book_info.name,
             object_background_image: item.book_info.background_image,
-            process:
-              (item.current_chapter / item.book_info.total_chapters) * 100,
+            process: (item.current_chapter / item.book_info.total_chapters) * 100,
             type: 'Book',
           } as ContinueResourceResponse;
         });
@@ -49,9 +41,8 @@ class ResourceBusiness implements IResourceBusiness {
       });
   }
 
-  listEbook(student_id: number): Promise<EbookResponse[]> {
-    return StudentsDAL.getStudentById(student_id)
-      .then(student => BookDAL.listBookWithoutPaging({ level: student.level }))
+  listEbook(level?: string): Promise<EbookResponse[]> {
+    return BookDAL.listBookWithoutPaging({ level })
       .then(books =>
         books.map(
           item =>
@@ -70,11 +61,8 @@ class ResourceBusiness implements IResourceBusiness {
         throw err;
       });
   }
-  listGame(student_id: number): Promise<GameExerciseResponse[]> {
-    return StudentsDAL.getStudentById(student_id)
-      .then(student =>
-        GameExerciseDAL.listGameWithoutPaging({ level: student.level })
-      )
+  listGame(level?: string): Promise<GameExerciseResponse[]> {
+    return GameExerciseDAL.listGameWithoutPaging({ level })
       .then(games =>
         games.map(
           game =>
