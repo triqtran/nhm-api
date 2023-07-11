@@ -4,26 +4,27 @@ import { AyotreeStudent } from 'requests/ayotrees/AyotreeTypes';
 /* eslint-disable @typescript-eslint/ban-types */
 export type OwnerProfileRequest = {};
 
-export type OwnerProfileResponse = Students & {
-  ayotree_profile?: AyotreeStudent | null;
-  learning_journey: {
-    latest_book: {
-      id: number;
-      title: string;
-      image: string;
-    } | null;
-    latest_exercise: {
-      id: number;
-      title: string;
-      image: string;
-    } | null;
-    short_schedule?: {
-      date: string;
-      time: string;
-      course_title: string;
-    } | null;
-  };
-};
+export type OwnerProfileResponse =
+  | Students & {
+      ayotree_profile?: AyotreeStudent | null;
+      learning_journey: {
+        latest_book: {
+          id: number;
+          title: string;
+          image: string;
+        } | null;
+        latest_exercise: {
+          id: number;
+          title: string;
+          image: string;
+        } | null;
+        short_schedule?: {
+          date: string;
+          time: string;
+          course_title: string;
+        } | null;
+      };
+    };
 
 export type OwnerScheduleRequest = {};
 
@@ -63,4 +64,10 @@ export type UpdateRequest = {
 export type ListStudentsResponse = {
   data: Students[];
   count: number;
+};
+
+export type ConfirmPasswordRequest = {
+  email: string;
+  confirm_code: string;
+  password: string;
 };

@@ -106,7 +106,7 @@ class StudentsDAL implements IStudentsDAL {
     return Students.findOne({
       where: { user_name, password },
       attributes: {
-        exclude: ['password'],
+        exclude: ['password', 'confirm_code'],
       },
     })
       .then(res => (res?.dataValues || null) as Students)
