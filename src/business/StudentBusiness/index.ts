@@ -19,6 +19,7 @@ import helpers from 'utils/helpers';
 
 interface IStudentBusiness {
   // student owner
+  getHomeScreenData: (student: Students) => Promise<OwnerProfileResponse>;
   signIn: (data: SignInRequest) => Promise<Students>;
   register: (data: RegisterRequest) => Promise<Students>;
   getProfile: (id: number) => Promise<OwnerProfileResponse>;
@@ -32,15 +33,102 @@ interface IStudentBusiness {
 }
 
 class StudentBusiness implements IStudentBusiness {
-  signIn(data: SignInRequest): Promise<Students> {
+  getHomeScreenData(student: Students): Promise<OwnerProfileResponse> {
+    const responseStudent = student as OwnerProfileResponse;
+    if (!student || student.status === 'suspended') {
+      return Promise.resolve(responseStudent);
+    }
+    return Promise.allSettled([
+      BookDAL.getBookStudentLatest(student.id),
+      GameExerciseDAL.getGameStudentLatest(student.id),
+      LessonsDAL.getUpcomingClass(student.ayotree_course_code),
+    ]).then(([book, game_exercise, lessons]) => {
+      responseStudent.learning_journey = {
+        latest_book: null,
+        latest_exercise: null,
+        short_schedule: null,
+      };
+
+      responseStudent.learning_journey.latest_book = (() => {
+        if (book.status === 'fulfilled' && book.value) {
+          return {
+            id: book.value.book_id,
+            title: book.value.book_info.name,
+            image: book.value.book_info.background_image,
+          };
+        }
+        return null;
+      })();
+
+      responseStudent.learning_journey.latest_exercise = (() => {
+        if (game_exercise.status === 'fulfilled' && game_exercise.value) {
+          return {
+            id: game_exercise.value.game_exercise_id,
+            title: game_exercise.value.game_info.name,
+            image: game_exercise.value.game_info.background_image,
+          };
+        }
+        return null;
+      })();
+
+      responseStudent.learning_journey.short_schedule = (() => {
+        if (lessons.status === 'fulfilled' && lessons.value) {
+          return {
+            course_title: lessons.value.CourseTitle,
+            date: helpers.getDateString(lessons.value.LessonStart),
+            time: helpers.getTimeString(lessons.value.LessonStart),
+          };
+        }
+        return null;
+      })();
+
+      return responseStudent;
+
+      // if (!student.ayotree_student_id || !student.ayotree_campus_id) {
+      //   return responseStudent;
+      // }
+
+      // return AyotreeServices.inst()
+      //   .getStudentViaId({
+      //     student: {
+      //       StudentID: student.ayotree_student_id,
+      //       CampusID: student.ayotree_campus_id,
+      //     },
+      //   })
+      //   .then(ayotreeResult => {
+      //     const splitCourse = ayotreeResult?.Course?.split('|')?.map(item =>
+      //       item.trim()
+      //     );
+      //     let courseCode: string | undefined = '';
+      //     if (splitCourse) courseCode = splitCourse.pop();
+      //     if (courseCode && courseCode !== student.ayotree_course_code) {
+      //       return StudentsDAL.updateStudentById(
+      //         {
+      //           ayotree_course_code: courseCode,
+      //           ayotree_course_title: splitCourse?.join(' '),
+      //         },
+      //         student.id
+      //       ).then(() => ayotreeResult);
+      //     }
+      //     return ayotreeResult;
+      //   })
+      //   .then(ayotreeResult => {
+      //     responseStudent.ayotree_profile = ayotreeResult;
+      //     return responseStudent;
+      //   });
+    });
+  }
+
+  signIn(data: SignInRequest): Promise<OwnerProfileResponse> {
     return StudentsDAL.signInStudent(data.user_name, data.password)
       .then(student => {
+        const responseData = this.getHomeScreenData(student);
         if (student && data.device_token)
           return StudentsDAL.upsertStudentDeviceToken(
             student.id,
             data.device_token
-          ).then(() => student as Students);
-        return student as Students;
+          ).then(() => responseData);
+        return responseData;
       })
       .catch(err => {
         throw err;
@@ -50,92 +138,9 @@ class StudentBusiness implements IStudentBusiness {
     return StudentsDAL.addNewStudent(data);
   }
   getProfile(id: number): Promise<OwnerProfileResponse> {
-    return StudentsDAL.getStudentById(id).then(student => {
-      const responseStudent = student as OwnerProfileResponse;
-      if (student.status === 'suspended') {
-        return responseStudent;
-      }
-
-      return Promise.allSettled([
-        BookDAL.getBookStudentLatest(id),
-        GameExerciseDAL.getGameStudentLatest(id),
-        LessonsDAL.getUpcomingClass(student.ayotree_course_code),
-      ]).then(([book, game_exercise, lessons]) => {
-        responseStudent.learning_journey = {
-          latest_book: null,
-          latest_exercise: null,
-          short_schedule: null,
-        };
-
-        responseStudent.learning_journey.latest_book = (() => {
-          if (book.status === 'fulfilled' && book.value) {
-            return {
-              id: book.value.book_id,
-              title: book.value.book_info.name,
-              image: book.value.book_info.background_image,
-            };
-          }
-          return null;
-        })();
-
-        responseStudent.learning_journey.latest_exercise = (() => {
-          if (game_exercise.status === 'fulfilled' && game_exercise.value) {
-            return {
-              id: game_exercise.value.game_exercise_id,
-              title: game_exercise.value.game_info.name,
-              image: game_exercise.value.game_info.background_image,
-            };
-          }
-          return null;
-        })();
-
-        responseStudent.learning_journey.short_schedule = (() => {
-          if (lessons.status === 'fulfilled' && lessons.value) {
-            return {
-              course_title: lessons.value.CourseTitle,
-              date: helpers.getDateString(lessons.value.LessonStart),
-              time: helpers.getTimeString(lessons.value.LessonStart),
-            };
-          }
-          return null;
-        })();
-
-        return responseStudent;
-
-        // if (!student.ayotree_student_id || !student.ayotree_campus_id) {
-        //   return responseStudent;
-        // }
-
-        // return AyotreeServices.inst()
-        //   .getStudentViaId({
-        //     student: {
-        //       StudentID: student.ayotree_student_id,
-        //       CampusID: student.ayotree_campus_id,
-        //     },
-        //   })
-        //   .then(ayotreeResult => {
-        //     const splitCourse = ayotreeResult?.Course?.split('|')?.map(item =>
-        //       item.trim()
-        //     );
-        //     let courseCode: string | undefined = '';
-        //     if (splitCourse) courseCode = splitCourse.pop();
-        //     if (courseCode && courseCode !== student.ayotree_course_code) {
-        //       return StudentsDAL.updateStudentById(
-        //         {
-        //           ayotree_course_code: courseCode,
-        //           ayotree_course_title: splitCourse?.join(' '),
-        //         },
-        //         student.id
-        //       ).then(() => ayotreeResult);
-        //     }
-        //     return ayotreeResult;
-        //   })
-        //   .then(ayotreeResult => {
-        //     responseStudent.ayotree_profile = ayotreeResult;
-        //     return responseStudent;
-        //   });
-      });
-    });
+    return StudentsDAL.getStudentById(id).then(student =>
+      this.getHomeScreenData(student)
+    );
   }
   getSchedules(req: OwnerScheduleRequest): void {}
   getCampus(req: OwnerCourseRequest): void {}
