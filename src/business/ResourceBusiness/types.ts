@@ -22,6 +22,7 @@ export type EbookResponse = Book & { current_chapter: number };
 export type GameExerciseResponse = GameExercises & {
   current_level: string | number;
   detail_levels: string[];
+  total_correct_answers: number;
 };
 
 export type GetAllGameLevelResponse = {

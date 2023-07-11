@@ -3,7 +3,6 @@ import {
   EbookResponse,
   GameExerciseResponse,
   GetAllGameLevelResponse,
-  LevelsQuestionsResponse,
   QuestionResponse,
 } from './types';
 import GameExerciseDAL from 'dals/GameExerciseDAL';
@@ -19,7 +18,7 @@ interface IResourceBusiness {
   getQuestionsOfLevel: (
     game_exercise_id: number,
     level: string
-  ) => Promise<LevelsQuestionsResponse>;
+  ) => Promise<QuestionResponse[]>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -90,6 +89,8 @@ class ResourceBusiness implements IResourceBusiness {
               how_to_play: game.how_to_play,
               intro: game.intro,
               current_level: game.game_student?.[0]?.level || null,
+              total_correct_answers:
+                game.game_student?.[0]?.total_correct_answers || null,
               stars_to_win: game.stars_to_win,
               type: game.type,
             } as GameExerciseResponse)
@@ -107,20 +108,8 @@ class ResourceBusiness implements IResourceBusiness {
   getQuestionsOfLevel(
     game_exercise_id: number,
     level: string
-  ): Promise<LevelsQuestionsResponse> {
-    return Promise.all([
-      GameExerciseDAL.listQuestionsOfLevel(game_exercise_id, level),
-      GameExerciseDAL.getGameStudent(game_exercise_id, level),
-    ])
-      .then(([questions, gameStudent]) => {
-        return {
-          total_correct_answers: gameStudent?.total_correct_answers || null,
-          questions: questions,
-        } as LevelsQuestionsResponse;
-      })
-      .catch(err => {
-        throw err;
-      });
+  ): Promise<QuestionResponse[]> {
+    return GameExerciseDAL.listQuestionsOfLevel(game_exercise_id, level);
   }
 }
 
