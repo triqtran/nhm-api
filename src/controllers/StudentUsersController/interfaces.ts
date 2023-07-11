@@ -65,5 +65,5 @@ export default interface IStudentControllers {
 
   forgotPassword: (req: Request, res: Response, next: NextFunction) => void;
 
-  confirmPassword: (req: Request, res: Response, next: NextFunction) => void;
+  resetPassword: (req: Request, res: Response, next: NextFunction) => void;
 }

@@ -31,6 +31,7 @@ interface IStudentBusiness {
   getById: (id: number) => Promise<Students>;
   logout: (student_id: number) => Promise<number>;
   forgotPassword: (email: string) => Promise<string>;
+  resetPassword: (data: ConfirmPasswordRequest) => Promise<any>;
 }
 
 class StudentBusiness implements IStudentBusiness {
@@ -165,7 +166,7 @@ class StudentBusiness implements IStudentBusiness {
       .then(() => 'Your new password is sent into your email');
   }
 
-  confirmPassword({
+  resetPassword({
     email,
     confirm_code,
     password,

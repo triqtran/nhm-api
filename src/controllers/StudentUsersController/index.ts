@@ -174,12 +174,12 @@ class StudentUsersController implements IStudentControllers {
       .catch(err => res.responseAppError(err));
   }
 
-  confirmPassword(req: Request, res: Response, next: NextFunction): void {
+  resetPassword(req: Request, res: Response, next: NextFunction): void {
     if (!req.body.email || !req.body.confirm_code || !req.body.password) {
       return res.responseAppError(errors.MISSING_NECCESSARY_DATA);
     }
 
-    StudentBusiness.confirmPassword(req.body)
+    StudentBusiness.resetPassword(req.body)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
