@@ -44,8 +44,6 @@ router.get(
   ctrl.getStudentOwnProfile as express.RequestHandler
 );
 
-router.get('/home', authHandler, ctrl.homeResource as express.RequestHandler);
-
 router.get(
   '/:id',
   ctrl.getStudentById as express.RequestHandler<StudentUserParamsReq>

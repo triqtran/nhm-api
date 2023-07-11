@@ -4,7 +4,7 @@ module.exports = {
   jsxSingleQuote: true,
   semi: true,
   trailingComma: 'es5',
-  printWidth: 100,
+  printWidth: 80,
   singleQuote: true,
   arrowParens: 'avoid',
   endOfLine: 'lf',

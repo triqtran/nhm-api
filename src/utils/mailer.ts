@@ -37,7 +37,7 @@ class Mailer implements IMailer {
   } as SMTPTransport.Options);
 
   generatePassword(user_id: number): string {
-    return '';
+    return '123456789';
   }
 
   sendEmail(mailOption: MailOption): Promise<any> {
@@ -53,18 +53,18 @@ class Mailer implements IMailer {
   }
 
   getHtmlForgotPasswordContent(password: string): string {
-    return `<div style="text-align: 'center';"><h1 style="color: '#B86E5F'">Nihaoma Mandarin Learning Lab</h1><h3>Your password is: </h3><div style="padding: '20px 30px'; background-color: '#E8E9EB'"><b>${password}</b></div><p>Please login and change your new password!</p></div>`;
+    return `<div style="text-align: center; width: 100%; color: black;"><h1 style="color:#B86E5F;">Nihaoma Mandarin Learning Lab</h1><h3>Your new password is: </h3><div style="padding: 20px 30px;"><b style="font-size: 30px;">${password}</b></div><p>Please login and change your new password!</p></div>`;
   }
 
   sendEmailForgotPassword(mail: string): Promise<any> {
     return StudentsDAL.getStudentByMail(mail).then(student => {
-      if (!student || student?.email) throw 'Can not find email to send!';
+      if (!student) throw 'Can not find account for this email!';
       const password = this.generatePassword(student.id);
 
       const mailOption = {
-        from: 'Nihaoma Madarin Service',
+        from: 'Nihaoma Mandarin Service',
         to: `${student.email}`,
-        subject: 'Reset Password',
+        subject: '[Reset Password] - Nihaoma Mandarin Service',
         html: this.getHtmlForgotPasswordContent(password),
       } as MailOption;
 

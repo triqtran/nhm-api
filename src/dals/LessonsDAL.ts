@@ -27,7 +27,7 @@ class LessonsDAL implements ILessonsDAL {
           [Op.gt]: new Date(),
         },
       },
-      order: [['LessonStart', 'desc']],
+      order: [['LessonStart', 'asc']],
     }).catch(throwError('getUpcomingClass'));
   }
 

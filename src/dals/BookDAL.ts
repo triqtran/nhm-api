@@ -38,7 +38,7 @@ interface IBookDAL {
     is_trial?: boolean
   ): Promise<BookStudentResponseIncludeBook[]>;
 
-  getBookStudentLastest(
+  getBookStudentLatest(
     student_id: number
   ): Promise<BookStudentResponseIncludeBook | null>;
   listBookWithoutPaging(where: any): Promise<BookResponseIncludeBookStudent[]>;
@@ -154,7 +154,7 @@ class BookDAL implements IBookDAL {
       .catch(throwError('listBookStudentByStudentId'));
   }
 
-  getBookStudentLastest(
+  getBookStudentLatest(
     student_id: number
   ): Promise<BookStudentResponseIncludeBook | null> {
     return BookStudent.findOne({
