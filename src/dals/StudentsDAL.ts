@@ -2,6 +2,7 @@ import { Paging } from '@tsenv';
 import Students from 'models/Students';
 import Campus from 'models/Campus';
 import StudentDevices from 'models/StudentDevices';
+import Courses from 'models/Courses';
 
 const throwError =
   (funcName: string) =>
@@ -16,6 +17,8 @@ const throwNewError = (err = 'Error not implemented.') => {
 
 type CampusListResponse = Campus[] | null;
 
+type StudentResponseIncludingCourse = Students & { course: Courses };
+
 export type ListStudentsResponse = {
   count: number;
   data: Students[];
@@ -27,12 +30,10 @@ interface IStudentsDAL {
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
   getCampusList(): Promise<CampusListResponse>;
-  upsertStudentDeviceToken(
-    student_id: number,
-    device_token: string
-  ): Promise<StudentDevices>;
+  upsertStudentDeviceToken(student_id: number, device_token: string): Promise<StudentDevices>;
   removeStudentDeviceToken(student_id: number): Promise<number>;
   getStudentByMail(email: string): Promise<Students>;
+  getStudentViaIdIncludingCourse(student_id: number): Promise<StudentResponseIncludingCourse>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -112,10 +113,7 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('getCampusList'));
   }
 
-  upsertStudentDeviceToken(
-    id: number,
-    device_token: string
-  ): Promise<StudentDevices> {
+  upsertStudentDeviceToken(id: number, device_token: string): Promise<StudentDevices> {
     return StudentDevices.findOne({
       where: { id },
     })
@@ -151,6 +149,22 @@ class StudentsDAL implements IStudentsDAL {
     })
       .then(res => (res?.dataValues || null) as Students)
       .catch(throwError('getStudentByMail'));
+  }
+
+  getStudentViaIdIncludingCourse(id: number): Promise<StudentResponseIncludingCourse> {
+    return Students.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['password'],
+      },
+      include: {
+        model: Courses,
+        as: 'course',
+        required: true,
+      },
+    })
+      .then(res => (res?.dataValues || null) as StudentResponseIncludingCourse)
+      .catch(throwError('getStudentViaIdIncludingCourse'));
   }
 }
 

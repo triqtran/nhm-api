@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
+import Courses from './Courses';
 
 export type StudentStatus = 'registered' | 'active' | 'suspended';
 
@@ -84,5 +85,11 @@ Students.init(
     tableName: 'students',
   }
 );
+
+Students.belongsTo(Courses, {
+  as: 'course',
+  foreignKey: 'ayotree_course_code',
+  targetKey: 'CourseCode',
+});
 
 export default Students;

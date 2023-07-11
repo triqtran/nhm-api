@@ -75,6 +75,7 @@ interface DecodedUserType {
   name: string;
   phone?: string;
   email?: string;
+  level?: string
 }
 
 interface Paging {
