@@ -57,4 +57,9 @@ router.post('/logout', authHandler, ctrl.logout as express.RequestHandler);
 
 router.post('/forgot-password', ctrl.forgotPassword as express.RequestHandler);
 
+router.post(
+  '/confirm-password',
+  ctrl.confirmPassword as express.RequestHandler
+);
+
 export default router;

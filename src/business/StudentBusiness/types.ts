@@ -65,3 +65,9 @@ export type ListStudentsResponse = {
   data: Students[];
   count: number;
 };
+
+export type ConfirmPasswordRequest = {
+  email: string;
+  confirm_code: string;
+  password: string;
+};

@@ -42,6 +42,10 @@ const errors = {
     code: 'error',
     show: 'You can not perform this action',
   } as ErrorStruct,
+  MISSING_NECCESSARY_DATA: {
+    code: 'error',
+    show: 'Missing neccessary data.',
+  } as ErrorStruct,
 };
 
 class StudentUsersController implements IStudentControllers {
@@ -166,6 +170,16 @@ class StudentUsersController implements IStudentControllers {
 
   forgotPassword(req: Request, res: Response, next: NextFunction): void {
     StudentBusiness.forgotPassword(req.body.email)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+
+  confirmPassword(req: Request, res: Response, next: NextFunction): void {
+    if (!req.body.email || !req.body.confirm_code || !req.body.password) {
+      return res.responseAppError(errors.MISSING_NECCESSARY_DATA);
+    }
+
+    StudentBusiness.confirmPassword(req.body)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
