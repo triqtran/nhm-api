@@ -158,14 +158,14 @@ class StudentUsersController implements IStudentControllers {
       .catch(err => res.responseAppError(err));
   }
 
-  homeResource(req: Request, res: Response, next: NextFunction): void {
-    StudentBusiness.getHomeResource(req.userDecoded.id)
+  logout(req: Request, res: Response, next: NextFunction): void {
+    StudentBusiness.logout(req.userDecoded.id)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
 
-  logout(req: Request, res: Response, next: NextFunction): void {
-    StudentBusiness.logout(req.userDecoded.id)
+  forgotPassword(req: Request, res: Response, next: NextFunction): void {
+    StudentBusiness.forgotPassword(req.body.email)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }

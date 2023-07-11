@@ -53,7 +53,7 @@ interface IGameExercisesDAL {
     student_id: number,
     is_trial?: boolean
   ): Promise<GameExerciseStudentsResponseIncludingGameExercises[]>;
-  getGameStudentLastest(
+  getGameStudentLatest(
     student_id: number
   ): Promise<GameExerciseStudents | null>;
   listGameWithoutPaging(
@@ -210,7 +210,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
       })
       .catch(throwError('listGameStudentByStudentId'));
   }
-  getGameStudentLastest(
+  getGameStudentLatest(
     student_id: number
   ): Promise<GameExerciseStudentsResponseIncludingGameExercises | null> {
     return GameExerciseStudents.findOne({

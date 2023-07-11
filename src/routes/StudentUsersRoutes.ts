@@ -44,8 +44,6 @@ router.get(
   ctrl.getStudentOwnProfile as express.RequestHandler
 );
 
-router.get('/home', authHandler, ctrl.homeResource as express.RequestHandler);
-
 router.get(
   '/:id',
   ctrl.getStudentById as express.RequestHandler<StudentUserParamsReq>
@@ -56,5 +54,7 @@ router.post('/login', ctrl.signInStudent as express.RequestHandler);
 router.post('/signup', ctrl.signUpStudent as express.RequestHandler);
 
 router.post('/logout', authHandler, ctrl.logout as express.RequestHandler);
+
+router.post('/forgot-password', ctrl.forgotPassword as express.RequestHandler);
 
 export default router;

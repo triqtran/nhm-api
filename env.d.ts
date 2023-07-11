@@ -47,6 +47,16 @@ declare namespace NodeJS {
 
     // Ayotree - get setting timeZones
     readonly AYOTREE_GET_TIMEZONES: string;
+
+    // Mailer - SMTP
+    readonly SMTP_HOST: string;
+    readonly SMTP_PORT: number;
+    readonly MAILER_AUTH_TYPE: string;
+    readonly SENDER_MAIL: string;
+    readonly SENDER_PASSWORD: string;
+    readonly MAILER_CLIENT_ID: string;
+    readonly MAILER_CLIENT_SECRET: string;
+    readonly MAILER_REFRESH_TOKEN: string;
   }
 }
 

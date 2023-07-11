@@ -30,12 +30,10 @@ interface IStudentsDAL {
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
   getCampusList(): Promise<CampusListResponse>;
-  upsertStudentDeviceToken(
-    student_id: number,
-    device_token: string
-  ): Promise<StudentDevices>;
+  upsertStudentDeviceToken(student_id: number, device_token: string): Promise<StudentDevices>;
   removeStudentDeviceToken(student_id: number): Promise<number>;
-  getStudentViaIdIncludingCourse(student_id: number): Promise<StudentResponseIncludingCourse>
+  getStudentByMail(email: string): Promise<Students>;
+  getStudentViaIdIncludingCourse(student_id: number): Promise<StudentResponseIncludingCourse>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -115,10 +113,7 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('getCampusList'));
   }
 
-  upsertStudentDeviceToken(
-    id: number,
-    device_token: string
-  ): Promise<StudentDevices> {
+  upsertStudentDeviceToken(id: number, device_token: string): Promise<StudentDevices> {
     return StudentDevices.findOne({
       where: { id },
     })
@@ -145,17 +140,28 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('removeStudentDeviceToken'));
   }
 
+  getStudentByMail(email: string): Promise<Students> {
+    return Students.findOne({
+      where: { email },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
+      .then(res => (res?.dataValues || null) as Students)
+      .catch(throwError('getStudentByMail'));
+  }
+
   getStudentViaIdIncludingCourse(id: number): Promise<StudentResponseIncludingCourse> {
-     return Students.findOne({
+    return Students.findOne({
       where: { id },
       attributes: {
         exclude: ['password'],
-       },
-       include: {
-         model: Courses,
-         as: 'course',
-         required: true
-      }
+      },
+      include: {
+        model: Courses,
+        as: 'course',
+        required: true,
+      },
     })
       .then(res => (res?.dataValues || null) as StudentResponseIncludingCourse)
       .catch(throwError('getStudentViaIdIncludingCourse'));
