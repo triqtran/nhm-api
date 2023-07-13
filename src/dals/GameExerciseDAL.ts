@@ -292,8 +292,14 @@ class GameExercisesDAL implements IGameExercisesDAL {
         model: GameExerciseStudents,
         as: 'game_student',
         required: false,
-        order: [['updated_at', 'desc']],
       },
+      order: [
+        [
+          { model: GameExerciseStudents, as: 'game_student' },
+          'updated_at',
+          'desc',
+        ],
+      ],
     })
       .then(resp => {
         if (resp.length <= 0) {
@@ -468,7 +474,13 @@ class GameExercisesDAL implements IGameExercisesDAL {
         model: GameExerciseStudents,
         as: 'game_student',
         required: false,
-        order: [['updated_at', 'desc']],
+        order: [
+          [
+            { model: GameExerciseStudents, as: 'game_student' },
+            'updated_at',
+            'desc',
+          ],
+        ],
       },
     })
       .then(
