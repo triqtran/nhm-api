@@ -8,6 +8,21 @@ import { ParamsDictionary } from 'express-serve-static-core';
 const errors = {};
 
 class ResourceController implements IResourceControllers {
+  getStudentOwner(req: Request, res: Response, next: NextFunction): void {
+    Promise.allSettled([
+      ResourceBusiness.listContinue(req.userDecoded.id),
+      ResourceBusiness.listEbook(req.userDecoded.level),
+      ResourceBusiness.listGame(req.userDecoded.level),
+    ])
+      .then(([currentRes, booksRes, gamesRes]) => {
+        const current =
+          currentRes.status === 'fulfilled' ? currentRes.value : null;
+        const books = booksRes.status === 'fulfilled' ? booksRes.value : null;
+        const games = gamesRes.status === 'fulfilled' ? gamesRes.value : null;
+        res.responseSuccess({ current, books, games });
+      })
+      .catch(err => res.responseAppError(err));
+  }
   listContinue(req: Request, res: Response, next: NextFunction): void {
     ResourceBusiness.listContinue(req.userDecoded.id)
       .then(result => res.responseSuccess(result))

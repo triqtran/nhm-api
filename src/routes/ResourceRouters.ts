@@ -8,6 +8,13 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
 router.get(
+  '/student-owner',
+  authHandler,
+  levelHandler,
+  ctrl.getStudentOwner as express.RequestHandler
+);
+
+router.get(
   '/continues',
   authHandler,
   ctrl.listContinue as express.RequestHandler
