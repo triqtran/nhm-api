@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { StudentsDAL } from 'dals';
 import IStudentControllers, {
   StudentUserBodyReq,
   StudentUserParamsReq,
@@ -7,7 +6,8 @@ import IStudentControllers, {
 } from './interfaces';
 import { ErrorStruct } from '@tsenv';
 import jwtResponse from 'middlewares/jwtResponse';
-import AyotreeServices from 'requests/ayotrees/AyotreeServices';
+import { StudentBusiness } from 'business';
+import { RegisterRequest } from 'business/StudentBusiness/types';
 
 const errors = {
   STUDENT_USER_IS_DISABLED: {
@@ -22,6 +22,18 @@ const errors = {
     code: 'error',
     show: 'Missing email or password',
   } as ErrorStruct,
+  MISSING_INPUT: {
+    code: 'error',
+    show: 'Missing input',
+  } as ErrorStruct,
+  MISSING_USER_NAME_OR_PASSWORD: {
+    code: 'error',
+    show: 'Missing user_name or password',
+  } as ErrorStruct,
+  WRONG_USER_NAME_OR_PASSWORD: {
+    code: 'error',
+    show: 'Your user_name or password is wrong',
+  } as ErrorStruct,
   CAN_NOT_SIGN_UP_NEW_STUDENT: {
     code: 'error',
     show: 'Can not sign up new student',
@@ -29,6 +41,10 @@ const errors = {
   CAN_NOT_PERFORM_THIS_ACTION: {
     code: 'error',
     show: 'You can not perform this action',
+  } as ErrorStruct,
+  MISSING_NECCESSARY_DATA: {
+    code: 'error',
+    show: 'Missing neccessary data.',
   } as ErrorStruct,
 };
 
@@ -38,14 +54,14 @@ class StudentUsersController implements IStudentControllers {
     res: Response<any, Record<string, any>>,
     next: NextFunction
   ): void {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
+    const { user_name, password, device_token } = req.body;
+    if (!user_name || !password) {
+      return res.responseAppError(errors.MISSING_USER_NAME_OR_PASSWORD);
     }
-    StudentsDAL.signInStudent(email, password)
-      .then((student) => {
+    StudentBusiness.signIn({ user_name, password, device_token })
+      .then(student => {
         if (!student) {
-          return res.responseAppError(errors.WRONG_EMAIL_OR_PASSWORD);
+          return res.responseAppError(errors.WRONG_USER_NAME_OR_PASSWORD);
         }
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
@@ -60,7 +76,7 @@ class StudentUsersController implements IStudentControllers {
 
         res.responseSuccess({ data: student, token });
       })
-      .catch((err) => res.responseAppError(err));
+      .catch(err => res.responseAppError(err));
   }
 
   signUpStudent(
@@ -69,8 +85,11 @@ class StudentUsersController implements IStudentControllers {
     next: NextFunction
   ): void {
     const data = req.body;
-    StudentsDAL.addNewStudent(data)
-      .then((student) => {
+    if (!data.user_name || !data.password) {
+      return res.responseAppError(errors.MISSING_USER_NAME_OR_PASSWORD);
+    }
+    StudentBusiness.register(data)
+      .then(student => {
         if (!student) {
           return res.responseAppError(errors.CAN_NOT_SIGN_UP_NEW_STUDENT);
         }
@@ -83,37 +102,32 @@ class StudentUsersController implements IStudentControllers {
         });
         res.responseSuccess({ data: student, token });
       })
-      .catch((err) => res.responseAppError(err));
+      .catch(err => res.responseAppError(err));
   }
   getStudentOwnProfile(req: Request, res: Response, next: NextFunction): void {
-    StudentsDAL.getStudentById(req.userDecoded.id)
-      .then((student) => {
+    StudentBusiness.getProfile(req.userDecoded.id)
+      .then(student => {
         if (student.status === 'suspended') {
           return res.responseAppError(errors.STUDENT_USER_IS_DISABLED);
         }
-        if (student.ayotree_student_id && student.ayotree_campus_id) {
-          return AyotreeServices.inst()
-            .getStudentViaId({
-              student: {
-                StudentID: student.ayotree_student_id,
-                CampusID: student.ayotree_campus_id,
-              },
-            })
-            .then((ayotreeResult) => {
-              res.responseSuccess({
-                ...student,
-                ayotree_profile: ayotreeResult,
-              });
-            });
-        }
         res.responseSuccess(student);
       })
-      .catch((err) => res.responseAppError(err));
+      .catch(err => res.responseAppError(err));
   }
   addNewStudent(req: Request, res: Response, next: NextFunction): void {
-    StudentsDAL.addNewStudent(req)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+    const data: RegisterRequest = req.body;
+    if (
+      !data.user_name ||
+      !data.password ||
+      !data.email ||
+      !data.first_name ||
+      !data.last_name
+    ) {
+      return res.responseAppError(errors.MISSING_INPUT);
+    }
+    StudentBusiness.register(data)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 
   updateStudent(
@@ -127,15 +141,15 @@ class StudentUsersController implements IStudentControllers {
     ) {
       return res.responseAppError(errors.CAN_NOT_PERFORM_THIS_ACTION);
     }
-    StudentsDAL.updateStudentById(req?.body, req.params.id)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+    StudentBusiness.update(req.params.id, req?.body)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 
   listStudents(req: Request, res: Response, next: NextFunction): void {
-    StudentsDAL.listStudentsByCourse(req.paging)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+    StudentBusiness.list(req.paging)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 
   getStudentById(
@@ -143,9 +157,31 @@ class StudentUsersController implements IStudentControllers {
     res: Response,
     next: NextFunction
   ): void {
-    StudentsDAL.getStudentById(req.params.id)
-      .then((result) => res.responseSuccess(result))
-      .catch((err) => res.responseAppError(err));
+    StudentBusiness.getById(req.params.id)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+
+  logout(req: Request, res: Response, next: NextFunction): void {
+    StudentBusiness.logout(req.userDecoded.id)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+
+  forgotPassword(req: Request, res: Response, next: NextFunction): void {
+    StudentBusiness.forgotPassword(req.body.email)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+
+  resetPassword(req: Request, res: Response, next: NextFunction): void {
+    if (!req.body.email || !req.body.confirm_code || !req.body.password) {
+      return res.responseAppError(errors.MISSING_NECCESSARY_DATA);
+    }
+
+    StudentBusiness.resetPassword(req.body)
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
   }
 }
 

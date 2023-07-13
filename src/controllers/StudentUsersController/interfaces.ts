@@ -8,15 +8,22 @@ export interface StudentUserParamsReq {
 export interface StudentUserBodyReq {
   first_name: string;
   last_name: string;
-  registered_user_id: number;
-  status: StudentStatus;
   email: string;
+  user_name: string;
   password: string;
+  phone: string;
+  birthday: string;
+  status?: StudentStatus;
+  ayotree_student_id?: number;
+  ayotree_campus_id?: number;
+  ayotree_course_title?: string;
+  ayotree_course_code?: string;
 }
 
 export interface StudentUserSignInBodyReq {
-  email: string;
+  user_name: string;
   password: string;
+  email?: string;
 }
 
 export default interface IStudentControllers {
@@ -26,16 +33,37 @@ export default interface IStudentControllers {
     res: Response,
     next: NextFunction
   ) => void;
-  signUpStudent: (req: Request<any, StudentUserBodyReq>, res: Response, next: NextFunction) => void;
-  getStudentOwnProfile: (req: Request, res: Response, next: NextFunction) => void;
+  signUpStudent: (
+    req: Request<any, StudentUserBodyReq>,
+    res: Response,
+    next: NextFunction
+  ) => void;
+  getStudentOwnProfile: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void;
 
   // from portal
-  addNewStudent: (req: Request<any, StudentUserBodyReq>, res: Response, next: NextFunction) => void;
+  addNewStudent: (
+    req: Request<any, StudentUserBodyReq>,
+    res: Response,
+    next: NextFunction
+  ) => void;
   updateStudent: (
     req: Request<StudentUserParamsReq, StudentUserBodyReq>,
     res: Response,
     next: NextFunction
   ) => void;
   listStudents: (req: Request, res: Response, next: NextFunction) => void;
-  getStudentById: (req: Request<StudentUserParamsReq>, res: Response, next: NextFunction) => void;
+  getStudentById: (
+    req: Request<StudentUserParamsReq>,
+    res: Response,
+    next: NextFunction
+  ) => void;
+  logout: (req: Request, res: Response, next: NextFunction) => void;
+
+  forgotPassword: (req: Request, res: Response, next: NextFunction) => void;
+
+  resetPassword: (req: Request, res: Response, next: NextFunction) => void;
 }

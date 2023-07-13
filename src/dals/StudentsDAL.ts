@@ -1,5 +1,8 @@
 import { Paging } from '@tsenv';
 import Students from 'models/Students';
+import Campus from 'models/Campus';
+import StudentDevices from 'models/StudentDevices';
+import Courses from 'models/Courses';
 
 const throwError =
   (funcName: string) =>
@@ -12,16 +15,30 @@ const throwNewError = (err = 'Error not implemented.') => {
   throw new Error(err);
 };
 
+type CampusListResponse = Campus[] | null;
+
+type StudentResponseIncludingCourse = Students & { course: Courses };
+
 export type ListStudentsResponse = {
   count: number;
-  data: Array<Students>;
+  data: Students[];
 };
 interface IStudentsDAL {
-  addNewStudent(data: any): Promise<Students>;
-  updateStudentById(data: any, id: number): Promise<Students>;
-  listStudentsByCourse(paging: any): Promise<ListStudentsResponse>;
+  addNewStudent(data: Students): Promise<Students>;
+  updateStudentById(data: Partial<Students>, id: number): Promise<Students>;
+  listStudents(paging: Paging): Promise<ListStudentsResponse>;
   getStudentById(id: number): Promise<Students>;
   signInStudent(email: string, password: string): Promise<Students>;
+  getCampusList(): Promise<CampusListResponse>;
+  upsertStudentDeviceToken(
+    student_id: number,
+    device_token: string
+  ): Promise<StudentDevices>;
+  removeStudentDeviceToken(student_id: number): Promise<number>;
+  getStudentByMail(email: string): Promise<Students>;
+  getStudentViaIdIncludingCourse(
+    student_id: number
+  ): Promise<StudentResponseIncludingCourse>;
 }
 
 class StudentsDAL implements IStudentsDAL {
@@ -48,18 +65,21 @@ class StudentsDAL implements IStudentsDAL {
         'status',
         'ayotree_student_id',
         'ayotree_campus_id',
+        'ayotree_course_code',
+        'ayotree_course_title',
         'password',
-        'updated_at',
+        'level',
+        'confirm_code',
       ],
       returning: true,
     })
       .then(res => {
         if (res?.length > 0 && res[1]) return res[1][0];
-        return throwNewError('updateStudentById');
+        return throwNewError('Cannot update student');
       })
       .catch(throwError('updateStudentById'));
   }
-  listStudentsByCourse(paging: Paging): Promise<ListStudentsResponse> {
+  listStudents(paging: Paging): Promise<ListStudentsResponse> {
     return Students.findAndCountAll({
       where: paging.filters,
       limit: paging.limit,
@@ -72,15 +92,90 @@ class StudentsDAL implements IStudentsDAL {
       .catch(throwError('listStudentsByCourse'));
   }
   getStudentById(id: number): Promise<Students> {
-    return Students.findOne({ where: { id } })
+    return Students.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
       .then(res => (res?.dataValues || null) as Students)
       .catch(throwError('getStudentById'));
   }
 
-  signInStudent(email: string, password: string): Promise<Students> {
-    return Students.findOne({ where: { email, password } })
+  signInStudent(user_name: string, password: string): Promise<Students> {
+    return Students.findOne({
+      where: { user_name, password },
+      attributes: {
+        exclude: ['password', 'confirm_code'],
+      },
+    })
       .then(res => (res?.dataValues || null) as Students)
       .catch(throwError('signInStudent'));
+  }
+
+  getCampusList(): Promise<CampusListResponse> {
+    return Campus.findAll()
+      .then(resp => resp.map(item => item.dataValues) as CampusListResponse)
+      .catch(throwError('getCampusList'));
+  }
+
+  upsertStudentDeviceToken(
+    id: number,
+    device_token: string
+  ): Promise<StudentDevices> {
+    return StudentDevices.findOne({
+      where: { id },
+    })
+      .then(res => {
+        if (res?.dataValues) return res.update({ device_token });
+        return StudentDevices.create({
+          student_id: id,
+          device_token,
+        }).then(created => {
+          if (created?.dataValues) return created.dataValues as StudentDevices;
+          return throwNewError('Can not create student devices!');
+        });
+      })
+      .catch(throwError('updateStudentDeviceToken'));
+  }
+
+  removeStudentDeviceToken(student_id: number): Promise<number> {
+    return StudentDevices.destroy({
+      where: { student_id },
+    })
+      .then(resp => {
+        return resp;
+      })
+      .catch(throwError('removeStudentDeviceToken'));
+  }
+
+  getStudentByMail(email: string): Promise<Students> {
+    return Students.findOne({
+      where: { email },
+      attributes: {
+        exclude: ['password'],
+      },
+    })
+      .then(res => (res?.dataValues || null) as Students)
+      .catch(throwError('getStudentByMail'));
+  }
+
+  getStudentViaIdIncludingCourse(
+    id: number
+  ): Promise<StudentResponseIncludingCourse> {
+    return Students.findOne({
+      where: { id },
+      attributes: {
+        exclude: ['password'],
+      },
+      include: {
+        model: Courses,
+        as: 'course',
+        required: true,
+      },
+    })
+      .then(res => (res?.dataValues || null) as StudentResponseIncludingCourse)
+      .catch(throwError('getStudentViaIdIncludingCourse'));
   }
 }
 

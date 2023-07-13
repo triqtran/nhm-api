@@ -53,4 +53,10 @@ router.post('/login', ctrl.signInStudent as express.RequestHandler);
 
 router.post('/signup', ctrl.signUpStudent as express.RequestHandler);
 
+router.post('/logout', authHandler, ctrl.logout as express.RequestHandler);
+
+router.post('/forgot-password', ctrl.forgotPassword as express.RequestHandler);
+
+router.post('/reset-password', ctrl.resetPassword as express.RequestHandler);
+
 export default router;

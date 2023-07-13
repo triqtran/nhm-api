@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { NHMAccountDAL } from 'dals';
+import { AccountBusiness } from 'business';
 import INHMAccountControllers, {
   NHMAccountBodyReq,
   NHMAccountParamsReq,
@@ -33,7 +33,7 @@ class NHMAccountController implements INHMAccountControllers {
     if (!email || !password) {
       return res.responseAppError(errors.MISSING_EMAIL_OR_PASSWORD);
     }
-    NHMAccountDAL.signInAccount(email, password)
+    AccountBusiness.signIn({ email, password })
       .then(account => {
         if (!account) {
           return res.responseAppError(errors.WRONG_EMAIL_OR_PASSWORD);
@@ -52,15 +52,19 @@ class NHMAccountController implements INHMAccountControllers {
       .catch(err => res.responseAppError(err));
   }
 
-  getNHMAccountOwnProfile(req: Request, res: Response, next: NextFunction): void {
-    NHMAccountDAL.getAccountById(req.userDecoded.id)
+  getNHMAccountOwnProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void {
+    AccountBusiness.getAccountById(req.userDecoded.id)
       .then(student => {
         res.responseSuccess(student);
       })
       .catch(err => res.responseAppError(err));
   }
   addNewNHMAccount(req: Request, res: Response, next: NextFunction): void {
-    NHMAccountDAL.addNewAccount(req)
+    AccountBusiness.addNewAccount(req.body)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
@@ -70,19 +74,23 @@ class NHMAccountController implements INHMAccountControllers {
     res: Response,
     next: NextFunction
   ): void {
-    NHMAccountDAL.updateAccountById(req?.body, req.params.id)
+    AccountBusiness.updateAccountById(req.params.id, req?.body)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
 
   listNHMAccounts(req: Request, res: Response, next: NextFunction): void {
-    NHMAccountDAL.listAccounts(req.query)
+    AccountBusiness.listAccount(req.paging)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
 
-  getNHMAccountById(req: Request<NHMAccountParamsReq>, res: Response, next: NextFunction): void {
-    NHMAccountDAL.getAccountById(req.params.id)
+  getNHMAccountById(
+    req: Request<NHMAccountParamsReq>,
+    res: Response,
+    next: NextFunction
+  ): void {
+    AccountBusiness.getAccountById(req.params.id)
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }

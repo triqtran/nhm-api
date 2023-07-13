@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
+import Courses from './Courses';
 
 export type StudentStatus = 'registered' | 'active' | 'suspended';
 
@@ -11,9 +12,14 @@ interface StudentsAttributes {
   email: string;
   phone: string;
   status: StudentStatus;
+  user_name: string;
   password: string;
   ayotree_student_id?: number;
   ayotree_campus_id?: number;
+  ayotree_course_title?: string;
+  ayotree_course_code?: string;
+  level?: string;
+  confirm_code?: string;
   created_at: Date;
   updated_at?: Date;
 }
@@ -32,9 +38,14 @@ class Students
   public email!: string;
   public phone!: string;
   public status!: StudentStatus;
+  public user_name!: string;
   public password!: string;
   public ayotree_student_id?: number;
   public ayotree_campus_id?: number;
+  public ayotree_course_code?: string;
+  public ayotree_course_title?: string;
+  public level?: string;
+  public confirm_code?: string;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -57,9 +68,14 @@ Students.init(
       defaultValue: 'registered',
       values: ['registered', 'active', 'suspended'],
     },
+    user_name: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
     ayotree_student_id: { type: DataTypes.INTEGER },
     ayotree_campus_id: { type: DataTypes.INTEGER },
+    ayotree_course_code: { type: DataTypes.STRING },
+    ayotree_course_title: { type: DataTypes.STRING },
+    level: { type: DataTypes.STRING },
+    confirm_code: { type: DataTypes.STRING },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },
@@ -72,5 +88,11 @@ Students.init(
     tableName: 'students',
   }
 );
+
+Students.belongsTo(Courses, {
+  as: 'course',
+  foreignKey: 'ayotree_course_code',
+  targetKey: 'CourseCode',
+});
 
 export default Students;

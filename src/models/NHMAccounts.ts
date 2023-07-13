@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConnection from './dbConnection';
 
-type NHM_Account_Type = 'admin' | 'teacher';
+export type NHM_Account_Type = 'admin' | 'teacher';
 
 interface NHMAccountsAttributes {
   id: number;
