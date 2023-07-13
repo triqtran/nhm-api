@@ -79,10 +79,7 @@ class JwtResponse {
   getLearningLevel(req: Request, res: Response, next: NextFunction) {
     StudentsDAL.getStudentViaIdIncludingCourse(req.userDecoded.id)
       .then(student => {
-        if (!student) {
-          res.responseAppError(throwError('Student has not had any courses yet!'));
-        }
-        req.userDecoded.level = student.course.LearningLevel;
+        req.userDecoded.level = student?.course?.LearningLevel;
         next();
       })
       .catch((e: Error) => res.responseAppError(throwError(e.message)));

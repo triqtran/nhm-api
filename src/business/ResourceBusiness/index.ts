@@ -78,7 +78,7 @@ class ResourceBusiness implements IResourceBusiness {
       });
   }
 
-  listEbook(level?: string): Promise<EbookResponse[]> {
+  listEbook(level?: string | null): Promise<EbookResponse[]> {
     return BookDAL.listBookWithoutPaging({ level })
       .then(books =>
         books.map(
@@ -98,7 +98,7 @@ class ResourceBusiness implements IResourceBusiness {
         throw err;
       });
   }
-  listGame(level?: string): Promise<GameExerciseResponse[]> {
+  listGame(level?: string | null): Promise<GameExerciseResponse[]> {
     return GameExerciseDAL.listGameWithoutPaging({ level })
       .then(games =>
         games.map(game => {

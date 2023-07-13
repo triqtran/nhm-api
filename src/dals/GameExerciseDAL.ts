@@ -4,8 +4,11 @@ import { Op, col, literal } from 'sequelize';
 import GameExerciseStudents from 'models/GameExerciseStudents';
 import GameExerciseResults from 'models/GameExerciseResults';
 
-const logError = (funcName: string, err: string) =>
-  `GameExerciseDAL.${funcName}: ${err}`;
+const logError = (funcName: string, err: string) => {
+  console.log('------------------------------')
+  console.error(`GameExerciseDAL.${funcName}: ${err}`);
+  console.log('------------------------------')
+}
 
 const throwError =
   (funcName: string) =>

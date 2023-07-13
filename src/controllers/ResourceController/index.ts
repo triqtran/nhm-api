@@ -6,8 +6,8 @@ class ResourceController implements IResourceControllers {
   getStudentOwner(req: Request, res: Response, next: NextFunction): void {
     Promise.allSettled([
       ResourceBusiness.listContinue(req.userDecoded.id),
-      ResourceBusiness.listEbook(req.userDecoded.level),
-      ResourceBusiness.listGame(req.userDecoded.level),
+      ResourceBusiness.listEbook(req.userDecoded.level || null),
+      ResourceBusiness.listGame(req.userDecoded.level || null),
     ])
       .then(([currentRes, booksRes, gamesRes]) => {
         const current =

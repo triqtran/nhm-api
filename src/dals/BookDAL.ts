@@ -2,8 +2,11 @@ import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
 import { Op, col } from 'sequelize';
 
-const logError = (funcName: string, err: string) =>
-  `BookDAL.${funcName}: ${err}`;
+const logError = (funcName: string, err: string) => {
+  console.log('-------------------------');
+  console.error(`BookDAL.${funcName}: ${err}`);
+  console.log('--------------------------');
+};
 
 const throwError =
   (funcName: string) =>
