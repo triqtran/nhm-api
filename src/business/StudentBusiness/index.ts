@@ -180,6 +180,7 @@ class StudentBusiness implements IStudentBusiness {
       return StudentsDAL.updateStudentById(
         {
           password,
+          confirm_code: null,
         },
         student.id
       );

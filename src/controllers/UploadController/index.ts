@@ -21,12 +21,12 @@ class UploadControllers implements IUploadControllers {
       return res.responseAppError(errors.MISSING_FILE);
     }
     UploadFileBusiness.s3UploadFile(req.file)
-      .then(data => {
-        if (!data.Key) {
+      .then(Key => {
+        if (!Key) {
           return res.responseAppError(errors.UPLOAD_FAILED);
         }
         res.responseSuccess({
-          url: `${config.S3_STORAGE_PUBLIC_URL}/${data.Key}`,
+          url: `${config.S3_STORAGE_PUBLIC_URL}/${Key}`,
         });
       })
       .catch(err => res.responseAppError(err));
