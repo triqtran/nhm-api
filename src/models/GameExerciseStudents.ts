@@ -7,6 +7,7 @@ interface GameExerciseStudentsAttributes {
   game_exercise_id: number;
   student_id: number;
   level: string;
+  next_level: number;
   total_correct_answers: number;
   created_at: Date;
   updated_at?: Date;
@@ -26,6 +27,7 @@ class GameExerciseStudents
   public game_exercise_id!: number;
   public student_id!: number;
   public level!: string;
+  public next_level!: number;
   public total_correct_answers!: number;
   public created_at!: Date;
   public updated_at?: Date;
@@ -36,6 +38,7 @@ GameExerciseStudents.init(
     game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
     student_id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
     level: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
+    next_level: { type: DataTypes.TINYINT, allowNull: true },
     total_correct_answers: { type: DataTypes.INTEGER },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },

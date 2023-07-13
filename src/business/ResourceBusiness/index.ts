@@ -12,6 +12,8 @@ import BookDAL from 'dals/BookDAL';
 import BookStudent from 'models/BookStudents';
 import GameExerciseResults from 'models/GameExerciseResults';
 import GameExerciseStudents from 'models/GameExerciseStudents';
+import Book from 'models/Book';
+import GameExercises from 'models/GameExercises';
 
 interface IResourceBusiness {
   listContinue: (student_id: number) => Promise<ContinueResourceResponse[]>;
@@ -35,6 +37,10 @@ interface IResourceBusiness {
     game_exercise_id: number,
     student_id: number
   ): Promise<boolean>;
+
+  getBookDetail(booK_id: number): Promise<Book>;
+
+  getGameExerciseDetail(game_exercise_id: number): Promise<GameExercises>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -50,13 +56,19 @@ class ResourceBusiness implements IResourceBusiness {
           ).values(),
         ];
         const wrapGameData = uniqueGameExercises.map(item => {
+          const [level, total_correct_answers] = (() => {
+            if (item.total_correct_answers === item.game_info.stars_to_win) {
+              return [item.next_level, 0];
+            }
+            return [item.level, item.total_correct_answers];
+          })();
           return {
             object_name: item.game_info.name,
             object_background_image: item.game_info.background_image,
             type: 'Game',
             object_other_info: {
-              current_level: item.level,
-              total_correct_answers: item.total_correct_answers,
+              current_level: level,
+              total_correct_answers: total_correct_answers,
             },
           } as ContinueResourceResponse;
         });
@@ -211,6 +223,56 @@ class ResourceBusiness implements IResourceBusiness {
       .then(([exerciseResult, exerciseStudent]) => {
         if (exerciseResult || exerciseStudent) return true;
         return false;
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
+
+  getGameExerciseDetail(
+    game_exercise_id: number
+  ): Promise<GameExerciseResponse> {
+    return GameExerciseDAL.getGameExerciseDetail(game_exercise_id)
+      .then(game => {
+        let totalFinishExercise = 0;
+        game.game_student?.forEach(item => {
+          if (item.total_correct_answers === game.stars_to_win)
+            totalFinishExercise++;
+        });
+
+        return {
+          background_image: game.background_image,
+          total_level: game.total_level,
+          name: game.name,
+          description: game.description,
+          how_to_play: game.how_to_play,
+          intro: game.intro,
+          current_level: game.game_student?.[0]?.level || null,
+          total_correct_answers:
+            game.game_student?.[0]?.total_correct_answers || null,
+          stars_to_win: game.stars_to_win,
+          type: game.type,
+          total_levels_completed: totalFinishExercise,
+          is_finish: totalFinishExercise === game.total_level,
+        } as GameExerciseResponse;
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
+
+  getBookDetail(booK_id: number): Promise<EbookResponse> {
+    return BookDAL.getBookDetail(booK_id)
+      .then(book => {
+        return {
+          background_image: book.background_image,
+          name: book.name,
+          short_description: book.short_description,
+          description: book.description,
+          total_chapters: book.total_chapters,
+          current_chapter: book.book_student?.current_chapter || null,
+          url_file: book.url_file,
+        } as EbookResponse;
       })
       .catch(err => {
         throw err;

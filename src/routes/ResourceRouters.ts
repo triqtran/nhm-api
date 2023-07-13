@@ -21,45 +21,59 @@ router.get(
 );
 
 router.get(
-  '/ebooks',
+  '/student-books',
   authHandler,
   levelHandler,
   ctrl.listEbook as express.RequestHandler
 );
 
 router.get(
-  '/game-exercises',
+  '/student-games',
   authHandler,
   levelHandler,
   ctrl.listGame as express.RequestHandler
 );
 
 router.get(
-  '/game-exercises/:id/levels',
+  '/student-books/:bookId',
+  authHandler,
+  levelHandler,
+  ctrl.getBookDetail as express.RequestHandler
+);
+
+router.get(
+  '/student-games/:gameExerciseId',
+  authHandler,
+  levelHandler,
+  ctrl.getGameExerciseDetail as express.RequestHandler
+);
+
+router.get(
+  '/student-games/:id/levels',
   authHandler,
   ctrl.listLevelsOfGame as express.RequestHandler
 );
 
 router.get(
-  '/game-exercises/:id/levels/:level',
+  '/student-games/:id/levels/:level',
   authHandler,
   ctrl.listQuestionsOfLevel as express.RequestHandler
 );
 
 router.post(
-  '/ebooks/student',
+  '/student-books/save',
   authHandler,
   ctrl.saveChapterOfBook as express.RequestHandler
 );
 
 router.post(
-  '/game-exercises/student',
+  '/student-games/save',
   authHandler,
   ctrl.saveGameExerciseResult as express.RequestHandler
 );
 
 router.post(
-  '/game-exercises/:id/replay',
+  '/student-games/:id/replay',
   authHandler,
   ctrl.replayGameExercise as express.RequestHandler
 );

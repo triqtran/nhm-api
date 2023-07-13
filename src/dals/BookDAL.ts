@@ -43,6 +43,7 @@ interface IBookDAL {
     student_id: number
   ): Promise<BookStudentResponseIncludeBook | null>;
   listBookWithoutPaging(where: any): Promise<BookResponseIncludeBookStudent[]>;
+  getBookDetail(id: number): Promise<BookResponseIncludeBookStudent>;
 }
 
 class BookDAL implements IBookDAL {
@@ -189,6 +190,19 @@ class BookDAL implements IBookDAL {
         );
       })
       .catch(throwError('listBookWithoutPaging'));
+  }
+
+  getBookDetail(id: number): Promise<BookResponseIncludeBookStudent> {
+    return Book.findOne({
+      where: { id },
+      include: {
+        model: BookStudent,
+        as: 'book_student',
+        required: false,
+      },
+    })
+      .then(resp => resp?.dataValues as BookResponseIncludeBookStudent)
+      .catch(throwError('getBookDetail'));
   }
 }
 

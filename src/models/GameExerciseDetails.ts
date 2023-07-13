@@ -13,12 +13,16 @@ interface GameExerciseDetailsAttributes {
   right_answer_index: number;
 
   level: string;
+  level_index: number;
 
   created_at: Date;
   updated_at?: Date;
 }
 export interface IngredientInput
-  extends Optional<GameExerciseDetailsAttributes, 'id' | 'updated_at' | 'created_at'> {}
+  extends Optional<
+    GameExerciseDetailsAttributes,
+    'id' | 'updated_at' | 'created_at'
+  > {}
 export interface IngredientOuput
   extends Required<GameExerciseDetailsAttributes> {}
 
@@ -34,6 +38,7 @@ class GameExerciseDetails
   public answers_image!: string;
   public right_answer_index!: number;
   public level!: string;
+  public level_index!: any;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -52,6 +57,7 @@ GameExerciseDetails.init(
     answers_image: { type: DataTypes.TEXT, allowNull: true },
     right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
     level: { type: DataTypes.STRING, allowNull: true },
+    level_index: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 1 },
     created_at: { type: DataTypes.DATE },
     updated_at: { type: DataTypes.DATE },
   },

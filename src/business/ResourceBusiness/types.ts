@@ -37,7 +37,7 @@ export type GameExerciseResponse = GameExercises & {
 
 export type GetAllGameLevelResponse = {
   processing?: GameExerciseStudents[];
-  levels?: string[];
+  levels?: GameExerciseDetails[];
 };
 
 export type QuestionResponse = GameExerciseDetails;

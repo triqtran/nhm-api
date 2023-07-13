@@ -6,8 +6,8 @@ class ResourceController implements IResourceControllers {
   getStudentOwner(req: Request, res: Response, next: NextFunction): void {
     Promise.allSettled([
       ResourceBusiness.listContinue(req.userDecoded.id),
-      ResourceBusiness.listEbook(req.userDecoded.level || null),
-      ResourceBusiness.listGame(req.userDecoded.level || null),
+      ResourceBusiness.listEbook(req.userDecoded.level),
+      ResourceBusiness.listGame(req.userDecoded.level),
     ])
       .then(([currentRes, booksRes, gamesRes]) => {
         const current =
@@ -75,6 +75,18 @@ class ResourceController implements IResourceControllers {
       parseInt(req.params.id),
       req.userDecoded.id
     )
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+
+  getBookDetail(req: Request, res: Response, next: NextFunction): void {
+    ResourceBusiness.getBookDetail(parseInt(req.params.bookId))
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+
+  getGameExerciseDetail(req: Request, res: Response, next: NextFunction): void {
+    ResourceBusiness.getGameExerciseDetail(parseInt(req.params.gameExerciseId))
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }

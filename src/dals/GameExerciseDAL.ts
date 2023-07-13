@@ -5,10 +5,10 @@ import GameExerciseStudents from 'models/GameExerciseStudents';
 import GameExerciseResults from 'models/GameExerciseResults';
 
 const logError = (funcName: string, err: string) => {
-  console.log('------------------------------')
+  console.log('------------------------------');
   console.error(`GameExerciseDAL.${funcName}: ${err}`);
-  console.log('------------------------------')
-}
+  console.log('------------------------------');
+};
 
 const throwError =
   (funcName: string) =>
@@ -62,7 +62,9 @@ interface IGameExercisesDAL {
   listGameWithoutPaging(
     filters: any
   ): Promise<GameExerciseResponseIncludingGameExerciseStudent[]>;
-  getAllLevelViaGameId(game_exercise_id: number): Promise<string[]>;
+  getAllLevelViaGameId(
+    game_exercise_id: number
+  ): Promise<GameExerciseDetails[]>;
   listQuestionsOfLevel(
     game_exercise_id: number,
     level: string
@@ -96,6 +98,15 @@ interface IGameExercisesDAL {
     game_exercise_id: number,
     student_id: number
   ): Promise<boolean>;
+
+  getGameExerciseDetail(
+    id: number
+  ): Promise<GameExerciseResponseIncludingGameExerciseStudent>;
+
+  getNextLevelsOfGame(
+    game_exercise_id: number,
+    current_level_index: number
+  ): Promise<GameExerciseDetails>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -211,7 +222,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
       where: {
         student_id,
         total_correct_answers: {
-          [Op.lt]: col('game_info`.`stars_to_win'),
+          [Op.lte]: col('game_info`.`stars_to_win'),
         },
       },
       include: {
@@ -224,15 +235,19 @@ class GameExercisesDAL implements IGameExercisesDAL {
       order: [['updated_at', 'asc']],
     })
       .then(res => {
-        if (res?.length > 0)
-          return res.map(
-            item => item.dataValues
-          ) as GameExerciseStudentsResponseIncludingGameExercises[];
-        logError(
-          'listGameStudentByStudentId',
-          'Student has not played any game yet!'
-        );
-        return [];
+        if (res.length <= 0) {
+          logError(
+            'listGameStudentByStudentId',
+            'Student has not played any game yet!'
+          );
+          return [];
+        }
+
+        if (!res[res.length - 1].next_level) return [];
+
+        return res.map(
+          item => item.dataValues
+        ) as GameExerciseStudentsResponseIncludingGameExercises[];
       })
       .catch(throwError('listGameStudentByStudentId'));
   }
@@ -293,15 +308,20 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('listGameWithoutPaging'));
   }
 
-  getAllLevelViaGameId(game_exercise_id: number): Promise<string[]> {
+  getAllLevelViaGameId(
+    game_exercise_id: number
+  ): Promise<GameExerciseDetails[]> {
     return GameExerciseDetails.findAll({
       where: { game_exercise_id },
-      order: [['level', 'asc']],
-      group: ['level'],
-      attributes: ['level'],
+      order: [['level_index', 'asc']],
+      group: ['level', 'level_index'],
+      attributes: ['level', 'level_index'],
     })
       .then(resp => {
-        return resp.map(item => item.level) as string[];
+        return resp.map(item => ({
+          level: item.level,
+          level_index: item.level_index,
+        })) as GameExerciseDetails[];
       })
       .catch(throwError('getAllLevelViaGameId'));
   }
@@ -437,6 +457,43 @@ class GameExercisesDAL implements IGameExercisesDAL {
         return false;
       })
       .catch(throwError('clearGameExerciseStudentViaExerciseIdStudentId'));
+  }
+
+  getGameExerciseDetail(
+    id: number
+  ): Promise<GameExerciseResponseIncludingGameExerciseStudent> {
+    return GameExercises.findOne({
+      where: { id },
+      include: {
+        model: GameExerciseStudents,
+        as: 'game_student',
+        required: false,
+        order: [['updated_at', 'desc']],
+      },
+    })
+      .then(
+        resp =>
+          resp?.dataValues as GameExerciseResponseIncludingGameExerciseStudent
+      )
+      .catch(throwError('getGameExerciseDetail'));
+  }
+
+  getNextLevelsOfGame(
+    game_exercise_id: number,
+    current_level_index: number
+  ): Promise<GameExerciseDetails> {
+    return GameExerciseDetails.findOne({
+      where: {
+        game_exercise_id,
+        level_index: current_level_index + 1,
+      },
+      group: ['level', 'level_index'],
+      attributes: ['level', 'level_index'],
+    })
+      .then(resp => {
+        return resp?.dataValues as GameExerciseDetails;
+      })
+      .catch(throwError('getNextLevelsOfGame'));
   }
 }
 

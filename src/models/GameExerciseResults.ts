@@ -13,6 +13,7 @@ interface GameExerciseResultsAttributes {
   right_answer_index: number;
   audio_url?: string;
   level: string;
+  level_index: number;
   student_answer_index: number;
   is_correct: boolean;
   created_at: Date;
@@ -35,6 +36,7 @@ class GameExerciseResults
   public answers_image!: string;
   public right_answer_index!: number;
   public level!: string;
+  public level_index!: number;
   public student_answer_index!: number;
   public is_correct!: boolean;
   public audio_url?: string;
@@ -57,6 +59,7 @@ GameExerciseResults.init(
     right_answer_index: { type: DataTypes.INTEGER, allowNull: false },
     audio_url: { type: DataTypes.TEXT, allowNull: true },
     level: { type: DataTypes.STRING, allowNull: true },
+    level_index: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 1 },
     student_answer_index: { type: DataTypes.INTEGER },
     is_correct: { type: DataTypes.BOOLEAN },
     created_at: { type: DataTypes.DATE },
