@@ -7,6 +7,7 @@ interface GameExerciseStudentsAttributes {
   game_exercise_id: number;
   student_id: number;
   level: string;
+  level_index: number;
   next_level: number;
   total_correct_answers: number;
   created_at: Date;
@@ -27,6 +28,7 @@ class GameExerciseStudents
   public game_exercise_id!: number;
   public student_id!: number;
   public level!: string;
+  public level_index!: number;
   public next_level!: number;
   public total_correct_answers!: number;
   public created_at!: Date;
@@ -37,6 +39,7 @@ GameExerciseStudents.init(
   {
     game_exercise_id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
     student_id: { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true },
+    level_index: { type: DataTypes.TINYINT, allowNull: false, defaultValue: 1 },
     level: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
     next_level: { type: DataTypes.TINYINT, allowNull: true },
     total_correct_answers: { type: DataTypes.INTEGER },
@@ -61,7 +64,7 @@ GameExerciseStudents.belongsTo(GameExercises, {
 
 GameExercises.hasMany(GameExerciseStudents, {
   as: 'game_student',
-  foreignKey: 'game_exercise_id'
+  foreignKey: 'game_exercise_id',
 });
 
 GameExercises.hasMany(GameExerciseDetails, {
