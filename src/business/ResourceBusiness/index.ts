@@ -50,13 +50,9 @@ class ResourceBusiness implements IResourceBusiness {
           ).values(),
         ];
         const wrapGameData = uniqueGameExercises.map(item => {
-          // const correctAnswerToCompleteGame =
-          //   item.game_info.total_level * item.game_info.stars_to_win;
           return {
             object_name: item.game_info.name,
             object_background_image: item.game_info.background_image,
-            // process:
-            //   (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
             type: 'Game',
             object_other_info: {
               current_level: item.level,
@@ -68,8 +64,6 @@ class ResourceBusiness implements IResourceBusiness {
           return {
             object_name: item?.book_info.name,
             object_background_image: item.book_info.background_image,
-            // process:
-            //   (item.current_chapter / item.book_info.total_chapters) * 100,
             type: 'Book',
             object_other_info: {
               current_chapter: item.current_chapter,
