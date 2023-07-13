@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import IResourceControllers from './interfaces';
-import { ErrorStruct } from '@tsenv';
-import { ParsedQs } from 'qs';
 import { ResourceBusiness } from 'business';
-import { ParamsDictionary } from 'express-serve-static-core';
-
-const errors = {};
 
 class ResourceController implements IResourceControllers {
   listContinue(req: Request, res: Response, next: NextFunction): void {
