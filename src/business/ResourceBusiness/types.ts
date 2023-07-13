@@ -2,6 +2,7 @@ import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
 import GameExerciseDetails from 'models/GameExerciseDetails';
 import GameExerciseResults from 'models/GameExerciseResults';
+import GameExerciseStudents from 'models/GameExerciseStudents';
 import GameExercises from 'models/GameExercises';
 
 type ContinueResourceType = 'Game' | 'Book';
@@ -21,6 +22,7 @@ export type ContinueResourceResponse = {
   object_background_image: string;
   process?: number;
   type: ContinueResourceType;
+  object_other_info: Object;
 };
 
 export type EbookResponse = Book & { current_chapter: number };
@@ -34,7 +36,8 @@ export type GameExerciseResponse = GameExercises & {
 };
 
 export type GetAllGameLevelResponse = {
-  level?: string[];
+  processing?: GameExerciseStudents[];
+  levels?: string[];
 };
 
 export type QuestionResponse = GameExerciseDetails;

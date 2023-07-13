@@ -24,14 +24,18 @@ class ResourceController implements IResourceControllers {
       .catch(err => res.responseAppError(err));
   }
   listLevelsOfGame(req: Request, res: Response, next: NextFunction): void {
-    ResourceBusiness.listLevelsOfGame(parseInt(req.params.id))
+    ResourceBusiness.listLevelsOfGame(
+      parseInt(req.params.id),
+      req.userDecoded.id
+    )
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }
   listQuestionsOfLevel(req: Request, res: Response, next: NextFunction): void {
     ResourceBusiness.getQuestionsOfLevel(
       parseInt(req.params.id),
-      req.params.level
+      req.params.level,
+      req.userDecoded.id
     )
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
@@ -53,6 +57,14 @@ class ResourceController implements IResourceControllers {
       ...req.body,
       student_id: req.userDecoded.id,
     })
+      .then(result => res.responseSuccess(result))
+      .catch(err => res.responseAppError(err));
+  }
+  replayGameExercise(req: Request, res: Response, next: NextFunction): void {
+    ResourceBusiness.clearGameExercise(
+      parseInt(req.params.id),
+      req.userDecoded.id
+    )
       .then(result => res.responseSuccess(result))
       .catch(err => res.responseAppError(err));
   }

@@ -1,5 +1,6 @@
 import Book from 'models/Book';
 import BookStudent from 'models/BookStudents';
+import { Op, col } from 'sequelize';
 
 const logError = (funcName: string, err: string) =>
   `BookDAL.${funcName}: ${err}`;
@@ -107,7 +108,12 @@ class BookDAL implements IBookDAL {
     is_trial = false
   ): Promise<BookStudentResponseIncludeBook[]> {
     return BookStudent.findAll({
-      where: { student_id },
+      where: {
+        student_id,
+        current_chapter: {
+          [Op.lt]: col('book_info`.`total_chapters'),
+        },
+      },
       include: {
         model: Book,
         as: 'book_info',

@@ -18,16 +18,23 @@ interface IResourceBusiness {
   listEbook: (level?: string) => Promise<EbookResponse[]>;
   listGame: (level?: string) => Promise<GameExerciseResponse[]>;
   listLevelsOfGame: (
-    game_exercise_id: number
+    game_exercise_id: number,
+    student_id: number
   ) => Promise<GetAllGameLevelResponse>;
   getQuestionsOfLevel: (
     game_exercise_id: number,
-    level: string
+    level: string,
+    student_id: number
   ) => Promise<QuestionResponse[]>;
   upsertBookStudent: (data: UpsertBookStudentRequest) => Promise<boolean>;
   saveGameExerciseResult: (
     data: SaveGameExerciseResultRequest
   ) => Promise<boolean>;
+
+  clearGameExercise(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<boolean>;
 }
 
 class ResourceBusiness implements IResourceBusiness {
@@ -37,7 +44,12 @@ class ResourceBusiness implements IResourceBusiness {
       BookDAL.listBookStudentByStudentId(student_id),
     ])
       .then(([gameExercises, books]) => {
-        const wrapGameData = gameExercises.map(item => {
+        const uniqueGameExercises = [
+          ...new Map(
+            gameExercises.map(item => [item['game_exercise_id'], item])
+          ).values(),
+        ];
+        const wrapGameData = uniqueGameExercises.map(item => {
           // const correctAnswerToCompleteGame =
           //   item.game_info.total_level * item.game_info.stars_to_win;
           return {
@@ -46,6 +58,10 @@ class ResourceBusiness implements IResourceBusiness {
             // process:
             //   (item.total_correct_answers / correctAnswerToCompleteGame) * 100,
             type: 'Game',
+            object_other_info: {
+              current_level: item.level,
+              total_correct_answers: item.total_correct_answers,
+            },
           } as ContinueResourceResponse;
         });
         const wrapBookData = books.map(item => {
@@ -55,6 +71,9 @@ class ResourceBusiness implements IResourceBusiness {
             // process:
             //   (item.current_chapter / item.book_info.total_chapters) * 100,
             type: 'Book',
+            object_other_info: {
+              current_chapter: item.current_chapter,
+            },
           } as ContinueResourceResponse;
         });
 
@@ -116,15 +135,45 @@ class ResourceBusiness implements IResourceBusiness {
       });
   }
 
-  listLevelsOfGame(game_exercise_id: number): Promise<GetAllGameLevelResponse> {
-    return GameExerciseDAL.getAllLevelViaGameId(game_exercise_id);
+  listLevelsOfGame(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<GetAllGameLevelResponse> {
+    return Promise.all([
+      GameExerciseDAL.getAllLevelViaGameId(game_exercise_id),
+      GameExerciseDAL.listGameStudentViaIdStudentId(
+        game_exercise_id,
+        student_id
+      ),
+    ])
+      .then(
+        ([levels, processing]) =>
+          ({
+            levels,
+            processing: processing.map(
+              item =>
+                ({
+                  level: item.level,
+                  total_correct_answers: item.total_correct_answers,
+                } as GameExerciseStudents)
+            ),
+          } as GetAllGameLevelResponse)
+      )
+      .catch(err => {
+        throw err;
+      });
   }
 
   getQuestionsOfLevel(
     game_exercise_id: number,
-    level: string
+    level: string,
+    student_id: number
   ): Promise<QuestionResponse[]> {
-    return GameExerciseDAL.listQuestionsOfLevel(game_exercise_id, level);
+    return GameExerciseDAL.listQuestionsOfLevelWithFilter(
+      game_exercise_id,
+      level,
+      student_id
+    );
   }
 
   upsertBookStudent(data: BookStudent): Promise<boolean> {
@@ -145,6 +194,29 @@ class ResourceBusiness implements IResourceBusiness {
           } as GameExerciseStudents).then(() => true);
         }
         return true;
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
+
+  clearGameExercise(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<boolean> {
+    return Promise.all([
+      GameExerciseDAL.clearGameExerciseResultViaExerciseIdStudentId(
+        game_exercise_id,
+        student_id
+      ),
+      GameExerciseDAL.clearGameExerciseStudentViaExerciseIdStudentId(
+        game_exercise_id,
+        student_id
+      ),
+    ])
+      .then(([exerciseResult, exerciseStudent]) => {
+        if (exerciseResult || exerciseStudent) return true;
+        return false;
       })
       .catch(err => {
         throw err;

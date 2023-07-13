@@ -1,8 +1,7 @@
 import GameExercises from 'models/GameExercises';
 import GameExerciseDetails from 'models/GameExerciseDetails';
-import { col, fn, where } from 'sequelize';
+import { Op, col, literal } from 'sequelize';
 import GameExerciseStudents from 'models/GameExerciseStudents';
-import { GetAllGameLevelResponse } from 'business/ResourceBusiness/types';
 import GameExerciseResults from 'models/GameExerciseResults';
 
 const logError = (funcName: string, err: string) =>
@@ -60,14 +59,12 @@ interface IGameExercisesDAL {
   listGameWithoutPaging(
     filters: any
   ): Promise<GameExerciseResponseIncludingGameExerciseStudent[]>;
-  getAllLevelViaGameId(
-    game_exercise_id: number
-  ): Promise<GetAllGameLevelResponse>;
+  getAllLevelViaGameId(game_exercise_id: number): Promise<string[]>;
   listQuestionsOfLevel(
     game_exercise_id: number,
     level: string
   ): Promise<GameExerciseDetails[]>;
-  getGameStudent(
+  getGameStudentViaIdLevel(
     game_exercise_id: number,
     level: string
   ): Promise<GameExerciseStudents>;
@@ -75,6 +72,27 @@ interface IGameExercisesDAL {
   createGameExerciseResult(
     data: GameExerciseResults
   ): Promise<GameExerciseResults>;
+
+  listGameStudentViaIdStudentId(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<GameExerciseStudents[]>;
+
+  listQuestionsOfLevelWithFilter(
+    game_exercise_id: number,
+    level: string,
+    student_id: number
+  ): Promise<GameExerciseDetails[]>;
+
+  clearGameExerciseStudentViaExerciseIdStudentId(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<boolean>;
+
+  clearGameExerciseResultViaExerciseIdStudentId(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<boolean>;
 }
 
 class GameExercisesDAL implements IGameExercisesDAL {
@@ -187,12 +205,12 @@ class GameExercisesDAL implements IGameExercisesDAL {
     is_trial = false
   ): Promise<GameExerciseStudentsResponseIncludingGameExercises[]> {
     return GameExerciseStudents.findAll({
-      where: { student_id },
-      attributes: [
-        'game_exercise_id',
-        'student_id',
-        [fn('sum', col('total_correct_answers')), 'total_correct_answers'],
-      ],
+      where: {
+        student_id,
+        total_correct_answers: {
+          [Op.lt]: col('game_info`.`stars_to_win'),
+        },
+      },
       include: {
         model: GameExercises,
         as: 'game_info',
@@ -200,7 +218,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
         where: { is_trial },
         attributes: ['name', 'total_level', 'background_image', 'stars_to_win'],
       },
-      group: 'game_exercise_id',
+      order: [['updated_at', 'asc']],
     })
       .then(res => {
         if (res?.length > 0)
@@ -272,9 +290,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('listGameWithoutPaging'));
   }
 
-  getAllLevelViaGameId(
-    game_exercise_id: number
-  ): Promise<GetAllGameLevelResponse> {
+  getAllLevelViaGameId(game_exercise_id: number): Promise<string[]> {
     return GameExerciseDetails.findAll({
       where: { game_exercise_id },
       order: [['level', 'asc']],
@@ -282,7 +298,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
       attributes: ['level'],
     })
       .then(resp => {
-        return resp.map(item => item.level) as GetAllGameLevelResponse;
+        return resp.map(item => item.level) as string[];
       })
       .catch(throwError('getAllLevelViaGameId'));
   }
@@ -305,7 +321,7 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .catch(throwError('listQuestionsOfLevel'));
   }
 
-  getGameStudent(
+  getGameStudentViaIdLevel(
     game_exercise_id: number,
     level: string
   ): Promise<GameExerciseStudents> {
@@ -335,12 +351,89 @@ class GameExercisesDAL implements IGameExercisesDAL {
       .then(() => true)
       .catch(throwError('upsertGameExerciseStudent'));
   }
+
   createGameExerciseResult(
     data: GameExerciseResults
   ): Promise<GameExerciseResults> {
     return GameExerciseResults.create(data)
       .then(created => created.dataValues as GameExerciseResults)
       .catch(throwError('upsertGameExerciseStudent'));
+  }
+
+  listGameStudentViaIdStudentId(game_exercise_id: number, student_id: number) {
+    return GameExerciseStudents.findAll({
+      where: { game_exercise_id, student_id },
+    })
+      .then(
+        resp => resp?.map(item => item.dataValues) as GameExerciseStudents[]
+      )
+      .catch(throwError('listGameStudentViaIdStudentId'));
+  }
+
+  listQuestionsOfLevelWithFilter(
+    game_exercise_id: number,
+    level: string,
+    student_id: number
+  ): Promise<GameExerciseDetails[]> {
+    return GameExerciseDetails.findAll({
+      where: {
+        game_exercise_id,
+        level,
+        [Op.or]: [
+          {
+            question: {
+              [Op.notIn]: literal(
+                `(SELECT question FROM \`game_exercise_results\` WHERE game_exercise_id = ${game_exercise_id} AND student_id = ${student_id} AND level = ${level} AND is_correct = 1)`
+              ),
+            },
+          },
+          {
+            audio_url: {
+              [Op.notIn]: literal(
+                `(SELECT audio_url FROM \`game_exercise_results\` WHERE game_exercise_id = ${game_exercise_id} AND student_id = ${student_id} AND level = ${level} AND is_correct = 1)`
+              ),
+            },
+          },
+        ],
+      },
+      attributes: [
+        'question',
+        'audio_url',
+        'answers',
+        'answers_image',
+        'right_answer_index',
+      ],
+    })
+      .then(resp => resp?.map(item => item.dataValues as GameExerciseDetails))
+      .catch(throwError('listQuestionsOfLevelWithFilter'));
+  }
+
+  clearGameExerciseStudentViaExerciseIdStudentId(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<boolean> {
+    return GameExerciseStudents.destroy({
+      where: { game_exercise_id, student_id },
+    })
+      .then(resp => {
+        if (resp) return true;
+        return false;
+      })
+      .catch(throwError('clearGameExerciseStudentViaExerciseIdStudentId'));
+  }
+
+  clearGameExerciseResultViaExerciseIdStudentId(
+    game_exercise_id: number,
+    student_id: number
+  ): Promise<boolean> {
+    return GameExerciseResults.destroy({
+      where: { game_exercise_id, student_id },
+    })
+      .then(resp => {
+        if (resp) return true;
+        return false;
+      })
+      .catch(throwError('clearGameExerciseStudentViaExerciseIdStudentId'));
   }
 }
 

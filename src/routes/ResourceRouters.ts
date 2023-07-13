@@ -51,4 +51,10 @@ router.post(
   ctrl.saveGameExerciseResult as express.RequestHandler
 );
 
+router.post(
+  '/game-exercises/:id/replay',
+  authHandler,
+  ctrl.replayGameExercise as express.RequestHandler
+);
+
 export default router;
